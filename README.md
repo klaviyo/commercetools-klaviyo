@@ -1,1 +1,1 @@
-# klavyio-ct-plugin-used
+# klavyio-ct-plugin
