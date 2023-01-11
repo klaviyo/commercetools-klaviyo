@@ -1,0 +1,40 @@
+name: Build and and test plugin
+on:
+  pull_request:
+    paths-ignore:
+      - 'infrastructure/**'
+  push:
+    branches:
+      - $default-branch
+    paths:
+      - '!infrastructure/**'
+jobs:
+  plugin:
+    name: 'Build and test'
+    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        node-version: [ 18.x ]
+#    environment: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: yarn
+      - name: Dependencies install
+        run: yarn install --frozen-lockfile
+      - name: Linting
+        run: yarn lint
+      - name: Test
+        run: yarn test
+      - name: Coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2
+        id: coverage
+        with:
+          coverage-file: ./coverage/coverage-final.json
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: ${{ steps.coverage.outputs.report }}
