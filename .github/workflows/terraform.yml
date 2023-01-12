@@ -115,3 +115,6 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false -var-file=environments/dev.tfvars
         working-directory: ./infrastructure
+        env:
+          TF_VAR_ct_client_id: ${{ secrets.CT_TF_CLIENT_ID }}
+          TF_VAR_ct_secret: ${{ secrets.CT_TF_SECRET }}

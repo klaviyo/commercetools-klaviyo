@@ -12,7 +12,6 @@
   * `CT_TF_CLIENT_ID`: commercetools client id
   * `CT_TF_SECRET`: commercetools secret
   * `GCP_CREDENTIALS`: google cloud service account key
-  * `GCP_PROJECT_ID`: google cloud project id
   * `KLAVIYO_AUTH_KEY`: the klaviyo private key
 
 ## Local development
