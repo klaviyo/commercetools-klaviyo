@@ -24,7 +24,7 @@ resource "google_project_service" "iam_api" {
 # Cloud Run service
 
 resource "google_cloud_run_service" "klaviyo_ct_plugin" {
-  name = local.service_name
+  name     = local.service_name
   location = local.location
 
   template {
@@ -51,50 +51,44 @@ resource "google_cloud_run_service" "klaviyo_ct_plugin" {
 }
 
 resource "google_pubsub_subscription" "subscription" {
-  name  = "pubsub_subscription"
+  name  = "klaviyo_ct_plugin_on_cloud_run"
   topic = google_pubsub_topic.commercetools.name
   push_config {
     push_endpoint = google_cloud_run_service.klaviyo_ct_plugin.status[0].url
-#    oidc_token {
-#      service_account_email = google_service_account.pubsub_invoker.email
-#    }
+    oidc_token {
+      service_account_email = google_service_account.pubsub_invoker.email
+    }
     attributes = {
       x-goog-version = "v1"
     }
   }
-  depends_on = [google_cloud_run_service.klaviyo_ct_plugin]
+  depends_on = [google_cloud_run_service.klaviyo_ct_plugin, google_pubsub_topic.commercetools]
 }
 
-#resource "google_cloud_run_service_iam_member" "allUsers" {
-#  service  = google_cloud_run_service.run_service.name
-#  location = google_cloud_run_service.run_service.location
-#  role     = "roles/run.invoker"
-#  member   = "allUsers"
-#}
+resource "google_cloud_run_service_iam_member" "allUsers" {
+  service  = google_cloud_run_service.klaviyo_ct_plugin.name
+  location = google_cloud_run_service.klaviyo_ct_plugin.location
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
 
-# Service Account for deployment
+# Service Account for invoking cloud run
 
-#resource "google_service_account" "pubsub_invoker" {
-#  gcp_project_id      = local.gcp_project_id
-#  account_id   = "cloud-run-pubsub-invoker"
-#  display_name = "Cloud Run Pub/Sub Invoker"
-#}
-#
+resource "google_service_account" "pubsub_invoker" {
+  project      = local.gcp_project_id
+  account_id   = "cloud-run-pubsub-invoker"
+  display_name = "Cloud Run Pub/Sub Invoker"
+}
+
 #resource "google_service_account_key" "deployment_sa_key" {
 #  service_account_id = google_service_account.pubsub_invoker.name
 #}
 
-#resource "google_project_iam_member" "deployment_sa_role_editor" {
-#  gcp_project_id = local.gcp_project_id
-#  role    = "roles/run.invoker"
-#  member  = "serviceAccount:${google_service_account.pubsub_invoker.email}"
-#}
-
-#resource "google_project_iam_member" "deployment_sa_storage_admin" {
-#  gcp_project_id = local.gcp_project_id
-#  role    = "roles/storage.admin"
-#  member  = "serviceAccount:${google_service_account.pubsub_invoker.email}"
-#}
+resource "google_project_iam_member" "deployment_sa_role_cloud_run_invoker" {
+  project = local.gcp_project_id
+  role    = "roles/run.invoker"
+  member  = "serviceAccount:${google_service_account.pubsub_invoker.email}"
+}
 
 # Artifact repository
 
@@ -104,12 +98,13 @@ resource "google_project_service" "artifact_registry_api" {
   disable_dependent_services = true
 }
 
+//todo add expiry policy for versioned images
 resource "google_artifact_registry_repository" "klaviyo-ct-plugin" {
   location      = "us-central1"
   repository_id = "${var.gcp_environment_namespace}-docker-repo"
   description   = "Klaviyo commercetools plugin docker repository"
   format        = "DOCKER"
-  depends_on = [google_project_service.artifact_registry_api]
+  depends_on    = [google_project_service.artifact_registry_api]
 }
 
 # Outputs
