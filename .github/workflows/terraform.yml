@@ -10,6 +10,7 @@ on:
       - main
     paths:
       - 'infrastructure/**'
+      - '.github/workflows/terraform.yml'
 jobs:
   terraform:
     name: 'Terraform'
