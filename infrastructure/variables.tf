@@ -1,10 +1,10 @@
 #COMMERCETOOLS
 
-variable "project_key" {
+variable "ct_project_key" {
   description = "commercetools Project key"
   type        = string
 }
-variable "project_name" {
+variable "ct_project_name" {
   description = "commercetools Project name"
   type        = string
 }
@@ -28,20 +28,21 @@ variable "ct_secret" {
   description = "commercetools secret"
   type        = string
 }
-variable "scopes" {
+variable "ct_scopes" {
   description = "commercetools scopes"
   type        = string
 }
 
-variable "environment" {
-  description = "commercetools environment name"
+#GCP
+
+variable "gcp_environment_namespace" {
+  description = "GCP environment prefix to be added to resources"
   type        = string
 }
 
-#GCP
-variable "project" {
+variable "gcp_project_id" {
   type    = string
-  default = "klaviyo-test-roberto"
+  default = "klaviyo-ct-plugin"
 }
 
 variable "location" {

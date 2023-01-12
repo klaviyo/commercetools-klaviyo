@@ -1,5 +1,5 @@
 resource "google_pubsub_topic" "commercetools" {
-  name = "${var.environment}-commercetools-topic"
+  name = "${var.gcp_environment_namespace}-commercetools-topic"
 
   #  labels = {
   #    foo = "bar"
@@ -8,13 +8,13 @@ resource "google_pubsub_topic" "commercetools" {
   message_retention_duration = "86400s"
 }
 resource "google_project_iam_binding" "project_token_creator" {
-  project = local.project
+  project = local.gcp_project_id
   role    = "roles/iam.serviceAccountTokenCreator"
   members = ["serviceAccount:${google_project_service_identity.pubsub_agent.email}"]
 }
 resource "google_project_service_identity" "pubsub_agent" {
   provider = google-beta
-  project  = local.project
+  project  = local.gcp_project_id
   service  = "pubsub.googleapis.com"
 }
 

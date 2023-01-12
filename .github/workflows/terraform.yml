@@ -7,7 +7,7 @@ on:
       - '.github/workflows/terraform.yml'
   push:
     branches:
-      - $default-branch
+      - main
     paths:
       - 'infrastructure/**'
 jobs:

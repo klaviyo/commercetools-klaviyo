@@ -11,5 +11,5 @@ resource "commercetools_project_settings" "project" {
     "en-US",
     "it"
   ]
-  name = var.project_name
+  name = var.ct_project_name
 }

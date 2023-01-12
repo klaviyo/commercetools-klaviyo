@@ -1,10 +1,10 @@
 locals {
   subscriptions = [
     {
-      key               = "${var.environment}-gcp-product-published"
+      key               = "${var.gcp_environment_namespace}-gcp-product-published"
       type              = "GoogleCloudPubSub"
-      projectId         = var.project
-      topic             = "${var.environment}-commercetools-topic"
+      projectId         = var.gcp_project_id
+      topic             = "${var.gcp_environment_namespace}-commercetools-topic"
       resource_type_ids = ["product"]
       resource_type_id  = "product"
       types             = ["ProductPublished"]

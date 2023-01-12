@@ -12,7 +12,7 @@
   * `CT_TF_CLIENT_ID`: commercetools client id
   * `CT_TF_SECRET`: commercetools secret
   * `GCP_CREDENTIALS`: google cloud service account key
-  * `PROJECT_ID`: google cloud project id
+  * `GCP_PROJECT_ID`: google cloud project id
   * `KLAVIYO_AUTH_KEY`: the klaviyo private key
 
 ## Local development
@@ -25,11 +25,19 @@ cd infrastructure
 ./terraform.sh apply
 ```
 
-### Build and deployment to cloud run 
+### Build and deployment to cloud run
+Authenticate with your Google account
 ```shell
 #run only once
 gcloud auth application-default login
 ```
+OR authenticate with service account key
+```shell
+gcloud auth activate-service-account terraform@klaviyo-ct-plugin.iam.gserviceaccount.com --key-file=/Users/roberto.losanno/work/klaviyo/gcp/klaviyo-ct-plugin-a5c9b42d8e43.json --project=klaviyo-ct-plugin    
+
+#export GOOGLE_APPLICATION_CREDENTIALS=~/path-to-you-service-acccount-key.json
+```
+
 ```shell
 #run only once
 gcloud auth configure-docker us-central1-docker.pkg.dev

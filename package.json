@@ -16,7 +16,8 @@
     "start": "ts-node-esm src/index.ts",
     "test": "NODE_OPTIONS=--experimental-vm-modules npx jest",
     "test:watch": "npm test -- --watch",
-    "ts-types": " tsc --emitDeclarationOnly --outDir dist"
+    "ts-types": " tsc --emitDeclarationOnly --outDir dist",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@commercetools/platform-sdk": "^4.3.0",
@@ -39,7 +40,8 @@
     "prettier": "^2.8.1",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "husky": "^8.0.0"
   },
   "dependencies": {
     "@commercetools/sdk-client-v2": "^2.1.1",

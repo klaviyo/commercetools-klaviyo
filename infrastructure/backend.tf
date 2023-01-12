@@ -9,7 +9,7 @@ terraform {
   required_version = ">= 0.13"
 
   backend "gcs" {
-    bucket = "tfstate-klaviyo-test-roberto"
+    bucket = "klaviyo-ct-plugin-terraform-state"
     prefix = "terraform/state"
   }
 

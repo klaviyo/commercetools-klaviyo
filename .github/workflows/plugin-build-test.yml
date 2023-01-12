@@ -5,7 +5,7 @@ on:
       - 'infrastructure/**'
   push:
     branches:
-      - $default-branch
+      - main
     paths:
       - '!infrastructure/**'
 jobs:
@@ -30,11 +30,3 @@ jobs:
         run: yarn lint
       - name: Test
         run: yarn test
-      - name: Coverage report
-        uses: ArtiomTr/jest-coverage-report-action@v2
-        id: coverage
-        with:
-          coverage-file: ./coverage/coverage-final.json
-      - uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          message: ${{ steps.coverage.outputs.report }}

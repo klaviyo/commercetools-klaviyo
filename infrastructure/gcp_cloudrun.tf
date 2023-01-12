@@ -1,7 +1,7 @@
 # Providers
 
 provider "google" {
-  project = local.project
+  project = local.gcp_project_id
 }
 
 # APIs
@@ -41,6 +41,7 @@ resource "google_cloud_run_service" "klaviyo_ct_plugin" {
   }
 
   lifecycle {
+    //noinspection HILUnresolvedReference
     ignore_changes = [
       template.0.spec.0.containers.0.image,
     ]
@@ -54,9 +55,9 @@ resource "google_pubsub_subscription" "subscription" {
   topic = google_pubsub_topic.commercetools.name
   push_config {
     push_endpoint = google_cloud_run_service.klaviyo_ct_plugin.status[0].url
-    oidc_token {
-      service_account_email = google_service_account.pubsub_invoker.email
-    }
+#    oidc_token {
+#      service_account_email = google_service_account.pubsub_invoker.email
+#    }
     attributes = {
       x-goog-version = "v1"
     }
@@ -73,27 +74,27 @@ resource "google_pubsub_subscription" "subscription" {
 
 # Service Account for deployment
 
-resource "google_service_account" "pubsub_invoker" {
-  project      = local.project
-  account_id   = "cloud-run-pubsub-invoker"
-  display_name = "Cloud Run Pub/Sub Invoker"
-}
+#resource "google_service_account" "pubsub_invoker" {
+#  gcp_project_id      = local.gcp_project_id
+#  account_id   = "cloud-run-pubsub-invoker"
+#  display_name = "Cloud Run Pub/Sub Invoker"
+#}
+#
+#resource "google_service_account_key" "deployment_sa_key" {
+#  service_account_id = google_service_account.pubsub_invoker.name
+#}
 
-resource "google_service_account_key" "deployment_sa_key" {
-  service_account_id = google_service_account.pubsub_invoker.name
-}
+#resource "google_project_iam_member" "deployment_sa_role_editor" {
+#  gcp_project_id = local.gcp_project_id
+#  role    = "roles/run.invoker"
+#  member  = "serviceAccount:${google_service_account.pubsub_invoker.email}"
+#}
 
-resource "google_project_iam_member" "deployment_sa_role_editor" {
-  project = local.project
-  role    = "roles/run.invoker"
-  member  = "serviceAccount:${google_service_account.pubsub_invoker.email}"
-}
-
-resource "google_project_iam_member" "deployment_sa_storage_admin" {
-  project = local.project
-  role    = "roles/storage.admin"
-  member  = "serviceAccount:${google_service_account.pubsub_invoker.email}"
-}
+#resource "google_project_iam_member" "deployment_sa_storage_admin" {
+#  gcp_project_id = local.gcp_project_id
+#  role    = "roles/storage.admin"
+#  member  = "serviceAccount:${google_service_account.pubsub_invoker.email}"
+#}
 
 # Artifact repository
 
@@ -105,7 +106,7 @@ resource "google_project_service" "artifact_registry_api" {
 
 resource "google_artifact_registry_repository" "klaviyo-ct-plugin" {
   location      = "us-central1"
-  repository_id = "${var.environment}-docker-repo"
+  repository_id = "${var.gcp_environment_namespace}-docker-repo"
   description   = "Klaviyo commercetools plugin docker repository"
   format        = "DOCKER"
   depends_on = [google_project_service.artifact_registry_api]
@@ -117,7 +118,7 @@ output "cloud_run_url" {
   value = google_cloud_run_service.klaviyo_ct_plugin.status[0].url
 }
 
-output "deployment_sa_key" {
-  sensitive = true
-  value     = base64decode(google_service_account_key.deployment_sa_key.private_key)
-}
+#output "deployment_sa_key" {
+#  sensitive = true
+#  value     = base64decode(google_service_account_key.deployment_sa_key.private_key)
+#}
