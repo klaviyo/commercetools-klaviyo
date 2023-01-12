@@ -27,5 +27,6 @@ roles/secretmanager.admin \
 roles/serviceusage.serviceUsageAdmin \
 roles/run.developer \
 roles/artifactregistry.admin \
-roles/pubsub.admin"
+roles/pubsub.admin \
+roles/run.admin"
 
