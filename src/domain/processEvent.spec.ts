@@ -2,6 +2,8 @@ import { processEvent } from './processEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 
 describe('main', () => {
+    //todo mock api call to create klaviyo client
+
     // it('should return 0', async () => {
     //     const message: MessageDeliveryPayload = {
     //         createdAt: '',

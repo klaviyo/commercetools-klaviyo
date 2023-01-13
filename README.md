@@ -75,5 +75,9 @@ gcloud run services update app \
 --image us-central1-docker.pkg.dev/klaviyo-test-roberto/klaviyo-ct-plugin/klaviyo-ct-plugin \
 --region=us-central1 \
 --port 6789 \
---max-instances=1
+--max-instances=5 \
+--update-env-vars KLAVIYO_AUTH_KEY=<the-klaviyo-api-key>
 ```
+
+## Security
+The klaviyo API key is passed via environment variable. When deployed on the cloud use your cloud specific secrets manager to store and retrieve the key.
