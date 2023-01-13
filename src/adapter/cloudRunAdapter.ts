@@ -7,7 +7,7 @@ import logger from '../utils/log';
 const app = express();
 app.use(express.json());
 
-app.post('/', async (req, res) => {
+app.post('/', (req, res) => {
     if (!req.body) {
         const msg = 'no Pub/Sub message received';
         console.error(`error: ${msg}`);
@@ -26,7 +26,7 @@ app.post('/', async (req, res) => {
     const payload = pubSubMessage.data ? JSON.parse(Buffer.from(pubSubMessage.data, 'base64').toString()) : null;
     // const payload = { resource: { typeId: 'customer' } };
     logger.info('Starting event processing...');
-    await processEvent(payload as MessageDeliveryPayload);
+    processEvent(payload as MessageDeliveryPayload);
     res.status(204).send();
 });
 

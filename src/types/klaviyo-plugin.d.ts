@@ -1,0 +1,3 @@
+type KlaviyoEvent = {
+    body: any;
+};

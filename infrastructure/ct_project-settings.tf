@@ -11,5 +11,6 @@ resource "commercetools_project_settings" "project" {
     "en-US",
     "it"
   ]
-  name = var.ct_project_name
+  name                       = var.ct_project_name
+  enable_search_index_orders = true
 }

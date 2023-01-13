@@ -3,13 +3,17 @@ import { CustomerCreatedEvent } from './eventProcessors/customerCreatedEvent.js'
 import { OrderCreatedEvent } from './eventProcessors/orderCreatedEvent.js';
 import { AbstractEvent } from './eventProcessors/abstractEvent.js';
 import logger from '../utils/log';
+import { sendEventToKlaviyo } from './eventProcessors/klaviyoService.js';
 
 // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {
-const eventProcessors: AbstractEvent[] = [new CustomerCreatedEvent(), new OrderCreatedEvent()];
-export const processEvent = async (ctMessage: MessageDeliveryPayload) => {
+const eventProcessors: typeof AbstractEvent[] = [CustomerCreatedEvent, OrderCreatedEvent];
+
+export const processEvent = (ctMessage: MessageDeliveryPayload) => {
     // todo check ctMessage.payloadNotIncluded;
-    logger.info('Processing commercetools message:', ctMessage);
+    logger.info('Processing commercetools message:', JSON.stringify(ctMessage));
     eventProcessors
-        .filter((eventProcessor) => eventProcessor.isEventValid(ctMessage))
-        .map((eventProcessor) => eventProcessor.process(ctMessage));
+        .map((eventProcessors) => eventProcessors.instance(ctMessage))
+        .filter((eventProcessor) => eventProcessor.isEventValid())
+        .map((eventProcessor) => eventProcessor.generateKlaviyoEvent())
+        .map((klaviyoEvent) => sendEventToKlaviyo(klaviyoEvent));
 };
