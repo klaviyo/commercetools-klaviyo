@@ -65,12 +65,12 @@ resource "google_pubsub_subscription" "subscription" {
   depends_on = [google_cloud_run_service.klaviyo_ct_plugin, google_pubsub_topic.commercetools]
 }
 
-resource "google_cloud_run_service_iam_member" "allUsers" {
-  service  = google_cloud_run_service.klaviyo_ct_plugin.name
-  location = google_cloud_run_service.klaviyo_ct_plugin.location
-  role     = "roles/run.invoker"
-  member   = "allUsers"
-}
+#resource "google_cloud_run_service_iam_member" "allUsers" {
+#  service  = google_cloud_run_service.klaviyo_ct_plugin.name
+#  location = google_cloud_run_service.klaviyo_ct_plugin.location
+#  role     = "roles/run.invoker"
+#  member   = "allUsers"
+#}
 
 # Service Account for invoking cloud run
 
@@ -80,15 +80,22 @@ resource "google_service_account" "pubsub_invoker" {
   display_name = "Cloud Run Pub/Sub Invoker"
 }
 
+resource "google_cloud_run_service_iam_binding" "pub_sub_cloud_run_invoker_iam" {
+  location = google_cloud_run_service.klaviyo_ct_plugin.location
+  service  = google_cloud_run_service.klaviyo_ct_plugin.name
+  role     = "roles/run.invoker"
+  members  = ["serviceAccount:${google_service_account.pubsub_invoker.email}"]
+}
+
 #resource "google_service_account_key" "deployment_sa_key" {
 #  service_account_id = google_service_account.pubsub_invoker.name
 #}
 
-resource "google_project_iam_member" "deployment_sa_role_cloud_run_invoker" {
-  project = local.gcp_project_id
-  role    = "roles/run.invoker"
-  member  = "serviceAccount:${google_service_account.pubsub_invoker.email}"
-}
+#resource "google_project_iam_member" "deployment_sa_role_cloud_run_invoker" {
+#  project = local.gcp_project_id
+#  role    = "roles/run.invoker"
+#  member  = "serviceAccount:${google_service_account.pubsub_invoker.email}"
+#}
 
 # Artifact repository
 
