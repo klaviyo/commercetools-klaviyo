@@ -35,18 +35,19 @@
     "eslint": "^8.31.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.0",
     "jest": "^29.3.1",
     "jest-mock-extended": "^3.0.1",
     "prettier": "^2.8.1",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.4",
-    "husky": "^8.0.0"
+    "typescript": "^4.9.4"
   },
   "dependencies": {
     "@commercetools/sdk-client-v2": "^2.1.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "klaviyo-api": "^1.0.2"
+    "klaviyo-api": "^1.0.2",
+    "winston": "^3.8.2"
   }
 }

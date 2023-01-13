@@ -2,6 +2,7 @@ import express from 'express';
 import { GenericAdapter } from './genericAdapter.js';
 import { processEvent } from '../domain/processEvent.js';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
+import logger from '../utils/log';
 
 const app = express();
 app.use(express.json());
@@ -24,9 +25,7 @@ app.post('/', async (req, res) => {
 
     const payload = pubSubMessage.data ? JSON.parse(Buffer.from(pubSubMessage.data, 'base64').toString()) : null;
     // const payload = { resource: { typeId: 'customer' } };
-
-    console.log(`Processing event`);
-    console.log(JSON.stringify(payload, null, 4));
+    logger.info('Starting event processing...');
     await processEvent(payload as MessageDeliveryPayload);
     res.status(204).send();
 });
