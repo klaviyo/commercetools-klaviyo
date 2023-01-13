@@ -64,7 +64,7 @@ jobs:
           image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
           flags: '--port 6789'
           env_vars: |
-            KLAVIYO_AUTH_KEY=${{ env.KLAVIYO_AUTH_KEY }}
+            KLAVIYO_AUTH_KEY=${{ secrets.KLAVIYO_AUTH_KEY }}
 #          todo create secret in terraform and use secrets
 #          secrets: |
 #            KLAVIYO_AUTH_KEY=${{ env.KLAVIYO_AUTH_KEY }}

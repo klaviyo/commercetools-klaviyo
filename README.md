@@ -25,13 +25,19 @@
 
 ## Local development
 
+### Running integration tests locally
+Create in the root of the project a file `.env` with:
+```dotenv
+KLAVIYO_AUTH_KEY=<the-klaviyo-auth-key>
+```
+
 ### Running terraform locally
 - Authenticate to Google Cloud platform using the terraform service account key:
 ```shell
 gcloud auth activate-service-account terraform@klaviyo-ct-plugin.iam.gserviceaccount.com --key-file=/Users/roberto.losanno/work/klaviyo/gcp/klaviyo-ct-plugin-a5c9b42d8e43.json --project=klaviyo-ct-plugin
 ```
 Create a new file `infrastructure/environment/credentials.tfvars` with the following content:
-```shell
+```terraform
 ct_client_id = "<add-your-commercetools-client-id>"
 ct_secret    = "<add-your-commercetools-secret>"
   ```
