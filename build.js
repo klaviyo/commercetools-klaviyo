@@ -1,27 +1,22 @@
 #!/usr/bin/env node
-import {build} from "esbuild";
-
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { build } = require('esbuild');
 
 const options = {
     // logLevel: "info",
     // declaration: true,
-    entryNames: "main",
+    entryNames: 'main',
     entryPoints: ['./src/index.ts'],
     // minify: process.env.NODE_ENV === 'production',
     minify: true,
     bundle: true,
     outdir: 'dist',
-    platform: "node",
-    splitting: true,
-    format: 'esm',
+    platform: 'node',
     target: ['esnext'],
     sourcemap: true,
-    banner: {
-        js: `import { createRequire } from 'module'; const require = createRequire(import.meta.url);`, //very important this is required for axios to work
-    }
-}
+};
 
-build(options).catch(err => {
-    process.stderr.write(err.stderr)
-    process.exit(1)
-})
+build(options).catch((err) => {
+    process.stderr.write(err.stderr);
+    process.exit(1);
+});
