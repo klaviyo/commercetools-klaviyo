@@ -4,9 +4,10 @@ import { OrderCreatedEvent } from './eventProcessors/orderCreatedEvent.js';
 import { AbstractEvent } from './eventProcessors/abstractEvent.js';
 import logger from '../utils/log';
 import { sendEventToKlaviyo } from './eventProcessors/klaviyoService.js';
+import { ProductPublishedEvent } from './eventProcessors/productPublishedEvent';
 
 // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {
-const eventProcessors: typeof AbstractEvent[] = [CustomerCreatedEvent, OrderCreatedEvent];
+const eventProcessors: typeof AbstractEvent[] = [CustomerCreatedEvent, OrderCreatedEvent, ProductPublishedEvent];
 
 export const processEvent = (ctMessage: MessageDeliveryPayload) => {
     // todo check ctMessage.payloadNotIncluded;
