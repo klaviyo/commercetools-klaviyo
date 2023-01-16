@@ -1,5 +1,6 @@
 import { AbstractEvent } from './abstractEvent';
 import logger from '../../utils/log';
+import { OrderCreatedMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
 
 export class OrderCreatedEvent extends AbstractEvent {
     // constructor(private readonly ctMessage: MessageDeliveryPayload) {
@@ -10,6 +11,7 @@ export class OrderCreatedEvent extends AbstractEvent {
     }
 
     generateKlaviyoEvent(): KlaviyoEvent {
+        const orderCreatedMessage = this.ctMessage as unknown as OrderCreatedMessage;
         logger.info('Processing order created event');
 
         const body = {
@@ -17,13 +19,13 @@ export class OrderCreatedEvent extends AbstractEvent {
                 type: 'event',
                 attributes: {
                     profile: {
-                        email: 'john.smith@e2x.com',
+                        email: 'paul.smith@e2x.com',
                     },
                     metric: {
                         name: 'Order created',
                     },
-                    properties: { ...this.ctMessage.resource },
-                    unique_id: '1234567',
+                    properties: { ...orderCreatedMessage.order },
+                    unique_id: '12345678',
                 },
             },
         };
