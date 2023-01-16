@@ -11,7 +11,7 @@ const eventProcessors: typeof AbstractEvent[] = [CustomerCreatedEvent, OrderCrea
 
 export const processEvent = (ctMessage: MessageDeliveryPayload) => {
     // todo check ctMessage.payloadNotIncluded;
-    logger.info('Processing commercetools message:', JSON.stringify(ctMessage));
+    logger.info('Processing commercetools message:', ctMessage);
     eventProcessors
         .map((eventProcessors) => eventProcessors.instance(ctMessage))
         .filter((eventProcessor) => eventProcessor.isEventValid())
