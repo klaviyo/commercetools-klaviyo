@@ -31,6 +31,11 @@ resource "google_cloud_run_service" "klaviyo_ct_plugin" {
     spec {
       containers {
         image = local.image
+
+        env {
+          name  = "KLAVIYO_AUTH_KEY"
+          value = var.klaviyo_auth_key
+        }
       }
     }
   }

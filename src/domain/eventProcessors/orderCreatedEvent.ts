@@ -1,4 +1,4 @@
-import { AbstractEvent } from './abstractEvent.js';
+import { AbstractEvent } from './abstractEvent';
 import logger from '../../utils/log';
 
 export class OrderCreatedEvent extends AbstractEvent {
@@ -34,7 +34,7 @@ export class OrderCreatedEvent extends AbstractEvent {
             time: 1387302423,
         };
         return {
-            body: body,
+            body,
         };
 
         logger.info('Processing order created event, winston logs');

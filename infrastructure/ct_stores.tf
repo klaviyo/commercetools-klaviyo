@@ -3,7 +3,7 @@ resource "commercetools_store" "us-store" {
   name = {
     en-US = "US store"
   }
-  languages             = ["en-US"]
+  languages = ["en-US"]
 }
 
 resource "commercetools_store" "it-store" {
@@ -11,5 +11,5 @@ resource "commercetools_store" "it-store" {
   name = {
     it = "IT store"
   }
-  languages             = ["it"]
+  languages = ["it"]
 }

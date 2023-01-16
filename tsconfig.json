@@ -1,14 +1,21 @@
 {
   "compilerOptions": {
     "esModuleInterop": true,
-    "module": "es2022",
+    "module": "commonjs",
     "target": "es2022",
     "preserveConstEnums": true,
     "moduleResolution": "node",
     "strict": true,
     "sourceMap": true,
     "types": ["node", "jest"],
-    "outDir": "dist"
+    "outDir": "dist",
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "rootDir": "src",
+    "paths": {
+      "*": ["./types/*"]
+    },
+    "typeRoots" : ["./node_modules/@types", "./types/*"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]

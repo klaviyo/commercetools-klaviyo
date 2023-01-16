@@ -6,15 +6,14 @@
   "author": "E2X",
   "license": "MIT",
   "private": true,
-  "type": "module",
   "scripts": {
     "build": "npm run clean && ./build.js && cp package.json ./dist/package.json",
     "clean": "rm -rf dist/",
     "klaviyo-types": "dts-gen -m klaviyo-api -f src/types/klaviyo-api.d.ts -o",
     "lint": "eslint 'src/**/*.ts' --quiet",
     "lint:fix": "eslint 'src/**/*.ts' --quiet --fix",
-    "start": "ts-node-esm src/index.ts",
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest",
+    "start": "ts-node src/index.ts",
+    "test": "jest",
     "test:watch": "npm test -- --watch",
     "ts-types": " tsc --emitDeclarationOnly --outDir dist",
     "prepare": "husky install"

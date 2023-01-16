@@ -1,20 +1,11 @@
 import type { JestConfigWithTsJest } from 'ts-jest';
+import type { Config } from '@jest/types';
 
-const jestConfig: JestConfigWithTsJest = {
+const jestConfig: Config.InitialOptions = {
     // extensionsToTreatAsEsm: ['.ts'],
-    preset: 'ts-jest/presets/default-esm',
-    moduleNameMapper: {
-        '^(\\.{1,2}/.*)\\.js$': '$1',
-    },
-    transform: {
-        '^.+\\.ts?$': [
-            'ts-jest',
-            {
-                useESM: true,
-            },
-        ],
-    },
+    preset: 'ts-jest',
     testMatch: ['**/*.spec.ts'],
+    testEnvironment: 'node',
 
     // Automatically clear mock calls, instances, contexts and results before every test
     clearMocks: true,

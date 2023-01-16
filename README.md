@@ -115,7 +115,7 @@ docker tag klaviyo-ct-plugin us-central1-docker.pkg.dev/klaviyo-test-roberto/kla
 docker push us-central1-docker.pkg.dev/klaviyo-test-roberto/klaviyo-ct-plugin/klaviyo-ct-plugin
 ```  
 ```shell
-gcloud run services update app \
+gcloud run services update dev-klaviyo-ct-plugin \
 --image us-central1-docker.pkg.dev/klaviyo-test-roberto/klaviyo-ct-plugin/klaviyo-ct-plugin \
 --region=us-central1 \
 --port 6789 \

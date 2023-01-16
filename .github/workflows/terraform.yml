@@ -50,6 +50,7 @@ jobs:
         env:
           TF_VAR_ct_client_id: ${{ secrets.CT_TF_CLIENT_ID }}
           TF_VAR_ct_secret: ${{ secrets.CT_TF_SECRET }}
+          TF_VAR_klaviyo_auth_key: ${{ secrets.KLAVIYO_AUTH_KEY }}
       - name: Update Pull Request
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
@@ -119,3 +120,4 @@ jobs:
         env:
           TF_VAR_ct_client_id: ${{ secrets.CT_TF_CLIENT_ID }}
           TF_VAR_ct_secret: ${{ secrets.CT_TF_SECRET }}
+          TF_VAR_klaviyo_auth_key: ${{ secrets.KLAVIYO_AUTH_KEY }}

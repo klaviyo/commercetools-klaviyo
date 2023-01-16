@@ -1,4 +1,4 @@
-import { AbstractEvent } from './abstractEvent.js';
+import { AbstractEvent } from './abstractEvent';
 import logger from '../../utils/log';
 
 export class ProductPublishedEvent extends AbstractEvent {

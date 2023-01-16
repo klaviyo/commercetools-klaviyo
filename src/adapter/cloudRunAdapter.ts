@@ -1,6 +1,6 @@
 import express from 'express';
-import { GenericAdapter } from './genericAdapter.js';
-import { processEvent } from '../domain/processEvent.js';
+import { GenericAdapter } from './genericAdapter';
+import { processEvent } from '../domain/processEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import logger from '../utils/log';
 

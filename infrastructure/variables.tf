@@ -33,6 +33,13 @@ variable "ct_scopes" {
   type        = string
 }
 
+#KLAVIYO
+
+variable "klaviyo_auth_key" {
+  description = "Klaviyo auth key"
+  type        = string
+}
+
 #GCP
 
 variable "gcp_environment_namespace" {
