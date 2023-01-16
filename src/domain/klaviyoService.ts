@@ -6,8 +6,10 @@ ConfigWrapper(process.env.KLAVIYO_AUTH_KEY);
 export const sendEventToKlaviyo = (event: KlaviyoEvent) => {
     try {
         if (event.body) {
-            logger.debug('Sending event to Klaviyo: ', event.body);
-            Events.createEvent(event);
+            logger.info('Sending event to Klaviyo', { zdata: event.body });
+            Events.createEvent(event.body);
+        } else {
+            logger.warn('Event not sent to klaviyo as the body of the request is not present');
         }
     } catch (error) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment

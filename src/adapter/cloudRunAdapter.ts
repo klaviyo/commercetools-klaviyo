@@ -4,7 +4,7 @@ import { processEvent } from '../domain/processEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import logger from '../utils/log';
 
-const app = express();
+export const app = express();
 app.use(express.json());
 
 app.post('/', (req, res) => {
@@ -33,6 +33,6 @@ app.post('/', (req, res) => {
 //todo should support other types of loggers?
 export const cloudRunAdapter: GenericAdapter = (): Promise<any> => {
     const PORT = 6789;
-    app.listen(PORT, () => console.log(`klaviyo commercetools plugin listening on port ${PORT}`));
+    app.listen(PORT, () => logger.info(`klaviyo commercetools plugin listening on port ${PORT}`));
     return new Promise((resolve) => resolve(app));
 };

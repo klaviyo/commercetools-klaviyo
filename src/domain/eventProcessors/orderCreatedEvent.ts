@@ -13,30 +13,22 @@ export class OrderCreatedEvent extends AbstractEvent {
         logger.info('Processing order created event');
 
         const body = {
-            token: 'PUBLIC_API_KEY',
-            event: 'Created Invoice',
-            customer_properties: {
-                $email: 'john.smith@test.com',
-                $first_name: 'John',
-                $last_name: 'Smith',
-                $phone_number: '5551234567',
-                $address1: '123 Abc st',
-                $address2: 'Suite 1',
-                $city: 'Boston',
-                $zip: '02110',
-                $region: 'MA',
-                $country: 'USA',
+            data: {
+                type: 'event',
+                attributes: {
+                    profile: {
+                        email: 'john.smith@e2x.com',
+                    },
+                    metric: {
+                        name: 'Order created',
+                    },
+                    properties: { ...this.ctMessage.resource },
+                    unique_id: '1234567',
+                },
             },
-            properties: {
-                $event_id: '1234',
-                ...this.ctMessage.resource,
-            },
-            time: 1387302423,
         };
         return {
             body,
         };
-
-        logger.info('Processing order created event, winston logs');
     }
 }

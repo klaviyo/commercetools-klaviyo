@@ -7,7 +7,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const main = async (adapter: GenericAdapter) => {
+const main = (adapter: GenericAdapter) => {
     return adapter();
 };
 export const app = main(cloudRunAdapter);
