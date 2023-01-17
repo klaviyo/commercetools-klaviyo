@@ -33,7 +33,7 @@ The script will generate a new `terraform` service account. Create a service acc
   * `KLAVIYO_AUTH_KEY`: the klaviyo private key
 
 #### Pipelines
-The following pipelines are available in the source code `.github/workflows`
+The following pipelines are available in `.github/workflows`
 - `terraform.yml`
   - commercetools setup:
     - subscriptions
@@ -43,10 +43,10 @@ The following pipelines are available in the source code `.github/workflows`
     - Pub/Sub topic
     - Permissions
 - `plugin-build-test.yml`
-  - runs build, linting and tests on 
+  - runs build, linting and tests
 - `plugin-deploy` 
   - build the plugin code in a docker container
-  - deploy of the container to cloud run
+  - deploy of the container to a cloud run instance
 
 ## Local development
 

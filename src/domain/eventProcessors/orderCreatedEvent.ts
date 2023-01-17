@@ -7,7 +7,12 @@ export class OrderCreatedEvent extends AbstractEvent {
     //     super(ctMessage);
     // }
     isEventValid(): boolean {
-        return this.ctMessage.resource.typeId === 'order';
+        const orderCreatedMessage = this.ctMessage as unknown as OrderCreatedMessage;
+        return (
+            orderCreatedMessage.resource.typeId === 'order' &&
+            orderCreatedMessage.type === 'OrderCreated' &&
+            !!orderCreatedMessage.order
+        );
     }
 
     generateKlaviyoEvent(): KlaviyoEvent {
