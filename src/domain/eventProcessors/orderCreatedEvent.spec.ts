@@ -3,12 +3,12 @@ import { mockDeep } from 'jest-mock-extended';
 import { OrderCreatedEvent } from './orderCreatedEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 
-describe('orderCreatedEvent', () => {
+describe('orderCreatedEvent > isEventValid', () => {
     it('should return valid when is an orderCreated message', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'order' } }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'type', { value: 'OrderCreated' }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'order', { value: {} }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'order', { value: { customerId: '123-1230-123' } }); //mock readonly property
 
         const event = OrderCreatedEvent.instance(ctMessageMock);
 
@@ -17,7 +17,7 @@ describe('orderCreatedEvent', () => {
 
     it.each`
         resource     | type              | order
-        ${'invalid'} | ${'OrderCreated'} | ${{}}
+        ${'invalid'} | ${'OrderCreated'} | ${{ customerId: '123-1230-123' }}
         ${'order'}   | ${'invalid'}      | ${{}}
         ${'order'}   | ${'OrderCreated'} | ${null}
     `('should return invalid when is not an orderCreated message', ({ resource, type, order }) => {
@@ -29,5 +29,19 @@ describe('orderCreatedEvent', () => {
         const event = OrderCreatedEvent.instance(ctMessageMock);
 
         expect(event.isEventValid()).to.be.false;
+    });
+});
+
+describe('orderCreatedEvent > generateKlaviyoEvent', () => {
+    it('should generate the klaviyo event for an order created message', async () => {
+        const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
+        Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'order' } }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'type', { value: 'OrderCreated' }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'order', { value: { customerId: '123-1230-123' } }); //mock readonly property
+
+        const event = OrderCreatedEvent.instance(ctMessageMock);
+
+        const klaviyoEvent = event.generateKlaviyoEvent();
+        expect(klaviyoEvent).to.not.be.undefined;
     });
 });
