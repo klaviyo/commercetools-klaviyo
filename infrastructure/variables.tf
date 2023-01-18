@@ -38,6 +38,7 @@ variable "ct_scopes" {
 variable "klaviyo_auth_key" {
   description = "Klaviyo auth key"
   type        = string
+  sensitive   = true
 }
 
 #GCP

@@ -6,3 +6,9 @@ provider "commercetools" {
   project_key   = var.ct_project_key
   scopes        = var.ct_scopes
 }
+
+# Providers
+
+provider "google" {
+  project = local.gcp_project_id
+}

@@ -1,9 +1,3 @@
-# Providers
-
-provider "google" {
-  project = local.gcp_project_id
-}
-
 # APIs
 
 resource "google_project_service" "run_api" {
@@ -35,8 +29,20 @@ resource "google_cloud_run_service" "klaviyo_ct_plugin" {
         env {
           name  = "KLAVIYO_AUTH_KEY"
           value = var.klaviyo_auth_key
+
+        }
+
+        env {
+          name = "CT_API_CLIENT"
+          value_from {
+            secret_key_ref {
+              key  = google_secret_manager_secret_version.ct-api-client-version.version
+              name = google_secret_manager_secret.ct-api-client.secret_id
+            }
+          }
         }
       }
+      service_account_name = google_service_account.cloud_run_executor.email
     }
   }
 
@@ -83,6 +89,29 @@ resource "google_cloud_run_service_iam_binding" "pub_sub_cloud_run_invoker_iam" 
   service  = google_cloud_run_service.klaviyo_ct_plugin.name
   role     = "roles/run.invoker"
   members  = ["serviceAccount:${google_service_account.pubsub_invoker.email}"]
+}
+
+# Service account for executing cloud run
+
+resource "google_service_account" "cloud_run_executor" {
+  project      = local.gcp_project_id
+  account_id   = "cloud-run-executor"
+  display_name = "Cloud Run Executor"
+}
+
+resource "google_service_account_iam_binding" "cloud_run_service_account_user_iam" {
+  service_account_id = google_service_account.cloud_run_executor.name
+  role               = "roles/iam.serviceAccountUser"
+  members            = ["serviceAccount:${google_service_account.cloud_run_executor.email}"]
+}
+
+resource "google_secret_manager_secret_iam_binding" "cloud_run_access_ct_secrets" {
+  project   = local.gcp_project_id
+  secret_id = google_secret_manager_secret.ct-api-client.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members   = [
+    "serviceAccount:${google_service_account.cloud_run_executor.email}",
+  ]
 }
 
 # Artifact repository
