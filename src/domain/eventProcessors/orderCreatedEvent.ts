@@ -23,11 +23,12 @@ export class OrderCreatedEvent extends AbstractEvent {
                 type: 'event',
                 attributes: {
                     profile: {
-                        email: this.getCustomerEmail(orderCreatedMessage.order),
+                        $email: this.getCustomerEmail(orderCreatedMessage.order),
                     },
                     metric: {
                         name: 'Order created',
                     },
+                    value: orderCreatedMessage.order?.totalPrice?.centAmount,
                     properties: { ...orderCreatedMessage.order },
                     unique_id: orderCreatedMessage.order.id,
                 },

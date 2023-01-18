@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo event for an order created message 1`] = `
+{
+  "data": {
+    "attributes": {
+      "metric": {
+        "name": "Order created",
+      },
+      "profile": {
+        "$email": "fix@me.com",
+      },
+      "properties": {
+        "customerId": "123-1230-123",
+      },
+      "unique_id": undefined,
+      "value": undefined,
+    },
+    "type": "event",
+  },
+}
+`;

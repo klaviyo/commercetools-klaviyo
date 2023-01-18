@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect as exp } from 'chai';
 import { mockDeep } from 'jest-mock-extended';
 import { OrderCreatedEvent } from './orderCreatedEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
@@ -12,7 +12,7 @@ describe('orderCreatedEvent > isEventValid', () => {
 
         const event = OrderCreatedEvent.instance(ctMessageMock);
 
-        expect(event.isEventValid()).to.be.true;
+        exp(event.isEventValid()).to.be.true;
     });
 
     it.each`
@@ -28,7 +28,7 @@ describe('orderCreatedEvent > isEventValid', () => {
 
         const event = OrderCreatedEvent.instance(ctMessageMock);
 
-        expect(event.isEventValid()).to.be.false;
+        exp(event.isEventValid()).to.be.false;
     });
 });
 
@@ -42,6 +42,8 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
         const event = OrderCreatedEvent.instance(ctMessageMock);
 
         const klaviyoEvent = event.generateKlaviyoEvent();
-        expect(klaviyoEvent).to.not.be.undefined;
+
+        exp(klaviyoEvent).to.not.be.undefined;
+        expect(klaviyoEvent.body).toMatchSnapshot();
     });
 });
