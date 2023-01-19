@@ -26,8 +26,12 @@ app.post('/', async (req, res) => {
     const payload = pubSubMessage.data ? JSON.parse(Buffer.from(pubSubMessage.data, 'base64').toString()) : null;
     // const payload = { resource: { typeId: 'customer' } };
     logger.info('Starting event processing...');
-    await processEvent(payload as MessageDeliveryPayload);
-    res.status(204).send();
+    try {
+        await processEvent(payload as MessageDeliveryPayload);
+        res.status(204).send();
+    } catch (e) {
+        res.status(500).send();
+    }
 });
 
 //todo should support other types of loggers?

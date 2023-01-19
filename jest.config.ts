@@ -1,4 +1,3 @@
-import type { JestConfigWithTsJest } from 'ts-jest';
 import type { Config } from '@jest/types';
 
 const jestConfig: Config.InitialOptions = {
@@ -11,7 +10,7 @@ const jestConfig: Config.InitialOptions = {
     clearMocks: true,
     collectCoverage: true,
     coverageDirectory: 'coverage',
-    coveragePathIgnorePatterns: ['/node_modules/'],
+    coveragePathIgnorePatterns: ['/node_modules/', '/src/test/'],
     coverageProvider: 'v8',
     coverageThreshold: {
         global: {

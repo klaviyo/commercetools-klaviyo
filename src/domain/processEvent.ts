@@ -16,20 +16,25 @@ export const processEvent = async (ctMessage: MessageDeliveryPayload) => {
         .map((eventProcessors) => eventProcessors.instance(ctMessage))
         .filter((eventProcessor) => eventProcessor.isEventValid())
         .map((eventProcessor) => eventProcessor.generateKlaviyoEvent())
+        .filter((event) => !!event.body)
         .map((klaviyoEvent) => sendEventToKlaviyo(klaviyoEvent));
+
     const results = await Promise.allSettled(promises);
-    const rejected = results.filter((result) => result.status === 'rejected').map((result) => result.status);
-    const fulfilled = results.filter((result) => result.status === 'fulfilled').map((result) => result.status);
+    const rejected = results.filter((result) => result.status === 'rejected');
+    const fulfilled = results.filter((result) => result.status === 'fulfilled');
 
     if (results.length === 0) {
-        logger.info('Message ignored');
+        logger.warn(
+            `No processor found to handle the message. Message with type '${ctMessage.resource.typeId}' ignored`,
+        );
     }
     if (results.length > 0) {
         logger.info(`Events to be sent to klaviyo: ${results.length}`);
         logger.info(`Events sent correctly: ${fulfilled.length}`);
     }
     if (rejected.length > 0) {
-        logger.info(`Events failed: ${rejected.length}`);
+        logger.error(`Events failed: ${rejected.length}`);
+        rejected.map((error, index) => logger.error(`Request ${index + 1} failed with error`, error));
         throw new Error('Failed to send data to klaviyo');
     }
 };

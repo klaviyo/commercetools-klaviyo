@@ -47,6 +47,12 @@ The script will generate a new `terraform` service account. Create a service acc
     * `GCP_CREDENTIALS`: google cloud service account key
     * `KLAVIYO_AUTH_KEY`: the klaviyo private key
 
+* Add the following environment variables to GitHub:
+    * `CT_API_URL`: commercetools API url
+    * `CT_AUTH_URL`: commercetools AUTH url
+    * `CT_PROJECT_ID`: commercetools project ID
+    * `CT_SCOPE`: commercetools API client scopes
+
 ### Pipelines
 
 The following pipelines are available in `.github/workflows`

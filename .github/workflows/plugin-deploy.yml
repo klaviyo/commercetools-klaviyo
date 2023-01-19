@@ -64,6 +64,11 @@ jobs:
           region: ${{ env.REGION }}
           image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
           flags: '--port 6789'
+          env_vars: |
+            CT_API_URL=${{ env.CT_API_URL }}
+            CT_AUTH_URL=${{ env.CT_AUTH_URL }}
+            CT_PROJECT_ID=${{ env.CT_PROJECT_ID }}
+            CT_SCOPE=${{ env.CT_SCOPE }}
           secrets: |
             KLAVIYO_AUTH_KEY=klaviyo_auth_key:latest
             CT_API_CLIENT=commercetools_api_client:latest
