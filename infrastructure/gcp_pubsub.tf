@@ -10,9 +10,10 @@ resource "google_project_iam_binding" "project_token_creator" {
 }
 
 resource "google_project_service_identity" "pubsub_agent" {
-  provider = google-beta
-  project  = local.gcp_project_id
-  service  = "pubsub.googleapis.com"
+  provider   = google-beta
+  project    = local.gcp_project_id
+  service    = "pubsub.googleapis.com"
+  depends_on = [google_project_service.iam_api]
 }
 
 #Commercetools Permissions

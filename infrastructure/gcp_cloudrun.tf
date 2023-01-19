@@ -2,17 +2,17 @@
 
 resource "google_project_service" "run_api" {
   service            = "run.googleapis.com"
-  disable_on_destroy = true
+  disable_on_destroy = false
 }
 
 resource "google_project_service" "resource_manager_api" {
   service            = "cloudresourcemanager.googleapis.com"
-  disable_on_destroy = true
+  disable_on_destroy = false
 }
 
 resource "google_project_service" "iam_api" {
   service            = "iam.googleapis.com"
-  disable_on_destroy = true
+  disable_on_destroy = false
 }
 
 # Cloud Run service
@@ -25,27 +25,6 @@ resource "google_cloud_run_service" "klaviyo_ct_plugin" {
     spec {
       containers {
         image = local.image
-
-        env {
-          name = "KLAVIYO_AUTH_KEY"
-          value_from {
-            secret_key_ref {
-              key  = google_secret_manager_secret_version.klaviyo-auth-key-version.version
-              name = google_secret_manager_secret.klaviyo-auth-key.secret_id
-            }
-          }
-
-        }
-
-        env {
-          name = "CT_API_CLIENT"
-          value_from {
-            secret_key_ref {
-              key  = google_secret_manager_secret_version.ct-api-client-version.version
-              name = google_secret_manager_secret.ct-api-client.secret_id
-            }
-          }
-        }
       }
       service_account_name = google_service_account.cloud_run_executor.email
     }
@@ -59,7 +38,7 @@ resource "google_cloud_run_service" "klaviyo_ct_plugin" {
   lifecycle {
     //noinspection HILUnresolvedReference
     ignore_changes = [
-      template.0.spec.0.containers.0.image,
+      template.0.spec.0.containers,
     ]
   }
 
@@ -87,6 +66,7 @@ resource "google_service_account" "pubsub_invoker" {
   project      = local.gcp_project_id
   account_id   = "cloud-run-pubsub-invoker"
   display_name = "Cloud Run Pub/Sub Invoker"
+  depends_on   = [google_project_service.iam_api]
 }
 
 resource "google_cloud_run_service_iam_binding" "pub_sub_cloud_run_invoker_iam" {
@@ -102,6 +82,7 @@ resource "google_service_account" "cloud_run_executor" {
   project      = local.gcp_project_id
   account_id   = "cloud-run-executor"
   display_name = "Cloud Run Executor"
+  depends_on   = [google_project_service.iam_api]
 }
 
 resource "google_service_account_iam_binding" "cloud_run_service_account_user_iam" {
@@ -113,6 +94,15 @@ resource "google_service_account_iam_binding" "cloud_run_service_account_user_ia
 resource "google_secret_manager_secret_iam_binding" "cloud_run_access_ct_secrets" {
   project   = local.gcp_project_id
   secret_id = google_secret_manager_secret.ct-api-client.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members   = [
+    "serviceAccount:${google_service_account.cloud_run_executor.email}",
+  ]
+}
+
+resource "google_secret_manager_secret_iam_binding" "cloud_run_access_klaviyo_secrets" {
+  project   = local.gcp_project_id
+  secret_id = google_secret_manager_secret.klaviyo-auth-key.secret_id
   role      = "roles/secretmanager.secretAccessor"
   members   = [
     "serviceAccount:${google_service_account.cloud_run_executor.email}",
