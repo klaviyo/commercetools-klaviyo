@@ -19,9 +19,17 @@ export const processEvent = async (ctMessage: MessageDeliveryPayload) => {
         .map((klaviyoEvent) => sendEventToKlaviyo(klaviyoEvent));
     const results = await Promise.allSettled(promises);
     const rejected = results.filter((result) => result.status === 'rejected').map((result) => result.status);
+    const fulfilled = results.filter((result) => result.status === 'fulfilled').map((result) => result.status);
+
+    if (results.length === 0) {
+        logger.info('Message ignored');
+    }
+    if (results.length > 0) {
+        logger.info(`Events to be sent to klaviyo: ${results.length}`);
+        logger.info(`Events sent correctly: ${fulfilled.length}`);
+    }
     if (rejected.length > 0) {
+        logger.info(`Events failed: ${rejected.length}`);
         throw new Error('Failed to send data to klaviyo');
-    } else {
-        logger.info('Events sent correctly to klaviyo');
     }
 };

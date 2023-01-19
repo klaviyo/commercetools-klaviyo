@@ -1,24 +1,36 @@
 # Infrastructure
 
-The infrastructure is created using the terraform scripts available in `/infrastructure` and are .  
+Details on how to configure a cloud environment to run the plugin, configure commercetools and import tests data.
 
 ## Commercetools
-The commercetools terraform scripts create subscription and test data. 
-Check the section [Configuration of the pipelines in GitHub actions](#configuration-of-the-pipelines-in-gitHub-actions) on how to configure the API client and run the terraform scripts 
+
+The commercetools terraform scripts create subscription and test data.
+Check the section [Configuration of the pipelines in GitHub actions](#configuration-of-the-pipelines-in-gitHub-actions)
+on how to configure the API client and run the terraform scripts
+
+### Importing test data
+
+Check the documentation
+at [https://docs.commercetools.com/sdk/sunrise-data](https://docs.commercetools.com/sdk/sunrise-data)
 
 ## Google Cloud project
+
 Run the bootstrap-gcp scripts to setup a new project in GCP (you need project creation rights)
+
 ```shell
 cd insfrastructure/bootstrap-gcp
 ```
+
 ```shell
 ./bootstrap.sh <your-user-account>
 ```
+
 The script will generate a new `terraform` service account. Create a service account key that will be used in GitHub.
 
 ## Configuration of the pipelines in GitHub actions
 
 ### GitHub configuration
+
 * Create a commercetools API client with the following scopes:
     * manage_extensions
     * manage_orders
@@ -36,7 +48,9 @@ The script will generate a new `terraform` service account. Create a service acc
     * `KLAVIYO_AUTH_KEY`: the klaviyo private key
 
 ### Pipelines
+
 The following pipelines are available in `.github/workflows`
+
 - `terraform.yml`
     - Setup commercetools with:
         - subscriptions
