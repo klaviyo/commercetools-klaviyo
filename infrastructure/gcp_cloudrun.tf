@@ -27,8 +27,13 @@ resource "google_cloud_run_service" "klaviyo_ct_plugin" {
         image = local.image
 
         env {
-          name  = "KLAVIYO_AUTH_KEY"
-          value = var.klaviyo_auth_key
+          name = "KLAVIYO_AUTH_KEY"
+          value_from {
+            secret_key_ref {
+              key  = google_secret_manager_secret_version.klaviyo-auth-key-version.version
+              name = google_secret_manager_secret.klaviyo-auth-key.secret_id
+            }
+          }
 
         }
 
