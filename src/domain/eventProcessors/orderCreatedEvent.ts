@@ -1,7 +1,7 @@
 import { AbstractEvent } from './abstractEvent';
 import logger from '../../utils/log';
 import { OrderCreatedMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
-import { Order } from '@commercetools/platform-sdk';
+import { Order, OrderState } from '@commercetools/platform-sdk';
 
 export class OrderCreatedEvent extends AbstractEvent {
     isEventValid(): boolean {
@@ -10,7 +10,8 @@ export class OrderCreatedEvent extends AbstractEvent {
             orderCreatedMessage.resource.typeId === 'order' &&
             orderCreatedMessage.type === 'OrderCreated' &&
             !!orderCreatedMessage.order &&
-            (!!orderCreatedMessage.order.customerEmail || !!orderCreatedMessage.order.customerId)
+            (!!orderCreatedMessage.order.customerEmail || !!orderCreatedMessage.order.customerId) &&
+            this.isValidState(orderCreatedMessage.order?.orderState)
         );
     }
 
@@ -22,9 +23,7 @@ export class OrderCreatedEvent extends AbstractEvent {
             data: {
                 type: 'event',
                 attributes: {
-                    profile: {
-                        $email: this.getCustomerEmail(orderCreatedMessage.order),
-                    },
+                    profile: this.getCustomerProfile(orderCreatedMessage.order),
                     metric: {
                         name: 'Order created',
                     },
@@ -34,19 +33,27 @@ export class OrderCreatedEvent extends AbstractEvent {
                 },
             },
         };
+
         return {
             body,
         };
     }
 
-    private getCustomerEmail(order: Order): string {
+    private getCustomerProfile(order: Order): KlaviyoEventProfile {
+        const profile: KlaviyoEventProfile = {};
         if (order.customerEmail) {
-            return order.customerEmail;
+            profile.$email = order.customerEmail;
         }
         if (order.customerId) {
-            //get customer email from CT
-            return 'fix@me.com';
+            profile.$id = order.customerId;
+        }
+        if (profile.$id || profile.$email) {
+            return profile;
         }
         throw new Error(`Customer information not available for order id ${order.id}`);
+    }
+
+    private isValidState(orderState: OrderState): boolean {
+        return (process.env.ORDER_CREATED_STATES || 'Open').split(/[, ]+/g).includes(orderState);
     }
 }

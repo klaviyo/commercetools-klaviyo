@@ -8,10 +8,13 @@ exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo ev
         "name": "Order created",
       },
       "profile": {
-        "$email": "fix@me.com",
+        "$email": "test@klaviyo.com",
+        "$id": "123-123-123",
       },
       "properties": {
-        "customerId": "123-1230-123",
+        "customerEmail": "test@klaviyo.com",
+        "customerId": "123-123-123",
+        "orderState": "Open",
       },
       "unique_id": undefined,
       "value": undefined,

@@ -33,7 +33,7 @@ describe('pubSub adapter event', () => {
         const createEventNock = klaviyoCreateEventNock({
             type: 'event',
             attributes: {
-                profile: { $email: 'test@klaviyo.com' },
+                profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
                 metric: { name: 'Order created' },
                 value: 1300,
                 properties: {
@@ -102,7 +102,7 @@ describe('pubSub event that produces 5xx error', () => {
             {
                 type: 'event',
                 attributes: {
-                    profile: { $email: 'test@klaviyo.com' },
+                    profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
                     metric: { name: 'Order created' },
                     value: 1300,
                     properties: {
