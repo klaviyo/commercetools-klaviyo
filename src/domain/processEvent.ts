@@ -7,7 +7,7 @@ import { sendEventToKlaviyo } from './klaviyoService';
 import { ProductPublishedEvent } from './eventProcessors/productPublishedEvent';
 
 // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {
-const eventProcessors: typeof AbstractEvent[] = [CustomerCreatedEvent, OrderCreatedEvent, ProductPublishedEvent];
+const eventProcessors: (typeof AbstractEvent)[] = [CustomerCreatedEvent, OrderCreatedEvent, ProductPublishedEvent];
 
 export const processEvent = async (ctMessage: MessageDeliveryPayload) => {
     // todo check ctMessage.payloadNotIncluded;
