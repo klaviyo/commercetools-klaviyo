@@ -7,3 +7,11 @@ export const klaviyoCreateEventNock = (data: any, responseCode = 202) => {
         })
         .reply(responseCode, '');
 };
+
+export const klaviyoCreateProfileNock = (data: any, responseCode = 201) => {
+    return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
+        .post('/api/profiles/', {
+            data,
+        })
+        .reply(responseCode, '');
+};

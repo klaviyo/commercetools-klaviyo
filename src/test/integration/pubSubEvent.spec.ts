@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { app } from '../../adapter/cloudRunAdapter';
 import { klaviyoCreateEventNock } from './nocks/KlaviyoCreateEventNock';
-import { sampleOrderCreatedMessage } from './testData/orderData';
+import { sampleOrderCreatedMessage } from '../testData/orderData';
 
 chai.use(chaiHttp);
 

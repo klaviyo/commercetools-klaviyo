@@ -24,7 +24,6 @@ app.post('/', async (req, res) => {
     const pubSubMessage = req.body.message;
 
     const payload = pubSubMessage.data ? JSON.parse(Buffer.from(pubSubMessage.data, 'base64').toString()) : null;
-    // const payload = { resource: { typeId: 'customer' } };
     logger.info('Starting event processing...');
     try {
         await processEvent(payload as MessageDeliveryPayload);
@@ -34,9 +33,8 @@ app.post('/', async (req, res) => {
     }
 });
 
-//todo should support other types of loggers?
 export const cloudRunAdapter: GenericAdapter = (): Promise<any> => {
     const PORT = 6789;
     app.listen(PORT, () => logger.info(`klaviyo commercetools plugin listening on port ${PORT}`));
-    return new Promise((resolve) => resolve(app));
+    return Promise.resolve(app);
 };

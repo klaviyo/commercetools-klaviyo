@@ -10,7 +10,7 @@ export class ProductPublishedEvent extends AbstractEvent {
         logger.info('processing CT product event');
         return {
             body: null,
+            type: 'event',
         };
-        // return 0;
     }
 }

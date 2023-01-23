@@ -8,14 +8,11 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'infrastructure/**'
-      - '.github/workflows/terraform.yml'
 jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-#    environment: dev
+    #    environment: dev
     steps:
       - name: Checkout
         uses: actions/checkout@v3

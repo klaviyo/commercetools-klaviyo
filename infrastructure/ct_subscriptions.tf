@@ -19,6 +19,16 @@ locals {
       resource_type_id  = "order"
       types             = ["OrderCreated"]
       queue_ref         = google_pubsub_topic.commercetools
+    },
+    {
+      key               = "${var.gcp_environment_namespace}-gcp-customer-created"
+      type              = "GoogleCloudPubSub"
+      projectId         = var.gcp_project_id
+      topic             = "${var.gcp_environment_namespace}-commercetools-topic"
+      resource_type_ids = ["customer"]
+      resource_type_id  = "customer"
+      types             = ["CustomerCreated"]
+      queue_ref         = google_pubsub_topic.commercetools
     }
   ]
 }

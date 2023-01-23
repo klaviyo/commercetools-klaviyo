@@ -34,7 +34,7 @@ export const processEvent = async (ctMessage: MessageDeliveryPayload) => {
     }
     if (rejected.length > 0) {
         logger.error(`Events failed: ${rejected.length}`);
-        rejected.map((error, index) => logger.error(`Request ${index + 1} failed with error`, error));
+        rejected.forEach((error, index) => logger.error(`Request ${index + 1} failed with error`, error));
         throw new Error('Failed to send data to klaviyo');
     }
 };

@@ -36,6 +36,7 @@ export class OrderCreatedEvent extends AbstractEvent {
 
         return {
             body,
+            type: 'event',
         };
     }
 

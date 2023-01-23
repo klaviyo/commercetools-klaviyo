@@ -1,4 +1,5 @@
 type KlaviyoEvent = {
+    type: 'profile' | 'event';
     body: any;
 };
 
