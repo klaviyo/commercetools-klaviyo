@@ -90,20 +90,20 @@ gcloud auth configure-docker us-central1-docker.pkg.dev
 ```
 
 ```shell
-docker build -t dev-klaviyo-ct-plugin .
+docker build -t klaviyo-ct-plugin .
 ```  
 
 ```shell
-docker tag dev-klaviyo-ct-plugin us-central1-docker.pkg.dev/klaviyo-ct-plugin/dev-docker-repo/dev-klaviyo-ct-plugin
+docker tag klaviyo-ct-plugin us-central1-docker.pkg.dev/klaviyo-ct-plugin/docker-repo/klaviyo-ct-plugin
 ```    
 
 ```shell
-docker push us-central1-docker.pkg.dev/klaviyo-ct-plugin/dev-docker-repo/dev-klaviyo-ct-plugin
+docker push us-central1-docker.pkg.dev/klaviyo-ct-plugin/docker-repo/klaviyo-ct-plugin
 ```  
 
 ```shell
 gcloud run services update dev-klaviyo-ct-plugin \
---image us-central1-docker.pkg.dev/klaviyo-ct-plugin/dev-docker-repo/dev-klaviyo-ct-plugin \
+--image us-central1-docker.pkg.dev/klaviyo-ct-plugin/docker-repo/klaviyo-ct-plugin \
 --region=us-central1 \
 --port 6789 \
 --max-instances=5 \

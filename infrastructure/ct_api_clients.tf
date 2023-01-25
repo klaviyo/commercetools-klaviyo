@@ -1,4 +1,6 @@
 resource "commercetools_api_client" "klaviyo-plugin-api-client" {
-  name  = "Klaviyo plugin API Client"
-  scope = ["view_orders:klaviyo-dev", "view_products:klaviyo-dev", "view_customers:klaviyo-dev"]
+  name = "Klaviyo plugin API Client"
+  scope = [
+    "view_orders:${var.ct_project_key}", "view_products:${var.ct_project_key}", "view_customers:${var.ct_project_key}"
+  ]
 }

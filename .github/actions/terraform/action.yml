@@ -134,7 +134,7 @@ runs:
       working-directory: ./infrastructure
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false -var-file=environments/dev.tfvars
+      run: terraform apply -auto-approve -input=false -var-file=environments/${{ inputs.tf_environment }}.tfvars
       shell: bash
       working-directory: ./infrastructure
       env:

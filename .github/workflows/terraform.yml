@@ -12,12 +12,11 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    #    environment: dev
+    environment: dev
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Run terraform
-        # Directory name only
         uses: ./.github/actions/terraform
         with:
           tf_environment: dev

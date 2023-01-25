@@ -95,7 +95,7 @@ resource "google_secret_manager_secret_iam_binding" "cloud_run_access_ct_secrets
   project   = local.gcp_project_id
   secret_id = google_secret_manager_secret.ct-api-client.secret_id
   role      = "roles/secretmanager.secretAccessor"
-  members = [
+  members   = [
     "serviceAccount:${google_service_account.cloud_run_executor.email}",
   ]
 }
@@ -104,7 +104,7 @@ resource "google_secret_manager_secret_iam_binding" "cloud_run_access_klaviyo_se
   project   = local.gcp_project_id
   secret_id = google_secret_manager_secret.klaviyo-auth-key.secret_id
   role      = "roles/secretmanager.secretAccessor"
-  members = [
+  members   = [
     "serviceAccount:${google_service_account.cloud_run_executor.email}",
   ]
 }
@@ -120,7 +120,7 @@ resource "google_project_service" "artifact_registry_api" {
 //todo add expiry policy for versioned images
 resource "google_artifact_registry_repository" "klaviyo-ct-plugin" {
   location      = "us-central1"
-  repository_id = "${var.gcp_environment_namespace}-docker-repo"
+  repository_id = "docker-repo"
   description   = "Klaviyo commercetools plugin docker repository"
   format        = "DOCKER"
   depends_on    = [google_project_service.artifact_registry_api]
