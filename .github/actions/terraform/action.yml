@@ -1,0 +1,143 @@
+name: 'Terrafom action'
+description: 'Runs terraform'
+
+inputs:
+  tf_environment:
+    description: 'Name of the terraform environment'
+    required: true
+  gcp_credentials:
+    description: 'GCP Service Account key'
+    required: true
+  ct_tf_client_id:
+    description: 'commercetools client id for terraform'
+    required: true
+  ct_tf_secret:
+    description: 'commercetools secret for terraform'
+    required: true
+  klaviyo_auth_key:
+    description: 'Klaviyo auth key'
+    required: true
+  github_token:
+    description: 'GitHub token'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Auth GCloud
+      id: 'auth'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ inputs.gcp_credentials }}'
+    - name: Setup GCloud SDK
+      uses: 'google-github-actions/setup-gcloud@v1'
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+    - name:
+        Terraform Format
+      id: fmt
+      run: terraform fmt -check
+      shell: bash
+      continue-on-error: true
+      working-directory: ./infrastructure
+    - name:
+        Terraform Init
+      id: init
+      run: terraform init
+      shell: bash
+      working-directory: ./infrastructure
+    - name:
+        Terraform select workspace
+      id: workspace
+      run: terraform workspace select ${{ inputs.tf_environment }} || terraform workspace new ${{ inputs.tf_environment }}
+      shell: bash
+      working-directory: ./infrastructure
+    - name:
+        Terraform Validate
+      id: validate
+      run: terraform validate -no-color
+      shell: bash
+      working-directory: ./infrastructure
+    - name:
+        Terraform Plan
+      id: plan
+      if: github.event_name == 'pull_request'
+      run: terraform plan -no-color -input=false -var-file=environments/${{ inputs.tf_environment }}.tfvars
+      shell: bash
+      continue-on-error: true
+      working-directory: ./infrastructure
+      env:
+        TF_VAR_ct_client_id: ${{ inputs.ct_tf_client_id }}
+        TF_VAR_ct_secret: ${{ inputs.ct_tf_secret }}
+        TF_VAR_klaviyo_auth_key: ${{ inputs.klaviyo_auth_key }}
+    - name: Update Pull Request
+      uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      env:
+        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      with:
+        github-token: ${{ inputs.github_token }}
+        script: |
+          // 1. Retrieve existing bot comments for the PR
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          })
+          const botComment = comments.find(comment => {
+            return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
+          })
+          
+          // 2. Prepare format of the comment
+          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+          <details><summary>Validation Output</summary>
+          
+          \`\`\`\n
+          ${{ steps.validate.outputs.stdout }}
+          \`\`\`
+          
+          </details>
+          
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+          
+          <details><summary>Show Plan</summary>
+          
+          \`\`\`\n
+          ${process.env.PLAN}
+          \`\`\`
+          
+          </details>
+          
+          *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+          
+          // 3. If we have a comment, update it, otherwise create a new one
+          if (botComment) {
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: botComment.id,
+              body: output
+            })
+          } else {
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+          }
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+      shell: bash
+      working-directory: ./infrastructure
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve -input=false -var-file=environments/dev.tfvars
+      shell: bash
+      working-directory: ./infrastructure
+      env:
+        TF_VAR_ct_client_id: ${{ inputs.ct_tf_client_id }}
+        TF_VAR_ct_secret: ${{ inputs.ct_tf_secret }}
+        TF_VAR_klaviyo_auth_key: ${{ inputs.klaviyo_auth_key }}
