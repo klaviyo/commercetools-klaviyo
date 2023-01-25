@@ -6,11 +6,13 @@ export class ProductPublishedEvent extends AbstractEvent {
         return this.ctMessage.resource.typeId === 'product'; // && ctMessage.notificationType === 'ResourceCreated';
     }
 
-    generateKlaviyoEvent(): KlaviyoEvent {
+    generateKlaviyoEvents(): KlaviyoEvent[] {
         logger.info('processing CT product event');
-        return {
-            body: null,
-            type: 'event',
-        };
+        return [
+            {
+                body: null,
+                type: 'event',
+            },
+        ];
     }
 }

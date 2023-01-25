@@ -4,7 +4,7 @@ export abstract class AbstractEvent {
     constructor(protected readonly ctMessage: MessageDeliveryPayload) {}
     abstract isEventValid(): boolean;
 
-    abstract generateKlaviyoEvent(): KlaviyoEvent;
+    abstract generateKlaviyoEvents(): KlaviyoEvent[];
 
     static instance<T extends AbstractEvent>(ctMessage: MessageDeliveryPayload): T {
         return Reflect.construct(this, [ctMessage]) as T;

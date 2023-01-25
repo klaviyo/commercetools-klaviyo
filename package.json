@@ -12,7 +12,7 @@
     "klaviyo-types": "dts-gen -m klaviyo-api -f src/types/klaviyo-api.d.ts -o",
     "lint": "eslint 'src/**/*.ts' --quiet",
     "lint:fix": "eslint 'src/**/*.ts' --quiet --fix",
-    "start": "ts-node src/index.ts",
+    "start": "ts-node --files src/index.ts",
     "test": "jest",
     "test:watch": "npm test -- --watch",
     "ts-types": " tsc --emitDeclarationOnly --outDir dist",

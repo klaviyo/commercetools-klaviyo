@@ -50,15 +50,56 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'order' } }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'type', { value: 'OrderCreated' }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'type', { value: 'OrderCreated' }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'order', {
-            value: { customerId: '123-123-123', customerEmail: 'test@klaviyo.com', orderState: 'Open' },
+            value: {
+                customerId: '123-123-123',
+                customerEmail: 'test@klaviyo.com',
+                orderState: 'Open',
+                totalPrice: { type: 'centPrecision', centAmount: 1300, currencyCode: 'USD', fractionDigits: 2 },
+            },
         }); //mock readonly property
 
         const event = OrderCreatedEvent.instance(ctMessageMock);
 
-        const klaviyoEvent = event.generateKlaviyoEvent();
+        const klaviyoEvent = event.generateKlaviyoEvents();
 
         exp(klaviyoEvent).to.not.be.undefined;
-        expect(klaviyoEvent.body).toMatchSnapshot();
+        expect(klaviyoEvent[0].body).toMatchSnapshot();
+    });
+});
+
+describe('orderCreatedEvent > generateKlaviyoEvent', () => {
+    it('should generate the klaviyo events for line items in an order created message', async () => {
+        const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
+        Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'order' } }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'type', { value: 'OrderCreated' }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'type', { value: 'OrderCreated' }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'order', {
+            value: {
+                customerId: '123-123-123',
+                customerEmail: 'test@klaviyo.com',
+                orderState: 'Open',
+                totalPrice: { type: 'centPrecision', centAmount: 1300, currencyCode: 'USD', fractionDigits: 2 },
+                lineItems: [
+                    {
+                        id: '123-123-123',
+                        totalPrice: { type: 'centPrecision', centAmount: 1300, currencyCode: 'USD', fractionDigits: 2 },
+                        name: {
+                            en: 'Test product',
+                        },
+                    },
+                ],
+            },
+        }); //mock readonly property
+
+        const event = OrderCreatedEvent.instance(ctMessageMock);
+
+        const klaviyoEvent = event.generateKlaviyoEvents();
+
+        exp(klaviyoEvent).to.not.be.undefined;
+        klaviyoEvent.forEach((event) => {
+            expect(event.body).toMatchSnapshot();
+        });
     });
 });

@@ -38,8 +38,8 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
         const message = sampleCustomerCreatedEvent as unknown as MessageDeliveryPayload;
         const event = CustomerCreatedEvent.instance(message);
 
-        const klaviyoEvent = event.generateKlaviyoEvent();
+        const klaviyoEvent = event.generateKlaviyoEvents();
         exp(klaviyoEvent).to.not.be.undefined;
-        expect(klaviyoEvent.body).toMatchSnapshot();
+        expect(klaviyoEvent[0].body).toMatchSnapshot();
     });
 });

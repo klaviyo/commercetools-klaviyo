@@ -2,6 +2,7 @@ import { AbstractEvent } from './abstractEvent';
 import logger from '../../utils/log';
 import { OrderCreatedMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
 import { Order, OrderState } from '@commercetools/platform-sdk';
+import { getTypedMoneyAsNumber } from '../../utils/get-typed-money-as-number';
 
 export class OrderCreatedEvent extends AbstractEvent {
     isEventValid(): boolean {
@@ -15,7 +16,7 @@ export class OrderCreatedEvent extends AbstractEvent {
         );
     }
 
-    generateKlaviyoEvent(): KlaviyoEvent {
+    generateKlaviyoEvents(): KlaviyoEvent[] {
         const orderCreatedMessage = this.ctMessage as unknown as OrderCreatedMessage;
         logger.info('Processing order created event');
 
@@ -27,17 +28,18 @@ export class OrderCreatedEvent extends AbstractEvent {
                     metric: {
                         name: 'Order created',
                     },
-                    value: orderCreatedMessage.order?.totalPrice?.centAmount,
-                    properties: { ...orderCreatedMessage.order },
+                    value: getTypedMoneyAsNumber(orderCreatedMessage.order?.totalPrice),
+                    properties: { ...orderCreatedMessage.order } as any,
                     unique_id: orderCreatedMessage.order.id,
                 },
             },
         };
 
-        return {
-            body,
-            type: 'event',
-        };
+        const events: KlaviyoEvent[] = [{ body, type: 'event' }];
+
+        this.getProductOrderedEventsFromOrder(events, orderCreatedMessage.order);
+
+        return events;
     }
 
     private getCustomerProfile(order: Order): KlaviyoEventProfile {
@@ -56,5 +58,27 @@ export class OrderCreatedEvent extends AbstractEvent {
 
     private isValidState(orderState: OrderState): boolean {
         return (process.env.ORDER_CREATED_STATES || 'Open').split(/[, ]+/g).includes(orderState);
+    }
+
+    private getProductOrderedEventsFromOrder(events: KlaviyoEvent[], order: Order) {
+        order?.lineItems?.forEach((lineItem) => {
+            events.push({
+                body: {
+                    data: {
+                        type: 'event',
+                        attributes: {
+                            profile: this.getCustomerProfile(order),
+                            metric: {
+                                name: 'Ordered Product',
+                            },
+                            value: getTypedMoneyAsNumber(lineItem.totalPrice),
+                            properties: { ...lineItem },
+                            unique_id: lineItem.id,
+                        },
+                    },
+                },
+                type: 'event',
+            });
+        });
     }
 }

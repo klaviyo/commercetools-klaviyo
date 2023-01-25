@@ -15,9 +15,90 @@ exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo ev
         "customerEmail": "test@klaviyo.com",
         "customerId": "123-123-123",
         "orderState": "Open",
+        "totalPrice": {
+          "centAmount": 1300,
+          "currencyCode": "USD",
+          "fractionDigits": 2,
+          "type": "centPrecision",
+        },
       },
       "unique_id": undefined,
-      "value": undefined,
+      "value": 13,
+    },
+    "type": "event",
+  },
+}
+`;
+
+exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo events for line items in an order created message 1`] = `
+{
+  "data": {
+    "attributes": {
+      "metric": {
+        "name": "Order created",
+      },
+      "profile": {
+        "$email": "test@klaviyo.com",
+        "$id": "123-123-123",
+      },
+      "properties": {
+        "customerEmail": "test@klaviyo.com",
+        "customerId": "123-123-123",
+        "lineItems": [
+          {
+            "id": "123-123-123",
+            "name": {
+              "en": "Test product",
+            },
+            "totalPrice": {
+              "centAmount": 1300,
+              "currencyCode": "USD",
+              "fractionDigits": 2,
+              "type": "centPrecision",
+            },
+          },
+        ],
+        "orderState": "Open",
+        "totalPrice": {
+          "centAmount": 1300,
+          "currencyCode": "USD",
+          "fractionDigits": 2,
+          "type": "centPrecision",
+        },
+      },
+      "unique_id": undefined,
+      "value": 13,
+    },
+    "type": "event",
+  },
+}
+`;
+
+exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo events for line items in an order created message 2`] = `
+{
+  "data": {
+    "attributes": {
+      "metric": {
+        "name": "Ordered Product",
+      },
+      "profile": {
+        "$email": "test@klaviyo.com",
+        "$id": "123-123-123",
+      },
+      "properties": {
+        "id": "123-123-123",
+        "name": {
+          "en": "Test product",
+        },
+        "totalPrice": {
+          "centAmount": 1300,
+          "currencyCode": "USD",
+          "fractionDigits": 2,
+          "type": "centPrecision",
+        },
+      },
+      "unique_id": "123-123-123",
+      "value": 13,
     },
     "type": "event",
   },

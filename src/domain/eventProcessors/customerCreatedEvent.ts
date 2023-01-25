@@ -14,7 +14,7 @@ export class CustomerCreatedEvent extends AbstractEvent {
         );
     }
 
-    generateKlaviyoEvent(): KlaviyoEvent {
+    generateKlaviyoEvents(): KlaviyoEvent[] {
         logger.info('processing CT customer created message');
         const customerCreatedMessage = this.ctMessage as unknown as CustomerCreatedMessage;
         const address = this.getCTCustomerAddress();
@@ -43,10 +43,12 @@ export class CustomerCreatedEvent extends AbstractEvent {
                 },
             },
         };
-        return {
-            body,
-            type: 'profile',
-        };
+        return [
+            {
+                body,
+                type: 'profile',
+            },
+        ];
     }
 
     getCTCustomerAddress(): Address | undefined {

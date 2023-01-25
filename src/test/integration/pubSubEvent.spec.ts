@@ -35,7 +35,7 @@ describe('pubSub adapter event', () => {
             attributes: {
                 profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
                 metric: { name: 'Order created' },
-                value: 1300,
+                value: 13,
                 properties: {
                     ...sampleOrderCreatedMessage.order,
                 },
@@ -104,7 +104,7 @@ describe('pubSub event that produces 5xx error', () => {
                 attributes: {
                     profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
                     metric: { name: 'Order created' },
-                    value: 1300,
+                    value: 13,
                     properties: {
                         ...sampleOrderCreatedMessage.order,
                     },
