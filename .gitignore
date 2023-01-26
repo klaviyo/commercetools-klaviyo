@@ -283,3 +283,6 @@ fabric.properties
 
 # Editor-based Rest Client
 .idea/httpRequests
+
+# Tests
+src/test/e2e/postman/newman

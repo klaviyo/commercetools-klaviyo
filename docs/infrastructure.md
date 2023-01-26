@@ -31,19 +31,18 @@ The script will generate a new `terraform` service account. Create a service acc
 
 ### GitHub configuration
 
-* Create a commercetools API client with the following scopes:
-    * manage_extensions
-    * manage_orders
-    * manage_products
-    * manage_tax_categories
-    * manage_stores
-    * manage_project_settings
-    * manage_shipping_methods
+* Create a commercetools API client for terraform with the following scopes:
+    * manage_api_clients
     * manage_subscriptions
-    * manage_types
-* Add the following GitHub repository secrets:
+* Create two new Github repository secrets with the CT terraform credentials:
     * `CT_TF_CLIENT_ID`: commercetools client id
     * `CT_TF_SECRET`: commercetools secret
+* Create a commercetools API client for E2E tests with the following scopes:
+    * manage_project
+* Create two new Github repository secrets with the CT credentials for E2E tests:
+    * `CT_E2E_CLIENT_ID`: commercetools client id
+    * `CT_E2E_SECRET`: commercetools secret
+* Add the following additional GitHub repository secrets:
     * `GCP_CREDENTIALS`: google cloud service account key
     * `KLAVIYO_AUTH_KEY`: the klaviyo private key
 
