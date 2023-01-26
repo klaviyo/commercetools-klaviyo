@@ -58,3 +58,4 @@ runs:
           CT_API_CLIENT=${{ inputs.ct_api_client_secret }}
     - name: Show Output
       run: echo ${{ steps.deployment.outputs.url }}
+      shell: bash
