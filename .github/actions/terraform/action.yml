@@ -133,7 +133,7 @@ runs:
       shell: bash
       working-directory: ./infrastructure
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      if: github.ref == 'refs/heads/main'
       run: terraform apply -auto-approve -input=false -var-file=environments/${{ inputs.tf_environment }}.tfvars
       shell: bash
       working-directory: ./infrastructure
