@@ -64,7 +64,7 @@ resource "google_pubsub_subscription" "subscription" {
 
 resource "google_service_account" "pubsub_invoker" {
   project      = local.gcp_project_id
-  account_id   = "cloud-run-pubsub-invoker"
+  account_id   = "${var.gcp_environment_namespace}-cloud-run-pubsub-invoker"
   display_name = "Cloud Run Pub/Sub Invoker"
   depends_on   = [google_project_service.iam_api]
 }
@@ -80,7 +80,7 @@ resource "google_cloud_run_service_iam_binding" "pub_sub_cloud_run_invoker_iam" 
 
 resource "google_service_account" "cloud_run_executor" {
   project      = local.gcp_project_id
-  account_id   = "cloud-run-executor"
+  account_id   = "${var.gcp_environment_namespace}-cloud-run-executor"
   display_name = "Cloud Run Executor"
   depends_on   = [google_project_service.iam_api]
 }
@@ -95,7 +95,7 @@ resource "google_secret_manager_secret_iam_binding" "cloud_run_access_ct_secrets
   project   = local.gcp_project_id
   secret_id = google_secret_manager_secret.ct-api-client.secret_id
   role      = "roles/secretmanager.secretAccessor"
-  members = [
+  members   = [
     "serviceAccount:${google_service_account.cloud_run_executor.email}",
   ]
 }
@@ -104,7 +104,7 @@ resource "google_secret_manager_secret_iam_binding" "cloud_run_access_klaviyo_se
   project   = local.gcp_project_id
   secret_id = google_secret_manager_secret.klaviyo-auth-key.secret_id
   role      = "roles/secretmanager.secretAccessor"
-  members = [
+  members   = [
     "serviceAccount:${google_service_account.cloud_run_executor.email}",
   ]
 }
@@ -119,6 +119,7 @@ resource "google_project_service" "artifact_registry_api" {
 
 //todo add expiry policy for versioned images
 resource "google_artifact_registry_repository" "klaviyo-ct-plugin" {
+  count         = var.gcp_environment_namespace == "dev" ? 1 : 0
   location      = "us-central1"
   repository_id = "docker-repo"
   description   = "Klaviyo commercetools plugin docker repository"
