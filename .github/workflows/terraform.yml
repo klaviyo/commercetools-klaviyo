@@ -5,9 +5,6 @@ on:
     paths:
       - 'infrastructure/**'
       - '.github/workflows/terraform.yml'
-  push:
-    branches:
-      - main
 jobs:
   terraform:
     name: 'Terraform'

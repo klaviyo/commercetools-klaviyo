@@ -41,7 +41,7 @@ resource "google_secret_manager_secret" "ct-api-client" {
 }
 
 resource "google_secret_manager_secret_version" "ct-api-client-version" {
-  secret      = google_secret_manager_secret.ct-api-client.id
+  secret = google_secret_manager_secret.ct-api-client.id
   secret_data = jsonencode({
     "clientId" : commercetools_api_client.klaviyo-plugin-api-client.id
     "secret" : commercetools_api_client.klaviyo-plugin-api-client.secret
