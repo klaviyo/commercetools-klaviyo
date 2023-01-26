@@ -1,4 +1,9 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+echo "Terraform lint"
+cd infrastructure
+terraform fmt -check
+cd ..
+echo "Source code lint and test"
 yarn lint && yarn test
