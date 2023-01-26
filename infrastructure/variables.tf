@@ -4,10 +4,6 @@ variable "ct_project_key" {
   description = "commercetools Project key"
   type        = string
 }
-variable "ct_project_name" {
-  description = "commercetools Project name"
-  type        = string
-}
 variable "ct_api_url" {
   description = "commercetools API URL"
   type        = string
