@@ -57,6 +57,7 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
                 customerEmail: 'test@klaviyo.com',
                 orderState: 'Open',
                 totalPrice: { type: 'centPrecision', centAmount: 1300, currencyCode: 'USD', fractionDigits: 2 },
+                createdAt: '2023-01-27T15:00:00.000Z',
             },
         }); //mock readonly property
 
@@ -67,9 +68,7 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
         exp(klaviyoEvent).to.not.be.undefined;
         expect(klaviyoEvent[0].body).toMatchSnapshot();
     });
-});
 
-describe('orderCreatedEvent > generateKlaviyoEvent', () => {
     it('should generate the klaviyo events for line items in an order created message', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'order' } }); //mock readonly property
@@ -80,6 +79,7 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
                 customerId: '123-123-123',
                 customerEmail: 'test@klaviyo.com',
                 orderState: 'Open',
+                createdAt: '2023-01-27T15:00:00.000Z',
                 totalPrice: { type: 'centPrecision', centAmount: 1300, currencyCode: 'USD', fractionDigits: 2 },
                 lineItems: [
                     {

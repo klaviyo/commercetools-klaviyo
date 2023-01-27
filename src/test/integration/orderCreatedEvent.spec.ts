@@ -40,6 +40,7 @@ describe('pubSub adapter event', () => {
                     ...sampleOrderCreatedMessage.order,
                 },
                 unique_id: '3456789',
+                time: '2023-01-27T15:00:00.000Z',
             },
         });
 
@@ -109,6 +110,7 @@ describe('pubSub event that produces 5xx error', () => {
                         ...sampleOrderCreatedMessage.order,
                     },
                     unique_id: '3456789',
+                    time: '2023-01-27T15:00:00.000Z',
                 },
             },
             500,

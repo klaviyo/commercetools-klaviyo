@@ -31,6 +31,7 @@ export class OrderCreatedEvent extends AbstractEvent {
                     value: getTypedMoneyAsNumber(orderCreatedMessage.order?.totalPrice),
                     properties: { ...orderCreatedMessage.order } as any,
                     unique_id: orderCreatedMessage.order.id,
+                    time: orderCreatedMessage.order.createdAt,
                 },
             },
         };
@@ -50,10 +51,7 @@ export class OrderCreatedEvent extends AbstractEvent {
         if (order.customerId) {
             profile.$id = order.customerId;
         }
-        if (profile.$id || profile.$email) {
-            return profile;
-        }
-        throw new Error(`Customer information not available for order id ${order.id}`);
+        return profile;
     }
 
     private isValidState(orderState: OrderState): boolean {
@@ -74,6 +72,7 @@ export class OrderCreatedEvent extends AbstractEvent {
                             value: getTypedMoneyAsNumber(lineItem.totalPrice),
                             properties: { ...lineItem },
                             unique_id: lineItem.id,
+                            time: order.createdAt,
                         },
                     },
                 },

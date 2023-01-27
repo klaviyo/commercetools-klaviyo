@@ -12,6 +12,7 @@ exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo ev
         "$id": "123-123-123",
       },
       "properties": {
+        "createdAt": "2023-01-27T15:00:00.000Z",
         "customerEmail": "test@klaviyo.com",
         "customerId": "123-123-123",
         "orderState": "Open",
@@ -22,6 +23,7 @@ exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo ev
           "type": "centPrecision",
         },
       },
+      "time": "2023-01-27T15:00:00.000Z",
       "unique_id": undefined,
       "value": 13,
     },
@@ -42,6 +44,7 @@ exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo ev
         "$id": "123-123-123",
       },
       "properties": {
+        "createdAt": "2023-01-27T15:00:00.000Z",
         "customerEmail": "test@klaviyo.com",
         "customerId": "123-123-123",
         "lineItems": [
@@ -66,6 +69,7 @@ exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo ev
           "type": "centPrecision",
         },
       },
+      "time": "2023-01-27T15:00:00.000Z",
       "unique_id": undefined,
       "value": 13,
     },
@@ -97,6 +101,7 @@ exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo ev
           "type": "centPrecision",
         },
       },
+      "time": "2023-01-27T15:00:00.000Z",
       "unique_id": "123-123-123",
       "value": 13,
     },
