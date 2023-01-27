@@ -7,16 +7,32 @@
     "moduleResolution": "node",
     "strict": true,
     "sourceMap": true,
-    "types": ["node", "jest"],
+    "types": [
+      "node",
+      "jest"
+    ],
     "outDir": "dist",
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "rootDir": "src",
     "paths": {
-      "*": ["./types/*"]
+      "*": [
+        "./types/*"
+      ]
     },
-    "typeRoots" : ["./node_modules/@types", "./types/*"]
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types/*"
+    ]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ],
+  "ts-node": {
+    "files": true
+  }
 }

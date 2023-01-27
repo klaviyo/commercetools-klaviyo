@@ -5,7 +5,7 @@ The [Klaviyo](https://www.klaviyo.com/) plugin for the integration with [commerc
 ## Infrastructure
 
 To configure commercetools subscription, test data and the cloud infrastructure
-check [documentation](doc/infrastructure.md)
+check [documentation](docs/infrastructure.md)
 
 ## Local development
 
@@ -117,6 +117,25 @@ gcloud run deploy SERVICE --image IMAGE_URL  \
 ## End-to-end tests
 
 To write and run end-to-end tests check the [documentation](docs/e2e-tests.md)
+
+## Error handling
+
+### commercetools subscriptions
+
+commercetools events are sent on the configured queue and consumed by the plugin.  
+The event is filtered, transformed and sent to klaviyo using the `processEvent` method.   
+The following outcomes are possible:
+
+1. Message sent correctly: klaviyo has accepted the request, the `processEvent` method returns `status: "OK"`. In this
+   case the messages should be acknowledged and removed from the queue.
+2. Message invalid: klaviyo returned a `4xx` error, the request is invalid or unauthenticated. The `processEvent` method
+   logs
+   the error and returns `status: "4xx"`, this allows to build your custom logic to handle the error, for example create
+   alerts, send a message to a DLQ...
+3. Exception: klaviyo returned a `5xx` error, this might be caused by a temporary glitch with the klaviyo API server and
+   typically the request should be retried.
+   The `processEvent` method throws an error. The `processEvent` caller should catch the error and not acknowledge the
+   message to the queue, so that the message can be reprocessed later.
 
 ## Security
 

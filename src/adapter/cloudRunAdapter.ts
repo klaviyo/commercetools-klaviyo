@@ -26,8 +26,18 @@ app.post('/', async (req, res) => {
     const payload = pubSubMessage.data ? JSON.parse(Buffer.from(pubSubMessage.data, 'base64').toString()) : null;
     logger.info('Starting event processing...');
     try {
-        await processEvent(payload as MessageDeliveryPayload);
-        res.status(204).send();
+        const result = await processEvent(payload as MessageDeliveryPayload);
+        switch (result.status) {
+            case 'OK':
+                res.status(204).send();
+                break;
+            case '4xx':
+                res.status(202).send();
+                break;
+            default:
+                res.status(202).send();
+                break;
+        }
     } catch (e) {
         res.status(500).send();
     }

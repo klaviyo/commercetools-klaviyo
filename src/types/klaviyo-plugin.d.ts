@@ -11,3 +11,7 @@ type KlaviyoEventProfile = {
     $phone_number?: string;
     [key: string]: unknown;
 };
+
+type ProcessingResult = {
+    status: 'OK' | '4xx';
+};

@@ -1,29 +1,90 @@
 import { processEvent } from './processEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
+import { AbstractEvent } from './eventProcessors/abstractEvent';
+import { sendEventToKlaviyo } from './klaviyoService';
+import { expect as exp } from 'chai';
+import { responseHandler } from './responseHandler';
+import mocked = jest.mocked;
 
-describe('main', () => {
+jest.mock('./klaviyoService');
+jest.mock('./responseHandler');
+describe('processEvent', () => {
     //todo mock api call to create klaviyo client
 
-    // it('should return 0', async () => {
-    //     const message: MessageDeliveryPayload = {
-    //         createdAt: '',
-    //         id: '',
-    //         lastModifiedAt: '',
-    //         notificationType: 'Message',
-    //         projectKey: '',
-    //         resource: {
-    //             typeId: 'order',
-    //
-    //             id: 'someId',
-    //             // obj?: Order;
-    //         },
-    //         resourceVersion: 0,
-    //         sequenceNumber: 0,
-    //         version: 0,
-    //     };
-    //     await processEvent(message);
-    // });
-    it('test', () => {
-        expect(1).toBe(1);
+    class TestEvent extends AbstractEvent {
+        generateKlaviyoEvents(): KlaviyoEvent[] {
+            return [
+                {
+                    type: 'event',
+                    body: 'something',
+                },
+            ];
+        }
+
+        isEventValid(): boolean {
+            return this.ctMessage.resource.typeId === 'order';
+        }
+    }
+
+    const sendEventToKlaviyoMock = mocked(sendEventToKlaviyo);
+    const responseHandlerMock = mocked(responseHandler);
+
+    it('should process a valid event (order)', async () => {
+        const message: MessageDeliveryPayload = {
+            createdAt: '',
+            id: '',
+            lastModifiedAt: '',
+            notificationType: 'Message',
+            projectKey: '',
+            resource: {
+                typeId: 'order',
+                id: 'someId',
+            },
+            resourceVersion: 0,
+            sequenceNumber: 0,
+            version: 0,
+        };
+        const sendEventToKlaviyoResponse = new Promise((resolve) => resolve('something'));
+        sendEventToKlaviyoMock.mockReturnValueOnce(sendEventToKlaviyoResponse);
+        responseHandlerMock.mockReturnValueOnce({ status: 'OK' });
+
+        const response = await processEvent(message, [TestEvent]);
+
+        exp(response).to.eql({ status: 'OK' });
+        expect(sendEventToKlaviyoMock).toHaveBeenCalledTimes(1);
+        expect(sendEventToKlaviyoMock).toHaveBeenCalledWith({
+            body: 'something',
+            type: 'event',
+        });
+        expect(responseHandlerMock).toHaveBeenCalledTimes(1);
+        expect(responseHandlerMock).toHaveBeenCalledWith(
+            await Promise.allSettled([sendEventToKlaviyoResponse]),
+            message,
+        );
+    });
+
+    it('should not process invalid events (quote)', async () => {
+        const message: MessageDeliveryPayload = {
+            createdAt: '',
+            id: '',
+            lastModifiedAt: '',
+            notificationType: 'Message',
+            projectKey: '',
+            resource: {
+                typeId: 'quote',
+                id: 'someId',
+            },
+            resourceVersion: 0,
+            sequenceNumber: 0,
+            version: 0,
+        };
+        responseHandlerMock.mockReturnValueOnce({ status: 'OK' });
+
+        const response = await processEvent(message, [TestEvent]);
+
+        exp(response).to.eql({ status: 'OK' });
+        expect(sendEventToKlaviyoMock).toHaveBeenCalledTimes(0);
+        expect(responseHandlerMock).toHaveBeenCalledTimes(1);
+        expect(responseHandlerMock).toHaveBeenCalledWith(await Promise.allSettled([]), message);
     });
 });
