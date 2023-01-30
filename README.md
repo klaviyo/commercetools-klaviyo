@@ -2,6 +2,8 @@
 
 The [Klaviyo](https://www.klaviyo.com/) plugin for the integration with [commercetools](https://commercetools.com/).
 
+![Deployment status](https://github.com/e2x/klaviyo-ct-plugin/actions/workflows/plugin-deploy.yml/badge.svg)
+
 ## Infrastructure
 
 To configure commercetools subscription, test data and the cloud infrastructure

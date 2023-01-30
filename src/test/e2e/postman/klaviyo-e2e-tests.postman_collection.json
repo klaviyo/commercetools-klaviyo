@@ -439,7 +439,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Status code is 202\", function () {",
 									"    pm.response.to.have.status(202);",
 									"});"
 								],
@@ -468,7 +468,7 @@
 							{
 								"description": "(Required) API endpoint revision (format: YYYY-MM-DD[.suffix])",
 								"key": "revision",
-								"value": "2022-10-17"
+								"value": "2023-01-24"
 							},
 							{
 								"key": "Accept",
@@ -477,7 +477,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"{{customer-email}}\"\n}",
+							"raw": "{\n    \"data\": {\n        \"type\": \"data-privacy-deletion-job\",\n        \"attributes\": {\n            \"email\": \"{{customer-email}}\"\n        }\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -485,7 +485,7 @@
 							}
 						},
 						"url": {
-							"raw": "https://a.klaviyo.com/api/v2/data-privacy/deletion-request?api_key={{klaviyoPrivateKey}}",
+							"raw": "https://a.klaviyo.com/api/data-privacy-deletion-jobs/",
 							"protocol": "https",
 							"host": [
 								"a",
@@ -494,15 +494,8 @@
 							],
 							"path": [
 								"api",
-								"v2",
-								"data-privacy",
-								"deletion-request"
-							],
-							"query": [
-								{
-									"key": "api_key",
-									"value": "{{klaviyoPrivateKey}}"
-								}
+								"data-privacy-deletion-jobs",
+								""
 							]
 						},
 						"description": "Get all profiles in an account.\nProfiles can be sorted by the following fields in ascending and descending order: `id`, `created`, `email`\nUse filters to narrow your results. Request specific fields using [sparse fieldsets](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#sparse-fieldsets).\nReturns a maximum of 20 profiles per page, which can be paginated with [cursor-based pagination](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#pagination).<br><br>*Rate limits*:<br>Burst: `10/s`<br>Steady: `150/m`\n\n**Scopes:**\n`Profiles Write`"
@@ -511,6 +504,1213 @@
 				}
 			],
 			"description": "Tests that the customer creation in Commercetools will create a profile in Klaviyo"
+		},
+		{
+			"name": "order created with customer email only",
+			"item": [
+				{
+					"name": "[auth] Obtain CT access token Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(response.access_token).to.not.be.undefined;",
+									"    pm.environment.set(\"ctp_access_token\", response.access_token);",
+									"});",
+									"console.log(\"Request name: \", pm.info.requestName);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{ct_client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{ct_client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ct_auth_url}}/oauth/token?grant_type=client_credentials",
+							"host": [
+								"{{ct_auth_url}}"
+							],
+							"path": [
+								"oauth",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials"
+								}
+							]
+						},
+						"description": "Use this request to obtain an access token for your commercetools platform project via Client Credentials Flow. As a prerequisite you must have filled out environment variables in Postman for projectKey, client_id and client_secret to use this."
+					},
+					"response": []
+				},
+				{
+					"name": "[given] Create Cart in CT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"var data = pm.response.json();",
+									"if(data.version){",
+									"    pm.environment.set(\"cart-version\", data.version);",
+									"}",
+									"if(data.id){",
+									"    pm.environment.set(\"cart-id\", data.id); ",
+									"}",
+									"if(data.key){",
+									"    pm.environment.set(\"cart-key\", data.key);",
+									"}",
+									"if(data.customerEmail){",
+									"    pm.environment.set(\"customer-email\", data.customerEmail);",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{ctp_access_token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n            \"customerEmail\": \"{{$randomEmail}}\",\n            \"currency\": \"EUR\",\n            \"shippingInfo\": {\n                \"shippingMethodName\": \"Standard delivery\",\n                \"price\": {\n                    \"type\": \"centPrecision\",\n                    \"currencyCode\": \"EUR\",\n                    \"centAmount\": 0,\n                    \"fractionDigits\": 2\n                },\n                \"shippingRate\": {\n                    \"price\": {\n                        \"type\": \"centPrecision\",\n                        \"currencyCode\": \"EUR\",\n                        \"centAmount\": 5000,\n                        \"fractionDigits\": 2\n                    },\n                    \"freeAbove\": {\n                        \"type\": \"centPrecision\",\n                        \"currencyCode\": \"EUR\",\n                        \"centAmount\": 50000,\n                        \"fractionDigits\": 2\n                    },\n                    \"tiers\": []\n                },\n                \"taxRate\": {\n                    \"name\": \"21% IVA\",\n                    \"amount\": 0.2,\n                    \"includedInPrice\": true,\n                    \"country\": \"IT\",\n                    \"id\": \"Fzs_ZDVt\",\n                    \"subRates\": []\n                },\n                \"taxCategory\": {\n                    \"typeId\": \"tax-category\",\n                    \"id\": \"{{tax-category-id}}\"\n                },\n                \"deliveries\": [],\n                \"shippingMethod\": {\n                    \"typeId\": \"shipping-method\",\n                    \"id\": \"f4d79d09-fe4c-4422-af20-572b19618f44\"\n                },\n                \"taxedPrice\": {\n                    \"totalNet\": {\n                        \"type\": \"centPrecision\",\n                        \"currencyCode\": \"EUR\",\n                        \"centAmount\": 0,\n                        \"fractionDigits\": 2\n                    },\n                    \"totalGross\": {\n                        \"type\": \"centPrecision\",\n                        \"currencyCode\": \"EUR\",\n                        \"centAmount\": 0,\n                        \"fractionDigits\": 2\n                    },\n                    \"totalTax\": {\n                        \"type\": \"centPrecision\",\n                        \"currencyCode\": \"EUR\",\n                        \"centAmount\": 0,\n                        \"fractionDigits\": 2\n                    }\n                },\n                \"shippingMethodState\": \"MatchesCart\"\n            },\n            \"shippingAddress\": {\n                \"streetName\": \"High Road\",\n                \"streetNumber\": \"14\",\n                \"postalCode\": \"SE13 2UB\",\n                \"city\": \"Boston\",\n                \"region\": \"\",\n                \"state\": \"\",\n                \"country\": \"US\"\n            },\n            \"shipping\": [],\n            \"lineItems\": [\n                {\n                    \"sku\": \"A0E200000002E49\"\n                }\n            ],\n            \"billingAddress\": {\n                \"id\": \"1UdurfSw\",\n                \"streetName\": \"Tribunali\",\n                \"streetNumber\": \"14\",\n                \"postalCode\": \"80100\",\n                \"city\": \"Napoli\",\n                \"country\": \"IT\"\n            },\n            \"itemShippingAddresses\": [],\n            \"refusedGifts\": [],\n            \"store\": {\n                \"typeId\": \"store\",\n                \"key\": \"uk\"\n            }\n        }"
+						},
+						"url": {
+							"raw": "{{ct_host}}/{{project-key}}/carts",
+							"host": [
+								"{{ct_host}}"
+							],
+							"path": [
+								"{{project-key}}",
+								"carts"
+							],
+							"query": [
+								{
+									"key": "expand",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Creating a cart can fail with an InvalidOperation if the referenced shipping method in the\nCartDraft has a predicate which does not match the cart.\n"
+					},
+					"response": []
+				},
+				{
+					"name": "[given] Create Order in CT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = pm.response.json();",
+									"pm.test(\"Order is created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.expect(data.customerEmail).to.eql(pm.environment.get(\"customer-email\"));",
+									"    pm.environment.set(\"order-id\", data.id); ",
+									"    pm.environment.set(\"order-key\", data.key);",
+									"    pm.environment.set(\"order-version\", data.version);",
+									"    pm.environment.set(\"order-createdAt\", data.createdAt);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{ctp_access_token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\" : \"{{cart-id}}\",\n  \"version\" : {{cart-version}}\n}"
+						},
+						"url": {
+							"raw": "{{ct_host}}/{{project-key}}/orders",
+							"host": [
+								"{{ct_host}}"
+							],
+							"path": [
+								"{{project-key}}",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "expand",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Creates an order from a Cart.\nThe cart must have a shipping address set before creating an order.\nWhen using the Platform TaxMode, the shipping address is used for tax calculation.\n"
+					},
+					"response": []
+				},
+				{
+					"name": "[then] Get Profile in klaviyo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var expectedHttpStatus = 200;",
+									"var maxNumberOfTries = 5;",
+									"var sleepBetweenTries = 2000;",
+									"",
+									"if (!pm.environment.get(\"collection_tries\")) {",
+									"    pm.environment.set(\"collection_tries\", 1);",
+									"}",
+									"const jsonData = pm.response.json();",
+									"if ((pm.response.code != expectedHttpStatus || jsonData.data.length == 0) && (pm.environment.get(\"collection_tries\") < maxNumberOfTries)) {",
+									"    console.log(\"retry\")",
+									"     var tries = parseInt(pm.environment.get(\"collection_tries\"), 10);",
+									"     pm.environment.set(\"collection_tries\", tries + 1);",
+									"     setTimeout(function() {}, sleepBetweenTries);",
+									"     postman.setNextRequest(request.name);",
+									" } else {",
+									"     pm.environment.unset(\"collection_tries\");",
+									"",
+									"     pm.test(\"Profile was created in klaviyo\", function () {",
+									"          pm.response.to.have.status(expectedHttpStatus);",
+									"          pm.expect(jsonData.data.length).to.be.above(0);",
+									"          pm.expect(jsonData.data[0].attributes.email.toLowerCase()).to.eql(pm.environment.get(\"customer-email\").toLowerCase());",
+									"     });",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "Klaviyo-API-Key {{klaviyoPrivateKey}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "(Required) API endpoint revision (format: YYYY-MM-DD[.suffix])",
+								"key": "revision",
+								"value": "2022-10-17"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{klaviyoBaseUrl}}/api/profiles/?filter=equals(email,\"{{customer-email}}\")",
+							"host": [
+								"{{klaviyoBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"profiles",
+								""
+							],
+							"query": [
+								{
+									"key": "fields[profile]",
+									"value": "<string>,<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#sparse-fieldsets",
+									"disabled": true
+								},
+								{
+									"key": "page[cursor]",
+									"value": "<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#pagination",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#sorting",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "equals(email,\"{{customer-email}}\")"
+								}
+							]
+						},
+						"description": "Get all profiles in an account.\nProfiles can be sorted by the following fields in ascending and descending order: `id`, `created`, `email`\nUse filters to narrow your results. Request specific fields using [sparse fieldsets](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#sparse-fieldsets).\nReturns a maximum of 20 profiles per page, which can be paginated with [cursor-based pagination](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#pagination).<br><br>*Rate limits*:<br>Burst: `10/s`<br>Steady: `150/m`\n\n**Scopes:**\n`Profiles Write`"
+					},
+					"response": []
+				},
+				{
+					"name": "[then] Order Created events are created in klaviyo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var expectedHttpStatus = 200;",
+									"var maxNumberOfTries = 5;",
+									"var sleepBetweenTries = 2000;",
+									"",
+									"if (!pm.environment.get(\"collection_tries\")) {",
+									"    pm.environment.set(\"collection_tries\", 1);",
+									"}",
+									"const jsonData = pm.response.json();",
+									"if ((pm.response.code != expectedHttpStatus || jsonData.data.length == 0) && (pm.environment.get(\"collection_tries\") < maxNumberOfTries)) {",
+									"    console.log(\"retry\")",
+									"     var tries = parseInt(pm.environment.get(\"collection_tries\"), 10);",
+									"     pm.environment.set(\"collection_tries\", tries + 1);",
+									"     setTimeout(function() {}, sleepBetweenTries);",
+									"     postman.setNextRequest(request.name);",
+									" } else {",
+									"     pm.environment.unset(\"collection_tries\");",
+									"",
+									"     pm.test(\"Order Created event was created in klaviyo\", function () {",
+									"        const orderCreatedEvent = jsonData.data.find(event => event.attributes.event_properties.id === pm.environment.get(\"order-id\"));",
+									"        pm.expect(orderCreatedEvent).to.not.be.null;",
+									"        pm.expect(orderCreatedEvent.attributes.event_properties.version).to.eql(pm.environment.get(\"order-version\"));",
+									"     });",
+									"",
+									"     pm.test(\"Ordered Product event was created in klaviyo\", function () {",
+									"        const orderCreatedEvent = jsonData.data.find(event => event.attributes.event_properties.id === pm.environment.get(\"order-id\"));",
+									"        const lineItemIds = orderCreatedEvent.attributes.event_properties.lineItems.map(line => line.id);",
+									"        lineItemIds.forEach(id => {",
+									"            console.log(`looking for ordered product event with id:  ${id}`)",
+									"            const found = jsonData.data.some(event => event.attributes.event_properties.id === pm.environment.get(\"order-id\"))",
+									"            pm.expect(found).to.be.true;",
+									"        })",
+									"     });",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "Klaviyo-API-Key {{klaviyoPrivateKey}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "(Required) API endpoint revision (format: YYYY-MM-DD[.suffix])",
+								"key": "revision",
+								"value": "2023-01-24"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{klaviyoBaseUrl}}/api/events/?filter=greater-or-equal(datetime,{{order-createdAt}})",
+							"host": [
+								"{{klaviyoBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"events",
+								""
+							],
+							"query": [
+								{
+									"key": "fields[profile]",
+									"value": "<string>,<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#sparse-fieldsets",
+									"disabled": true
+								},
+								{
+									"key": "page[cursor]",
+									"value": "<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#pagination",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#sorting",
+									"disabled": true
+								},
+								{
+									"key": "include",
+									"value": "profiles",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "greater-or-equal(datetime,{{order-createdAt}})"
+								}
+							]
+						},
+						"description": "Get all profiles in an account.\nProfiles can be sorted by the following fields in ascending and descending order: `id`, `created`, `email`\nUse filters to narrow your results. Request specific fields using [sparse fieldsets](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#sparse-fieldsets).\nReturns a maximum of 20 profiles per page, which can be paginated with [cursor-based pagination](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#pagination).<br><br>*Rate limits*:<br>Burst: `10/s`<br>Steady: `150/m`\n\n**Scopes:**\n`Profiles Write`"
+					},
+					"response": []
+				},
+				{
+					"name": "[cleanup] Delete profile in klaviyo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "Klaviyo-API-Key {{klaviyoPrivateKey}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"description": "(Required) API endpoint revision (format: YYYY-MM-DD[.suffix])",
+								"key": "revision",
+								"value": "2023-01-24"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"data\": {\n        \"type\": \"data-privacy-deletion-job\",\n        \"attributes\": {\n            \"email\": \"{{customer-email}}\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://a.klaviyo.com/api/data-privacy-deletion-jobs/",
+							"protocol": "https",
+							"host": [
+								"a",
+								"klaviyo",
+								"com"
+							],
+							"path": [
+								"api",
+								"data-privacy-deletion-jobs",
+								""
+							]
+						},
+						"description": "Get all profiles in an account.\nProfiles can be sorted by the following fields in ascending and descending order: `id`, `created`, `email`\nUse filters to narrow your results. Request specific fields using [sparse fieldsets](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#sparse-fieldsets).\nReturns a maximum of 20 profiles per page, which can be paginated with [cursor-based pagination](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#pagination).<br><br>*Rate limits*:<br>Burst: `10/s`<br>Steady: `150/m`\n\n**Scopes:**\n`Profiles Write`"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "order created with customer profile",
+			"item": [
+				{
+					"name": "[auth] Obtain CT access token Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(response.access_token).to.not.be.undefined;",
+									"    pm.environment.set(\"ctp_access_token\", response.access_token);",
+									"});",
+									"console.log(\"Request name: \", pm.info.requestName);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{ct_client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{ct_client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ct_auth_url}}/oauth/token?grant_type=client_credentials",
+							"host": [
+								"{{ct_auth_url}}"
+							],
+							"path": [
+								"oauth",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials"
+								}
+							]
+						},
+						"description": "Use this request to obtain an access token for your commercetools platform project via Client Credentials Flow. As a prerequisite you must have filled out environment variables in Postman for projectKey, client_id and client_secret to use this."
+					},
+					"response": []
+				},
+				{
+					"name": "[when] Create Customer in CT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const json = pm.response.json();",
+									"pm.test(\"customer is created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.expect(json.customer.id).to.not.be.null;",
+									"    pm.environment.set(\"customer-email\", json.customer.email);",
+									"    pm.environment.set(\"customer-version\", json.customer.version);",
+									"    pm.environment.set(\"customer-id\", json.customer.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.replaceIn('{{$randomEmail}}')",
+									"pm.variables.replaceIn('{{$randomFirstName}}')",
+									"pm.variables.replaceIn('{{$randomLastName}}')",
+									"pm.variables.replaceIn('{{$randomCity}}')",
+									"pm.variables.replaceIn('{{$randomPhoneNumber}}')"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{ctp_access_token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Miss\",\n    \"email\": \"{{$randomEmail}}\",\n    \"firstName\": \"{{$randomFirstName}}\",\n    \"lastName\": \"{{$randomLastName}}\",\n    \"password\": \"secret123\",\n    \"addresses\": [\n        {\n            \"id\": \"lgDP675C\",\n            \"title\": \"Mrs.\",\n            \"firstName\": \"{{$randomFirstName}}\",\n            \"lastName\": \"{{$randomLastName}}\",\n            \"streetName\": \"First Street\",\n            \"streetNumber\": \"12\",\n            \"postalCode\": \"12345\",\n            \"city\": \"{{$randomCity}}\",\n            \"country\": \"NL\",\n            \"phone\": \"+39 3234567892\",\n            \"mobile\": \"+39 3234567892\",\n            \"email\": \"jane.doe@example.com\"\n        },\n        {\n            \"id\": \"hKSGcsgu\",\n            \"title\": \"Head of factory\",\n            \"firstName\": \"Jane\",\n            \"lastName\": \"Doe\",\n            \"streetName\": \"Third Street\",\n            \"streetNumber\": \"34\",\n            \"postalCode\": \"12345\",\n            \"city\": \"Example City\",\n            \"country\": \"NL\",\n            \"phone\": \"+3112345678\",\n            \"mobile\": \"+3112345679\",\n            \"email\": \"jane.doe@example.com\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{ct_host}}/{{project-key}}/customers",
+							"host": [
+								"{{ct_host}}"
+							],
+							"path": [
+								"{{project-key}}",
+								"customers"
+							],
+							"query": [
+								{
+									"key": "expand",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "If the `anonymousCart` field is set on the [CustomerDraft](ctp:api:type:CustomerDraft), then the newly created Customer will be assigned to that [Cart](ctp:api:type:Cart).\nSimilarly, if the `anonymousId` field is set, the Customer will be set on all [Carts](ctp:api:type:Cart), [Orders](ctp:api:type:Order), [ShoppingLists](ctp:api:type:ShoppingList) and [Payments](ctp:api:type:Payment) with the same `anonymousId`.\nCreating a Customer produces the [CustomerCreated](ctp:api:type:CustomerCreatedMessage) Message.\n"
+					},
+					"response": []
+				},
+				{
+					"name": "[given] Create Cart in CT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"var data = pm.response.json();",
+									"if(data.version){",
+									"    pm.environment.set(\"cart-version\", data.version);",
+									"}",
+									"if(data.id){",
+									"    pm.environment.set(\"cart-id\", data.id); ",
+									"}",
+									"if(data.key){",
+									"    pm.environment.set(\"cart-key\", data.key);",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{ctp_access_token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n            \"customerId\": \"{{customer-id}}\",\n            \"currency\": \"EUR\",\n            \"shippingInfo\": {\n                \"shippingMethodName\": \"Standard delivery\",\n                \"price\": {\n                    \"type\": \"centPrecision\",\n                    \"currencyCode\": \"EUR\",\n                    \"centAmount\": 0,\n                    \"fractionDigits\": 2\n                },\n                \"shippingRate\": {\n                    \"price\": {\n                        \"type\": \"centPrecision\",\n                        \"currencyCode\": \"EUR\",\n                        \"centAmount\": 5000,\n                        \"fractionDigits\": 2\n                    },\n                    \"freeAbove\": {\n                        \"type\": \"centPrecision\",\n                        \"currencyCode\": \"EUR\",\n                        \"centAmount\": 50000,\n                        \"fractionDigits\": 2\n                    },\n                    \"tiers\": []\n                },\n                \"taxRate\": {\n                    \"name\": \"21% IVA\",\n                    \"amount\": 0.2,\n                    \"includedInPrice\": true,\n                    \"country\": \"IT\",\n                    \"id\": \"Fzs_ZDVt\",\n                    \"subRates\": []\n                },\n                \"taxCategory\": {\n                    \"typeId\": \"tax-category\",\n                    \"id\": \"{{tax-category-id}}\"\n                },\n                \"deliveries\": [],\n                \"shippingMethod\": {\n                    \"typeId\": \"shipping-method\",\n                    \"id\": \"f4d79d09-fe4c-4422-af20-572b19618f44\"\n                },\n                \"taxedPrice\": {\n                    \"totalNet\": {\n                        \"type\": \"centPrecision\",\n                        \"currencyCode\": \"EUR\",\n                        \"centAmount\": 0,\n                        \"fractionDigits\": 2\n                    },\n                    \"totalGross\": {\n                        \"type\": \"centPrecision\",\n                        \"currencyCode\": \"EUR\",\n                        \"centAmount\": 0,\n                        \"fractionDigits\": 2\n                    },\n                    \"totalTax\": {\n                        \"type\": \"centPrecision\",\n                        \"currencyCode\": \"EUR\",\n                        \"centAmount\": 0,\n                        \"fractionDigits\": 2\n                    }\n                },\n                \"shippingMethodState\": \"MatchesCart\"\n            },\n            \"shippingAddress\": {\n                \"streetName\": \"High Road\",\n                \"streetNumber\": \"14\",\n                \"postalCode\": \"SE13 2UB\",\n                \"city\": \"Boston\",\n                \"region\": \"\",\n                \"state\": \"\",\n                \"country\": \"US\"\n            },\n            \"shipping\": [],\n            \"lineItems\": [\n                {\n                    \"sku\": \"A0E200000002E49\"\n                }\n            ],\n            \"billingAddress\": {\n                \"id\": \"1UdurfSw\",\n                \"streetName\": \"Tribunali\",\n                \"streetNumber\": \"14\",\n                \"postalCode\": \"80100\",\n                \"city\": \"Napoli\",\n                \"country\": \"IT\"\n            },\n            \"itemShippingAddresses\": [],\n            \"refusedGifts\": [],\n            \"store\": {\n                \"typeId\": \"store\",\n                \"key\": \"uk\"\n            }\n        }"
+						},
+						"url": {
+							"raw": "{{ct_host}}/{{project-key}}/carts",
+							"host": [
+								"{{ct_host}}"
+							],
+							"path": [
+								"{{project-key}}",
+								"carts"
+							],
+							"query": [
+								{
+									"key": "expand",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Creating a cart can fail with an InvalidOperation if the referenced shipping method in the\nCartDraft has a predicate which does not match the cart.\n"
+					},
+					"response": []
+				},
+				{
+					"name": "[given] Create Order in CT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = pm.response.json();",
+									"pm.test(\"Order is created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.expect(data.customerId).to.eql(pm.environment.get(\"customer-id\"));",
+									"    pm.environment.set(\"order-id\", data.id); ",
+									"    pm.environment.set(\"order-key\", data.key);",
+									"    pm.environment.set(\"order-version\", data.version);",
+									"    pm.environment.set(\"order-createdAt\", data.createdAt);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{ctp_access_token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\" : \"{{cart-id}}\",\n  \"version\" : {{cart-version}}\n}"
+						},
+						"url": {
+							"raw": "{{ct_host}}/{{project-key}}/orders",
+							"host": [
+								"{{ct_host}}"
+							],
+							"path": [
+								"{{project-key}}",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "expand",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Creates an order from a Cart.\nThe cart must have a shipping address set before creating an order.\nWhen using the Platform TaxMode, the shipping address is used for tax calculation.\n"
+					},
+					"response": []
+				},
+				{
+					"name": "[then] Get Profile in klaviyo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var expectedHttpStatus = 200;",
+									"var maxNumberOfTries = 5;",
+									"var sleepBetweenTries = 2000;",
+									"",
+									"if (!pm.environment.get(\"collection_tries\")) {",
+									"    pm.environment.set(\"collection_tries\", 1);",
+									"}",
+									"const jsonData = pm.response.json();",
+									"if ((pm.response.code != expectedHttpStatus || jsonData.data.length == 0) && (pm.environment.get(\"collection_tries\") < maxNumberOfTries)) {",
+									"    console.log(\"retry\")",
+									"     var tries = parseInt(pm.environment.get(\"collection_tries\"), 10);",
+									"     pm.environment.set(\"collection_tries\", tries + 1);",
+									"     setTimeout(function() {}, sleepBetweenTries);",
+									"     postman.setNextRequest(request.name);",
+									" } else {",
+									"     pm.environment.unset(\"collection_tries\");",
+									"",
+									"     pm.test(\"Profile was created in klaviyo\", function () {",
+									"          pm.response.to.have.status(expectedHttpStatus);",
+									"          pm.expect(jsonData.data.length).to.be.above(0);",
+									"          pm.expect(jsonData.data[0].attributes.email.toLowerCase()).to.eql(pm.environment.get(\"customer-email\").toLowerCase());",
+									"     });",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "Klaviyo-API-Key {{klaviyoPrivateKey}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "(Required) API endpoint revision (format: YYYY-MM-DD[.suffix])",
+								"key": "revision",
+								"value": "2022-10-17"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{klaviyoBaseUrl}}/api/profiles/?filter=equals(email,\"{{customer-email}}\")",
+							"host": [
+								"{{klaviyoBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"profiles",
+								""
+							],
+							"query": [
+								{
+									"key": "fields[profile]",
+									"value": "<string>,<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#sparse-fieldsets",
+									"disabled": true
+								},
+								{
+									"key": "page[cursor]",
+									"value": "<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#pagination",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#sorting",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "equals(email,\"{{customer-email}}\")"
+								}
+							]
+						},
+						"description": "Get all profiles in an account.\nProfiles can be sorted by the following fields in ascending and descending order: `id`, `created`, `email`\nUse filters to narrow your results. Request specific fields using [sparse fieldsets](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#sparse-fieldsets).\nReturns a maximum of 20 profiles per page, which can be paginated with [cursor-based pagination](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#pagination).<br><br>*Rate limits*:<br>Burst: `10/s`<br>Steady: `150/m`\n\n**Scopes:**\n`Profiles Write`"
+					},
+					"response": []
+				},
+				{
+					"name": "[then] Order Created events are created in klaviyo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var expectedHttpStatus = 200;",
+									"var maxNumberOfTries = 5;",
+									"var sleepBetweenTries = 2000;",
+									"",
+									"if (!pm.environment.get(\"collection_tries\")) {",
+									"    pm.environment.set(\"collection_tries\", 1);",
+									"}",
+									"const jsonData = pm.response.json();",
+									"if ((pm.response.code != expectedHttpStatus || jsonData.data.length == 0) && (pm.environment.get(\"collection_tries\") < maxNumberOfTries)) {",
+									"    console.log(\"retry\")",
+									"     var tries = parseInt(pm.environment.get(\"collection_tries\"), 10);",
+									"     pm.environment.set(\"collection_tries\", tries + 1);",
+									"     setTimeout(function() {}, sleepBetweenTries);",
+									"     postman.setNextRequest(request.name);",
+									" } else {",
+									"     pm.environment.unset(\"collection_tries\");",
+									"",
+									"     pm.test(\"Order Created event was created in klaviyo\", function () {",
+									"        const orderCreatedEvent = jsonData.data.find(event => event.attributes.event_properties.id === pm.environment.get(\"order-id\"));",
+									"        pm.expect(orderCreatedEvent).to.not.be.null;",
+									"        pm.expect(orderCreatedEvent.attributes.event_properties.version).to.eql(pm.environment.get(\"order-version\"));",
+									"     });",
+									"",
+									"     pm.test(\"Ordered Product event was created in klaviyo\", function () {",
+									"        const orderCreatedEvent = jsonData.data.find(event => event.attributes.event_properties.id === pm.environment.get(\"order-id\"));",
+									"        const lineItemIds = orderCreatedEvent.attributes.event_properties.lineItems.map(line => line.id);",
+									"        lineItemIds.forEach(id => {",
+									"            console.log(`looking for ordered product event with id:  ${id}`)",
+									"            const found = jsonData.data.some(event => event.attributes.event_properties.id === pm.environment.get(\"order-id\"))",
+									"            pm.expect(found).to.be.true;",
+									"        })",
+									"     });",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "Klaviyo-API-Key {{klaviyoPrivateKey}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "(Required) API endpoint revision (format: YYYY-MM-DD[.suffix])",
+								"key": "revision",
+								"value": "2023-01-24"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{klaviyoBaseUrl}}/api/events/?filter=greater-or-equal(datetime,{{order-createdAt}})",
+							"host": [
+								"{{klaviyoBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"events",
+								""
+							],
+							"query": [
+								{
+									"key": "fields[profile]",
+									"value": "<string>,<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#sparse-fieldsets",
+									"disabled": true
+								},
+								{
+									"key": "page[cursor]",
+									"value": "<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#pagination",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#sorting",
+									"disabled": true
+								},
+								{
+									"key": "include",
+									"value": "profiles",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "greater-or-equal(datetime,{{order-createdAt}})"
+								}
+							]
+						},
+						"description": "Get all profiles in an account.\nProfiles can be sorted by the following fields in ascending and descending order: `id`, `created`, `email`\nUse filters to narrow your results. Request specific fields using [sparse fieldsets](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#sparse-fieldsets).\nReturns a maximum of 20 profiles per page, which can be paginated with [cursor-based pagination](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#pagination).<br><br>*Rate limits*:<br>Burst: `10/s`<br>Steady: `150/m`\n\n**Scopes:**\n`Profiles Write`"
+					},
+					"response": []
+				},
+				{
+					"name": "[cleanup] Delete profile in klaviyo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "Klaviyo-API-Key {{klaviyoPrivateKey}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"description": "(Required) API endpoint revision (format: YYYY-MM-DD[.suffix])",
+								"key": "revision",
+								"value": "2023-01-24"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"data\": {\n        \"type\": \"data-privacy-deletion-job\",\n        \"attributes\": {\n            \"email\": \"{{customer-email}}\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://a.klaviyo.com/api/data-privacy-deletion-jobs/",
+							"protocol": "https",
+							"host": [
+								"a",
+								"klaviyo",
+								"com"
+							],
+							"path": [
+								"api",
+								"data-privacy-deletion-jobs",
+								""
+							]
+						},
+						"description": "Get all profiles in an account.\nProfiles can be sorted by the following fields in ascending and descending order: `id`, `created`, `email`\nUse filters to narrow your results. Request specific fields using [sparse fieldsets](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#sparse-fieldsets).\nReturns a maximum of 20 profiles per page, which can be paginated with [cursor-based pagination](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#pagination).<br><br>*Rate limits*:<br>Burst: `10/s`<br>Steady: `150/m`\n\n**Scopes:**\n`Profiles Write`"
+					},
+					"response": []
+				},
+				{
+					"name": "[setup] Delete Customer in CT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{ctp_access_token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ct_host}}/{{project-key}}/customers/{{customer-id}}?version={{customer-version}}",
+							"host": [
+								"{{ct_host}}"
+							],
+							"path": [
+								"{{project-key}}",
+								"customers",
+								"{{customer-id}}"
+							],
+							"query": [
+								{
+									"key": "dataErasure",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "version",
+									"value": "{{customer-version}}"
+								},
+								{
+									"key": "expand",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Deleting a Customer produces the [CustomerDeleted](ctp:api:type:CustomerDeletedMessage) Message.\n"
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
