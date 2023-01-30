@@ -33,6 +33,12 @@ To edit the existing tests:
 - edit or add new tests
 - re-export the collection and override the json file in the repository
 
+### How to write tests with Postman
+
+https://learning.postman.com/docs/running-collections/intro-to-collection-runs/  
+https://learning.postman.com/docs/running-collections/building-workflows/  
+https://learning.postman.com/docs/writing-scripts/test-scripts/
+
 ## Test environment variables
 
 Test require api keys and other information to run. These sensible information cannot be saved in the repository and
