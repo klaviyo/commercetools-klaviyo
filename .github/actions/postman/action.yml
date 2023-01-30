@@ -39,7 +39,7 @@ runs:
       run: |
         newman run ${{ inputs.postman_collection_json }} --bail \
           -r htmlextra \
-          --reporter-htmlextra-export newman/htmlreport-${{ inputs.ct_project_id }}.html
+          --reporter-htmlextra-export newman/htmlreport-${{ inputs.ct_project_id }}.html \
           --env-var "ct_client_id=${{ inputs.ct_client_id }}" \
           --env-var "ct_client_secret=${{ inputs.ct_secret }}" \
           --env-var "klaviyoPrivateKey=${{ inputs.klaviyo_auth_key }}" \
