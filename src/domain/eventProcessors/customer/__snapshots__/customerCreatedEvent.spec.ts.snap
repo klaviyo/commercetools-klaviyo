@@ -5,7 +5,6 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
   "data": {
     "attributes": {
       "email": "rob.smith@e2x.com",
-      "external_id": "2925dd3a-5417-4b51-a76c-d6721472531f",
       "first_name": "Roberto",
       "last_name": "Smith",
       "location": {
@@ -20,6 +19,11 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
       "phone_number": "+44 0128472834",
       "title": "Mr",
     },
+    "meta": {
+      "identifiers": {
+        "external_id": "2925dd3a-5417-4b51-a76c-d6721472530f",
+      },
+    },
     "type": "profile",
   },
 }
@@ -30,7 +34,6 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
   "data": {
     "attributes": {
       "email": "rob.smith@e2x.com",
-      "external_id": "2925dd3a-5417-4b51-a76c-d6721472531f",
       "first_name": "Roberto",
       "last_name": "Smith",
       "location": {
@@ -45,6 +48,11 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
       "phone_number": "+44 0128472834",
       "title": "Mr",
     },
+    "meta": {
+      "identifiers": {
+        "external_id": "2925dd3a-5417-4b51-a76c-d6721472530f",
+      },
+    },
     "type": "profile",
   },
 }
@@ -55,7 +63,6 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
   "data": {
     "attributes": {
       "email": "rob.smith@e2x.com",
-      "external_id": "2925dd3a-5417-4b51-a76c-d6721472531f",
       "first_name": "Roberto",
       "last_name": "Smith",
       "location": {
@@ -70,6 +77,11 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
       "phone_number": "+44 0128472834",
       "title": "Mr",
     },
+    "meta": {
+      "identifiers": {
+        "external_id": "2925dd3a-5417-4b51-a76c-d6721472530f",
+      },
+    },
     "type": "profile",
   },
 }
@@ -80,7 +92,6 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
   "data": {
     "attributes": {
       "email": "rob.smith@e2x.com",
-      "external_id": "2925dd3a-5417-4b51-a76c-d6721472531f",
       "first_name": "Roberto",
       "last_name": "Smith",
       "location": {
@@ -95,6 +106,11 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
       "phone_number": "+44 0128472834",
       "title": "Mr",
     },
+    "meta": {
+      "identifiers": {
+        "external_id": "2925dd3a-5417-4b51-a76c-d6721472530f",
+      },
+    },
     "type": "profile",
   },
 }
@@ -105,13 +121,17 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
   "data": {
     "attributes": {
       "email": "rob.smith@e2x.com",
-      "external_id": "2925dd3a-5417-4b51-a76c-d6721472531f",
       "first_name": "Roberto",
       "last_name": "Smith",
       "location": null,
       "organization": "Klaviyo",
       "phone_number": undefined,
       "title": "Mr",
+    },
+    "meta": {
+      "identifiers": {
+        "external_id": "2925dd3a-5417-4b51-a76c-d6721472530f",
+      },
     },
     "type": "profile",
   },

@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { app } from '../../adapter/cloudRunAdapter';
-import { klaviyoCreateProfileNock } from './nocks/KlaviyoCreateEventNock';
+import { klaviyoUpsertClientProfileNock } from './nocks/KlaviyoCreateEventNock';
 import { getSampleCustomerCreatedMessage } from '../testData/ctCustomerMessages';
 import http from 'http';
 
@@ -17,12 +17,11 @@ describe('pubSub adapter customer event', () => {
         server.close();
     });
 
-    it('should return status 204 when the request is valid but ignored as message type is not supported', (done) => {
+    it('should return status 204 when the request is valid and the profile is sent to klaviyo', (done) => {
         // nock.recorder.rec();
-        const createProfileNock = klaviyoCreateProfileNock({
+        const createProfileNock = klaviyoUpsertClientProfileNock({
             type: 'profile',
             attributes: {
-                external_id: '2925dd3a-5417-4b51-a76c-d6721472531f',
                 email: 'rob.smith@e2x.com',
                 first_name: 'Roberto',
                 last_name: 'Smith',
@@ -38,6 +37,11 @@ describe('pubSub adapter customer event', () => {
                 organization: 'Klaviyo',
                 phone_number: '+44 0128472834',
             },
+            meta: {
+                identifiers: {
+                    external_id: '2925dd3a-5417-4b51-a76c-d6721472530f',
+                },
+            },
         });
         const inputMessage = getSampleCustomerCreatedMessage();
         chai.request(server)
@@ -51,11 +55,10 @@ describe('pubSub adapter customer event', () => {
     });
 
     it('should return status 202 when the user profile phone number is invalid', (done) => {
-        const createProfileNock = klaviyoCreateProfileNock(
+        const createProfileNock = klaviyoUpsertClientProfileNock(
             {
                 type: 'profile',
                 attributes: {
-                    external_id: '2925dd3a-5417-4b51-a76c-d6721472531f',
                     email: 'rob.smith@e2x.com',
                     first_name: 'Roberto',
                     last_name: 'Smith',
@@ -71,7 +74,13 @@ describe('pubSub adapter customer event', () => {
                     },
                     phone_number: '1234-123-4123',
                 },
+                meta: {
+                    identifiers: {
+                        external_id: '2925dd3a-5417-4b51-a76c-d6721472530f',
+                    },
+                },
             },
+            process.env.KLAVIYO_COMPANY_ID,
             400,
         );
 

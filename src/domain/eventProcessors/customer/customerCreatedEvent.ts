@@ -26,7 +26,6 @@ export class CustomerCreatedEvent extends AbstractEvent {
             data: {
                 type: 'profile',
                 attributes: {
-                    external_id: message.customer.id,
                     email: message.customer.email,
                     first_name: message.customer.firstName,
                     last_name: message.customer.lastName,
@@ -35,12 +34,17 @@ export class CustomerCreatedEvent extends AbstractEvent {
                     organization: message.customer.companyName,
                     location: mapCTAddressToKlaviyoLocation(address),
                 },
+                meta: {
+                    identifiers: {
+                        external_id: message.resource.id,
+                    },
+                },
             },
         };
         return Promise.resolve([
             {
                 body,
-                type: 'profileCreated',
+                type: 'profileUpdated',
             },
         ]);
     }
