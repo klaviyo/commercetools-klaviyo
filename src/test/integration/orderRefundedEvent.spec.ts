@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { app } from '../../adapter/cloudRunAdapter';
 import { klaviyoCreateEventNock } from './nocks/KlaviyoCreateEventNock';
-import { sampleOrderCreatedMessage } from '../testData/orderData';
+import { sampleOrderCreatedMessage, sampleReturnInfoSetMessage } from '../testData/orderData';
 import { ctAuthNock, ctGetOrderByIdNock } from './nocks/commercetoolsNock';
 
 chai.use(chaiHttp);
@@ -40,19 +40,19 @@ describe('pubSub adapter event', () => {
             type: 'event',
             attributes: {
                 profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                metric: { name: 'Order created' },
+                metric: { name: 'Refunded Order' },
                 value: 13,
                 properties: {
                     ...sampleOrderCreatedMessage.order,
                 },
                 unique_id: '3456789',
-                time: '2023-01-27T15:00:00.000Z',
+                time: '2023-01-18 09:23:00',
             },
         });
 
         chai.request(server)
             .post('/')
-            .send({ message: { data: Buffer.from(JSON.stringify(sampleOrderCreatedMessage)) } })
+            .send({ message: { data: Buffer.from(JSON.stringify(sampleReturnInfoSetMessage)) } })
             .end((res, err) => {
                 expect(err.status).to.eq(204);
                 expect(createEventNock.isDone()).to.be.true;
@@ -110,13 +110,13 @@ describe('pubSub event that produces 5xx error', () => {
                 type: 'event',
                 attributes: {
                     profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                    metric: { name: 'Order created' },
+                    metric: { name: 'Refunded Order' },
                     value: 13,
                     properties: {
                         ...sampleOrderCreatedMessage.order,
                     },
                     unique_id: '3456789',
-                    time: '2023-01-27T15:00:00.000Z',
+                    time: '2023-01-18 09:23:00',
                 },
             },
             500,
@@ -124,7 +124,7 @@ describe('pubSub event that produces 5xx error', () => {
 
         chai.request(server)
             .post('/')
-            .send({ message: { data: Buffer.from(JSON.stringify(sampleOrderCreatedMessage)) } })
+            .send({ message: { data: Buffer.from(JSON.stringify(sampleReturnInfoSetMessage)) } })
             .end((res, err) => {
                 expect(err.status).to.eq(500);
                 expect(createEventNock.isDone()).to.be.true;

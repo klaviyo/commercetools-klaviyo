@@ -9,6 +9,8 @@ import { CustomerLastNameSetEventProcessor } from './eventProcessors/customer/cu
 import { CustomerTitleSetEventProcessor } from './eventProcessors/customer/customerTitleSetEventProcessor';
 import { CustomerCompanyNameSetEventProcessor } from './eventProcessors/customer/customerCompanyNameSetEventProcessor';
 import { CustomerAddressUpdateEventProcessor } from './eventProcessors/customer/customerAddressUpdateEventProcessor';
+import { OrderStateChangedEvent } from './eventProcessors/orderStateChangedEvent';
+import { OrderRefundedEvent } from './eventProcessors/orderRefundedEvent';
 import { sendEventToKlaviyo } from './klaviyoService'; // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {
 
 // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {
@@ -20,6 +22,8 @@ const defaultProcessors: (typeof AbstractEvent)[] = [
     CustomerTitleSetEventProcessor,
     CustomerCompanyNameSetEventProcessor,
     OrderCreatedEvent,
+    OrderStateChangedEvent,
+    OrderRefundedEvent,
     CustomerAddressUpdateEventProcessor,
 ];
 

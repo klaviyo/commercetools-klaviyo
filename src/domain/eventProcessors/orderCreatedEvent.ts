@@ -3,6 +3,8 @@ import logger from '../../utils/log';
 import { OrderCreatedMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
 import { Order, OrderState } from '@commercetools/platform-sdk';
 import { getTypedMoneyAsNumber } from '../../utils/get-typed-money-as-number';
+import { getConfigProperty } from '../../utils/prop-mapper';
+import { getCustomerProfileFromOrder } from '../../utils/get-customer-profile-from-order';
 
 export class OrderCreatedEvent extends AbstractEvent {
     isEventValid(): boolean {
@@ -24,9 +26,9 @@ export class OrderCreatedEvent extends AbstractEvent {
             data: {
                 type: 'event',
                 attributes: {
-                    profile: this.getCustomerProfile(orderCreatedMessage.order),
+                    profile: getCustomerProfileFromOrder(orderCreatedMessage.order),
                     metric: {
-                        name: 'Order created',
+                        name: this.getOrderMetric('OrderCreated'),
                     },
                     value: getTypedMoneyAsNumber(orderCreatedMessage.order?.totalPrice),
                     properties: { ...orderCreatedMessage.order } as any,
@@ -55,7 +57,7 @@ export class OrderCreatedEvent extends AbstractEvent {
     }
 
     private isValidState(orderState: OrderState): boolean {
-        return (process.env.ORDER_CREATED_STATES || 'Open').split(/[, ]+/g).includes(orderState);
+        return Boolean(getConfigProperty('order.createdStates', orderState));
     }
 
     private getProductOrderedEventsFromOrder(events: KlaviyoEvent[], order: Order) {
@@ -67,7 +69,7 @@ export class OrderCreatedEvent extends AbstractEvent {
                         attributes: {
                             profile: this.getCustomerProfile(order),
                             metric: {
-                                name: 'Ordered Product',
+                                name: this.getOrderMetric('OrderedProduct'),
                             },
                             value: getTypedMoneyAsNumber(lineItem.totalPrice),
                             properties: { ...lineItem },
@@ -79,5 +81,9 @@ export class OrderCreatedEvent extends AbstractEvent {
                 type: 'event',
             });
         });
+    }
+
+    private getOrderMetric(type: string): string {
+        return getConfigProperty('order.createdStates', type);
     }
 }

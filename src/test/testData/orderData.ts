@@ -1,4 +1,8 @@
-import { OrderCreatedMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
+import {
+    OrderCreatedMessage,
+    OrderStateChangedMessage,
+    ReturnInfoSetMessage,
+} from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
 
 export const sampleOrderCreatedMessage: OrderCreatedMessage = {
     id: '123123123',
@@ -26,4 +30,44 @@ export const sampleOrderCreatedMessage: OrderCreatedMessage = {
         origin: 'Customer',
         refusedGifts: [],
     },
+};
+
+export const sampleOrderStateChangedMessage: OrderStateChangedMessage = {
+    id: '123123123',
+    version: 11,
+    createdAt: '2023-01-18 09:23:00',
+    lastModifiedAt: '2023-01-18 09:23:00',
+    sequenceNumber: 245,
+    resourceVersion: 24,
+    resource: { typeId: 'order', id: '3456789' },
+    type: 'OrderStateChanged',
+    orderState: 'Cancelled',
+    oldOrderState: 'Open',
+};
+
+export const sampleReturnInfoSetMessage: ReturnInfoSetMessage = {
+    id: '123123123',
+    version: 11,
+    createdAt: '2023-01-18 09:23:00',
+    lastModifiedAt: '2023-01-18 09:23:00',
+    sequenceNumber: 245,
+    resourceVersion: 23,
+    resource: { typeId: 'order', id: '3456789' },
+    type: 'ReturnInfoSet',
+    returnInfo: [
+        {
+            items: [
+                {
+                    id: '123-123-123',
+                    quantity: 1,
+                    paymentState: 'Refunded',
+                    type: 'LineItemReturnItem',
+                    lineItemId: '123-123-123',
+                    createdAt: '2023-01-18 09:23:00',
+                    lastModifiedAt: '2023-01-18 09:23:00',
+                    shipmentState: 'Advised',
+                },
+            ],
+        },
+    ],
 };

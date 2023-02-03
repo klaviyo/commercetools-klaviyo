@@ -53,3 +53,26 @@ export const ctGetCustomerNock = (customerId: string, addresses: Address[] = [])
             [],
         );
 };
+
+export const ctGetOrderByIdNock = (orderId: string) => {
+    return nock(/https:\/\/api\..*\.gcp.commercetools\.com\:443/, { encodedQueryParams: true })
+        .persist()
+        .get(`/klaviyo-dev/orders/${orderId}`)
+        .reply(200, {
+            customerId: '123-123-123',
+            customerEmail: 'test@klaviyo.com',
+            id: `${orderId}`,
+            version: 24,
+            createdAt: '2023-01-27T15:00:00.000Z',
+            lastModifiedAt: '2023-01-27T15:00:00.000Z',
+            lineItems: [],
+            customLineItems: [],
+            totalPrice: { type: 'centPrecision', centAmount: 1300, currencyCode: 'USD', fractionDigits: 2 },
+            shipping: [],
+            shippingMode: 'Single',
+            orderState: 'Open',
+            syncInfo: [],
+            origin: 'Customer',
+            refusedGifts: [],
+        });
+};

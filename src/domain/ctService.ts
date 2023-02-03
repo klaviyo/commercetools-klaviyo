@@ -1,5 +1,5 @@
 import { AuthMiddlewareOptions, ClientBuilder, HttpMiddlewareOptions } from '@commercetools/sdk-client-v2';
-import { ApiRoot, createApiBuilderFromCtpClient, Customer } from '@commercetools/platform-sdk';
+import { ApiRoot, createApiBuilderFromCtpClient, Customer, Order } from '@commercetools/platform-sdk';
 import logger from '../utils/log';
 import fetch from 'cross-fetch';
 
@@ -48,4 +48,18 @@ export const getCustomerProfile = async (customerId: string): Promise<Customer |
     }
 
     return ctCustomer;
+};
+
+export const getOrderById = async (orderId: string): Promise<Order | undefined> => {
+    logger.info(`Getting order ${orderId} in commercetools`);
+    let ctOrder: Order;
+
+    try {
+        ctOrder = (await ctApiClient.orders().withId({ ID: orderId }).get().execute()).body;
+    } catch (error) {
+        console.log(error);
+        return undefined;
+    }
+
+    return ctOrder;
 };

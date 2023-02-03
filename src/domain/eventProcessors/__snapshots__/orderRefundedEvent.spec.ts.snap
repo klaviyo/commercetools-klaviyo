@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`orderRefundedEvent > generateKlaviyoEvent should generate the klaviyo event for an order refunded message 1`] = `
+{
+  "data": {
+    "attributes": {
+      "metric": {
+        "name": "Refunded Order",
+      },
+      "profile": {
+        "$email": "test@klaviyo.com",
+        "$id": "123-123-123",
+      },
+      "properties": {
+        "createdAt": "2023-01-27T15:00:00.000Z",
+        "customLineItems": [],
+        "customerEmail": "test@klaviyo.com",
+        "customerId": "123-123-123",
+        "id": "3456789",
+        "lastModifiedAt": "2023-01-27T15:00:00.000Z",
+        "lineItems": [],
+        "orderState": "Open",
+        "origin": "Customer",
+        "refusedGifts": [],
+        "shipping": [],
+        "shippingMode": "Single",
+        "syncInfo": [],
+        "totalPrice": {
+          "centAmount": 1300,
+          "currencyCode": "USD",
+          "fractionDigits": 2,
+          "type": "centPrecision",
+        },
+        "version": 24,
+      },
+      "time": [MockFunction],
+      "unique_id": "3456789",
+      "value": 13,
+    },
+    "type": "event",
+  },
+}
+`;

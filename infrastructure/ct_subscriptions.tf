@@ -17,7 +17,7 @@ locals {
       topic             = "${var.gcp_environment_namespace}-commercetools-topic"
       resource_type_ids = ["order"]
       resource_type_id  = "order"
-      types             = ["OrderCreated"]
+      types             = ["OrderCreated", "OrderStateChanged", "ReturnInfoSet"]
       queue_ref         = google_pubsub_topic.commercetools
     },
     {
