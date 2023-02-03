@@ -84,6 +84,7 @@ jobs:
           ct_project_id: ${{ vars.CT_PROJECT_ID }}
           ct_scope: ${{ vars.CT_SCOPE }}
           klaviyo_auth_key_secret: ${{ env.ENV_STAGE }}-klaviyo_auth_key:latest
+          klaviyo_company_id: ${{ vars.KLAVIYO_COMPANY_ID }}
           ct_api_client_secret: ${{ env.ENV_STAGE }}-commercetools_api_client:latest
   e2e_tests:
     name: "[dev] End to end tests"

@@ -1,9 +1,23 @@
 # Infrastructure
 
-Details on how to configure a cloud environment to run the plugin, configure commercetools and import tests data.
+This section details how to configure a cloud environment to run the plugin, configure klaviyo, commercetools and import
+tests
+data.  
+The setup and configuration of a new environment for the klaviyo commercetools plugin require some manual steps:
+
+* Commercetools accounts creation
+* Creation of the commercetools API client for terraform
+* Creation of the klaviyo accounts
+* Creation of the klaviyo API keys
+* Configuration of GitHub for running pipelines
+
+The rest of the configuration of the environment (creation of the commercetools subscriptions, queues, docker
+repositories...) can be done using terraform scripts.
+The terraform scripts are available in `/infrastructure`
 
 ## Commercetools
 
+The initial creation of the commercetools projects and the API client for terraform must be done manually.  
 The commercetools terraform scripts create subscription and test data.
 Check the section [Configuration of the pipelines in GitHub actions](#configuration-of-the-pipelines-in-gitHub-actions)
 on how to configure the API client and run the terraform scripts
@@ -12,6 +26,13 @@ on how to configure the API client and run the terraform scripts
 
 Check the documentation
 at [https://docs.commercetools.com/sdk/sunrise-data](https://docs.commercetools.com/sdk/sunrise-data)
+
+## Klaviyo
+
+The creation of the Klaviyo accounts needs to be done manually.
+The creation of the API keys also needs to be done manually.
+See [https://help.klaviyo.com/hc/en-us/articles/360002165611-Understand-multi-account-user-privileges](https://help.klaviyo.com/hc/en-us/articles/360002165611-Understand-multi-account-user-privileges)
+for more info.
 
 ## Google Cloud project
 
@@ -69,8 +90,10 @@ The script will generate a new `terraform` service account. Create a service acc
 * Add the following environment specific variables to GitHub:
     * dev environment
         * `CT_PROJECT_ID`: commercetools dev project ID
+        * `KLAVIYO_COMPANY_ID`: Klaviyo public api KEY
     * prod environment
         * `CT_PROJECT_ID`: commercetools prod project ID
+        * `KLAVIYO_COMPANY_ID`: Klaviyo public api KEY
 
 ### Pipelines
 
@@ -90,5 +113,5 @@ The following pipelines are available in `.github/workflows`
     - runs build, linting and tests
 - `plugin-deploy`
     - Creates a docker image with the plugin source code
-    - Deploy of the container to cloud run dev and prod environment
+    - Deploys the container to Cloud Run _dev_ and _prod_ environment
     - Runs end-to-end tests

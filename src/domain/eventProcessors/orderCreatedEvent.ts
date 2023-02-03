@@ -16,7 +16,7 @@ export class OrderCreatedEvent extends AbstractEvent {
         );
     }
 
-    generateKlaviyoEvents(): KlaviyoEvent[] {
+    generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {
         const orderCreatedMessage = this.ctMessage as unknown as OrderCreatedMessage;
         logger.info('Processing order created event');
 
@@ -40,7 +40,7 @@ export class OrderCreatedEvent extends AbstractEvent {
 
         this.getProductOrderedEventsFromOrder(events, orderCreatedMessage.order);
 
-        return events;
+        return Promise.resolve(events);
     }
 
     private getCustomerProfile(order: Order): KlaviyoEventProfile {

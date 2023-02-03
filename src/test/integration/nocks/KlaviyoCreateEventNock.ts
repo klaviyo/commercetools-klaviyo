@@ -15,3 +15,12 @@ export const klaviyoCreateProfileNock = (data: any, responseCode = 201) => {
         })
         .reply(responseCode, '');
 };
+
+export const klaviyoUpsertClientProfileNock = (data: any, company_id: string, responseCode = 202) => {
+    return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
+        .post('/client/profiles/', {
+            data,
+        })
+        .query({ company_id })
+        .reply(responseCode, '');
+};

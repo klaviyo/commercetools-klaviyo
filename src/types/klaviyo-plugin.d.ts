@@ -1,6 +1,6 @@
 type KlaviyoEvent = {
-    type: 'profile' | 'event';
-    body: any;
+    type: 'profileCreated' | 'profileUpdated' | 'event';
+    body?: any;
 };
 
 type KlaviyoEventProfile = {

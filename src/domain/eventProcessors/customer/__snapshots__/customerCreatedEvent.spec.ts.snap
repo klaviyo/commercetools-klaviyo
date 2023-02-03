@@ -1,0 +1,119 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo event when the input customer created event is valid 1`] = `
+{
+  "data": {
+    "attributes": {
+      "email": "rob.smith@e2x.com",
+      "external_id": "2925dd3a-5417-4b51-a76c-d6721472531f",
+      "first_name": "Roberto",
+      "last_name": "Smith",
+      "location": {
+        "address1": "C, Tall Tower, 23, High Road",
+        "address2": "private access, additional address info",
+        "city": "London",
+        "country": "UK",
+        "region": "aRegion",
+        "zip": "WE1 2DP",
+      },
+      "organization": "Klaviyo",
+      "phone_number": "+44 0128472834",
+      "title": "Mr",
+    },
+    "type": "profile",
+  },
+}
+`;
+
+exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo event with the default billing address when set 1`] = `
+{
+  "data": {
+    "attributes": {
+      "email": "rob.smith@e2x.com",
+      "external_id": "2925dd3a-5417-4b51-a76c-d6721472531f",
+      "first_name": "Roberto",
+      "last_name": "Smith",
+      "location": {
+        "address1": "C, Tall Tower, 23, I'm the default billing address",
+        "address2": "private access, additional address info",
+        "city": "London",
+        "country": "UK",
+        "region": "aRegion",
+        "zip": "WS2 5FX",
+      },
+      "organization": "Klaviyo",
+      "phone_number": "+44 0128472834",
+      "title": "Mr",
+    },
+    "type": "profile",
+  },
+}
+`;
+
+exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo event with the first address when no billing address ids are set 1`] = `
+{
+  "data": {
+    "attributes": {
+      "email": "rob.smith@e2x.com",
+      "external_id": "2925dd3a-5417-4b51-a76c-d6721472531f",
+      "first_name": "Roberto",
+      "last_name": "Smith",
+      "location": {
+        "address1": "C, Tall Tower, 23, I'm a random address",
+        "address2": "private access, I'm a random address",
+        "city": "London",
+        "country": "UK",
+        "region": "aRegion",
+        "zip": "WS2 5FX",
+      },
+      "organization": "Klaviyo",
+      "phone_number": "+44 0128472834",
+      "title": "Mr",
+    },
+    "type": "profile",
+  },
+}
+`;
+
+exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo event with the first billing address available when no default billing address is set 1`] = `
+{
+  "data": {
+    "attributes": {
+      "email": "rob.smith@e2x.com",
+      "external_id": "2925dd3a-5417-4b51-a76c-d6721472531f",
+      "first_name": "Roberto",
+      "last_name": "Smith",
+      "location": {
+        "address1": "C, Tall Tower, 23, I'm another billing address",
+        "address2": "private access, I'm another billing address",
+        "city": "London",
+        "country": "UK",
+        "region": "aRegion",
+        "zip": "WS2 5FY",
+      },
+      "organization": "Klaviyo",
+      "phone_number": "+44 0128472834",
+      "title": "Mr",
+    },
+    "type": "profile",
+  },
+}
+`;
+
+exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo event without customer address inf when no address is available 1`] = `
+{
+  "data": {
+    "attributes": {
+      "email": "rob.smith@e2x.com",
+      "external_id": "2925dd3a-5417-4b51-a76c-d6721472531f",
+      "first_name": "Roberto",
+      "last_name": "Smith",
+      "location": null,
+      "organization": "Klaviyo",
+      "phone_number": undefined,
+      "title": "Mr",
+    },
+    "type": "profile",
+  },
+}
+`;

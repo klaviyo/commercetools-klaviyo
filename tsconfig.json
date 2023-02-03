@@ -22,15 +22,14 @@
     },
     "typeRoots": [
       "./node_modules/@types",
-      "./types/*"
+      "./src/types/*"
     ]
   },
   "include": [
     "src/**/*"
   ],
   "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
+    "node_modules"
   ],
   "ts-node": {
     "files": true

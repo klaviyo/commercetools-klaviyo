@@ -63,9 +63,10 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
 
         const event = OrderCreatedEvent.instance(ctMessageMock);
 
-        const klaviyoEvent = event.generateKlaviyoEvents();
+        const klaviyoEvent = await event.generateKlaviyoEvents();
 
         exp(klaviyoEvent).to.not.be.undefined;
+        exp(klaviyoEvent.length).to.eq(1);
         expect(klaviyoEvent[0].body).toMatchSnapshot();
     });
 
@@ -95,9 +96,10 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
 
         const event = OrderCreatedEvent.instance(ctMessageMock);
 
-        const klaviyoEvent = event.generateKlaviyoEvents();
+        const klaviyoEvent = await event.generateKlaviyoEvents();
 
         exp(klaviyoEvent).to.not.be.undefined;
+        exp(klaviyoEvent.length).to.eq(2);
         klaviyoEvent.forEach((event) => {
             expect(event.body).toMatchSnapshot();
         });

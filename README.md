@@ -6,8 +6,14 @@ The [Klaviyo](https://www.klaviyo.com/) plugin for the integration with [commerc
 
 ## Infrastructure
 
-To configure commercetools subscription, test data and the cloud infrastructure
-check [documentation](docs/infrastructure.md)
+In this sample implementation, we used Google Cloud Platform (GCP) to host the plugin.
+A single GCP project is created `klaviyo-ct-plugin` which hosts two environments separated by namespace (each
+environment specific resource is prefixed with the environment name `dev` or `prod`).
+The plugin is built into a docker image and deployed on [GCP Cloud Run](https://cloud.google.com/run).
+Commercetools subscriptions are configured via Terraform and communicate to the plugin using a
+single [GCP pub/sub](https://cloud.google.com/pubsub) topic.
+For all the details about the infrastructure configuration check
+the [infrastructure documentation](docs/infrastructure.md)
 
 ## Local development
 
@@ -128,11 +134,13 @@ commercetools events are sent on the configured queue and consumed by the plugin
 The event is filtered, transformed and sent to klaviyo using the `processEvent` method.   
 The following outcomes are possible:
 
-1. Message sent correctly: klaviyo has accepted the request, the `processEvent` method returns `status: "OK"`. In this
+1. Message sent correctly: klaviyo has accepted the request, and the `processEvent` method returns `status: "OK"`. In
+   this
    case the messages should be acknowledged and removed from the queue.
 2. Message invalid: klaviyo returned a `4xx` error, the request is invalid or unauthenticated. The `processEvent` method
    logs
-   the error and returns `status: "4xx"`, this allows to build your custom logic to handle the error, for example create
+   the error and returns `status: "4xx"`, this value can be used to build the custom logic to handle the error, for
+   example, to create
    alerts, send a message to a DLQ...
 3. Exception: klaviyo returned a `5xx` error, this might be caused by a temporary glitch with the klaviyo API server and
    typically the request should be retried.
@@ -141,7 +149,7 @@ The following outcomes are possible:
 
 ## Security
 
-The klaviyo API key is passed via environment variable. When deployed on the cloud use your cloud specific secrets
+The klaviyo API key is passed via an environment variable. When deployed on the cloud, use your cloud specific secrets
 manager to store and retrieve the key.
 
 ## TODO

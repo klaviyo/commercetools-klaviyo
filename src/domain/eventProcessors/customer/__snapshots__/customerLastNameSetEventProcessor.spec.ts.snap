@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CustomerLastNameSetEventProcessor > generateKlaviyoEvent should generate the klaviyo event when the input customer last name set event is valid 1`] = `
+{
+  "data": {
+    "attributes": {
+      "last_name": "Dylan",
+    },
+    "meta": {
+      "identifiers": {
+        "external_id": "2925dd3a-5417-4b51-a76c-d6721472530f",
+      },
+    },
+    "type": "profile",
+  },
+}
+`;

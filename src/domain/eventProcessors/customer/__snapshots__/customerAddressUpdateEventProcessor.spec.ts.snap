@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CustomerAddressUpdateEventProcessor > generateKlaviyoEvent should generate the klaviyo event when the customer address update event is valid 1`] = `
+{
+  "data": {
+    "attributes": {
+      "location": {
+        "address1": "12, First Street",
+        "address2": "",
+        "city": "Brookefort",
+        "country": "NL",
+        "region": undefined,
+        "zip": "12345",
+      },
+      "phone_number": "+39 3234567892",
+    },
+    "meta": {
+      "identifiers": {
+        "external_id": "77d8e6f4-2dee-4ac9-bd21-4035b6ba76d8",
+      },
+    },
+    "type": "profile",
+  },
+}
+`;
+
+exports[`CustomerAddressUpdateEventProcessor > generateKlaviyoEvent should set the profile location to null in Klaviyo if CT doesn't return and address 1`] = `
+{
+  "data": {
+    "attributes": {
+      "location": null,
+      "phone_number": undefined,
+    },
+    "meta": {
+      "identifiers": {
+        "external_id": "77d8e6f4-2dee-4ac9-bd21-4035b6ba76d8",
+      },
+    },
+    "type": "profile",
+  },
+}
+`;

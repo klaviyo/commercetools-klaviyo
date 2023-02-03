@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { app } from '../../adapter/cloudRunAdapter';
 import { klaviyoCreateProfileNock } from './nocks/KlaviyoCreateEventNock';
-import { sampleCustomerCreatedEvent } from '../testData/customerData';
+import { getSampleCustomerCreatedMessage } from '../testData/ctCustomerMessages';
 import http from 'http';
 
 chai.use(chaiHttp);
@@ -39,10 +39,10 @@ describe('pubSub adapter customer event', () => {
                 phone_number: '+44 0128472834',
             },
         });
-
+        const inputMessage = getSampleCustomerCreatedMessage();
         chai.request(server)
             .post('/')
-            .send({ message: { data: Buffer.from(JSON.stringify(sampleCustomerCreatedEvent)) } })
+            .send({ message: { data: Buffer.from(JSON.stringify(inputMessage)) } })
             .end((res, err) => {
                 expect(err.status).to.eq(204);
                 expect(createProfileNock.isDone()).to.be.true;
@@ -60,6 +60,7 @@ describe('pubSub adapter customer event', () => {
                     first_name: 'Roberto',
                     last_name: 'Smith',
                     title: 'Mr',
+                    organization: 'Klaviyo',
                     location: {
                         address1: 'C, Tall Tower, 23, High Road',
                         address2: 'private access, additional address info',
@@ -68,15 +69,15 @@ describe('pubSub adapter customer event', () => {
                         region: 'aRegion',
                         zip: 'WE1 2DP',
                     },
-                    organization: 'Klaviyo',
                     phone_number: '1234-123-4123',
                 },
             },
             400,
         );
 
-        sampleCustomerCreatedEvent.customer.addresses.pop();
-        sampleCustomerCreatedEvent.customer.addresses.push({
+        const inputMessage = getSampleCustomerCreatedMessage();
+        inputMessage.customer.addresses.pop();
+        inputMessage.customer.addresses.push({
             id: '1235aa3a-5417-4b51-a76c-d6721472531f',
             region: 'aRegion',
             city: 'London',
@@ -94,7 +95,7 @@ describe('pubSub adapter customer event', () => {
 
         chai.request(server)
             .post('/')
-            .send({ message: { data: Buffer.from(JSON.stringify(sampleCustomerCreatedEvent)) } })
+            .send({ message: { data: Buffer.from(JSON.stringify(inputMessage)) } })
             .end((res, err) => {
                 expect(err.status).to.eq(202);
                 expect(createProfileNock.isDone()).to.be.true;

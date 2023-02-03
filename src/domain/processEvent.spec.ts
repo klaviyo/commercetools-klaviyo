@@ -12,13 +12,13 @@ describe('processEvent', () => {
     //todo mock api call to create klaviyo client
 
     class TestEvent extends AbstractEvent {
-        generateKlaviyoEvents(): KlaviyoEvent[] {
-            return [
+        generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {
+            return Promise.resolve([
                 {
                     type: 'event',
                     body: 'something',
                 },
-            ];
+            ]);
         }
 
         isEventValid(): boolean {

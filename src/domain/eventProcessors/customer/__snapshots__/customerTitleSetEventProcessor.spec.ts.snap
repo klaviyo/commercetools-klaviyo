@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CustomerTitleSetEventProcessor > generateKlaviyoEvent should generate the klaviyo event when the input customer title set event is valid 1`] = `
+{
+  "data": {
+    "attributes": {
+      "title": "Mr",
+    },
+    "meta": {
+      "identifiers": {
+        "external_id": "2925dd3a-5417-4b51-a76c-d6721472530f",
+      },
+    },
+    "type": "profile",
+  },
+}
+`;

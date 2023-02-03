@@ -29,6 +29,9 @@ inputs:
   klaviyo_auth_key_secret:
     description: 'Klaviyo auth key GCP secret'
     required: true
+  klaviyo_company_id:
+    description: 'Klaviyo company ID'
+    required: true
   ct_api_client_secret:
     description: 'Commercetools API client secret'
     required: true
@@ -53,6 +56,7 @@ runs:
           CT_AUTH_URL=${{ inputs.ct_auth_url }}
           CT_PROJECT_ID=${{ inputs.ct_project_id }}
           CT_SCOPE=${{ inputs.ct_scope }}
+          KLAVIYO_COMPANY_ID=${{ inputs.klaviyo_company_id }}
         secrets: |
           KLAVIYO_AUTH_KEY=${{ inputs.klaviyo_auth_key_secret }}
           CT_API_CLIENT=${{ inputs.ct_api_client_secret }}
