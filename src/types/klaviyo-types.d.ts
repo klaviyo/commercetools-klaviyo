@@ -16,7 +16,7 @@ type Profile = {
     first_name?: string;
     last_name?: string;
     title?: string;
-    phone_number?: string;
+    phone_number?: string | null;
     organization?: string;
     location?: KlaviyoLocation | null;
 };

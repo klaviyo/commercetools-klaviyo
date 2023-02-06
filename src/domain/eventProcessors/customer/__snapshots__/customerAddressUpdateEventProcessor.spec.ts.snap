@@ -12,7 +12,7 @@ exports[`CustomerAddressUpdateEventProcessor > generateKlaviyoEvent should gener
         "region": undefined,
         "zip": "12345",
       },
-      "phone_number": "+39 3234567892",
+      "phone_number": "+393234567892",
     },
     "meta": {
       "identifiers": {
@@ -29,7 +29,7 @@ exports[`CustomerAddressUpdateEventProcessor > generateKlaviyoEvent should set t
   "data": {
     "attributes": {
       "location": null,
-      "phone_number": undefined,
+      "phone_number": null,
     },
     "meta": {
       "identifiers": {

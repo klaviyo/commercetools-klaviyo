@@ -67,4 +67,17 @@ describe('CustomerAddressUpdateEventProcessor > generateKlaviyoEvent', () => {
         exp(klaviyoEvent.length).to.be.eq(1);
         expect(klaviyoEvent[0].body).toMatchSnapshot();
     });
+
+    it('should return an empty array if the customer profile is not found in CT', async () => {
+        const inputMessage = getSampleCustomerAddressUpdateMessage();
+        const message = inputMessage as unknown as MessageDeliveryPayload;
+        const event = CustomerAddressUpdateEventProcessor.instance(message);
+        const getCustomerProfileMock = mocked(getCustomerProfile);
+        getCustomerProfileMock.mockResolvedValue(undefined);
+
+        const klaviyoEvent = await event.generateKlaviyoEvents();
+
+        exp(klaviyoEvent).to.not.be.undefined;
+        exp(klaviyoEvent.length).to.be.eq(0);
+    });
 });

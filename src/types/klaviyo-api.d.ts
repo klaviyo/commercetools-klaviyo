@@ -50,6 +50,166 @@ declare module 'klaviyo-api' {
         static parseDate(str: any): any;
     }
 
+    export class AudiencesSubObject {
+        constructor();
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignCloneQuery {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignCloneQueryAsSubResource {
+        constructor(type: any, attributes: any);
+
+        static TypeEnum: {
+            campaign: string;
+        };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignCloneQueryAsSubResourceAttributes {
+        constructor(id: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignCreateQuery {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignCreateQueryAsSubResource {
+        constructor(type: any, attributes: any);
+
+        static TypeEnum: {
+            campaign: string;
+        };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignCreateQueryAsSubResourceAttributes {
+        constructor(name: any, channel: any, audiences: any, sendStrategy: any, sendOptions: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignMessageAssignTemplateQuery {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignMessageAssignTemplateQueryAsSubResource {
+        constructor(type: any, attributes: any);
+
+        static TypeEnum: {
+            campaignMessage: string;
+        };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignMessageAssignTemplateQueryAsSubResourceAttributes {
+        constructor(id: any, templateId: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignMessagePartialUpdateQuery {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignMessagePartialUpdateQueryAsSubResource {
+        constructor(type: any, id: any, attributes: any);
+
+        static TypeEnum: {
+            campaignMessage: string;
+        };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignMessagePartialUpdateQueryAsSubResourceAttributes {
+        constructor();
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignPartialUpdateQuery {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignPartialUpdateQueryAsSubResource {
+        constructor(type: any, id: any, attributes: any);
+
+        static TypeEnum: {
+            campaign: string;
+        };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignPartialUpdateQueryAsSubResourceAttributes {
+        constructor();
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignSendJobCreateQuery {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignSendJobCreateQueryAsSubResource {
+        constructor(type: any, attributes: any);
+
+        static TypeEnum: {
+            campaignSendJob: string;
+        };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignSendJobCreateQueryAsSubResourceAttributes {
+        constructor(id: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignSendJobPartialUpdateQuery {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignSendJobPartialUpdateQueryAsSubResource {
+        constructor(type: any, id: any, attributes: any);
+
+        static TypeEnum: {
+            campaignSendJob: string;
+        };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class CampaignSendJobPartialUpdateQueryAsSubResourceAttributes {
+        constructor(action: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
     export class CatalogCategoryCreateJobCreateQuery {
         constructor(data: any);
 
@@ -497,6 +657,34 @@ declare module 'klaviyo-api' {
         static constructFromObject(data: any, obj: any): any;
     }
 
+    export class ContentSubObject {
+        constructor();
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class DataPrivacyCreateDeletionJobQuery {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class DataPrivacyCreateDeletionJobQueryAsSubResource {
+        constructor(type: any, attributes: any);
+
+        static TypeEnum: {
+            dataPrivacyDeletionJob: string;
+        };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class DataPrivacyCreateDeletionJobQueryAsSubResourceAttributes {
+        constructor();
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
     export class EmailMessageContent {
         constructor(subject: any, previewText: any, fromEmail: any, fromName: any);
 
@@ -681,16 +869,6 @@ declare module 'klaviyo-api' {
         static constructFromObject(data: any, obj: any): any;
     }
 
-    export class IncludedProfile {
-        constructor(type: any, id: any, attributes: any, links: any);
-
-        static TypeEnum: {
-            profile: string;
-        };
-
-        static constructFromObject(data: any, obj: any): any;
-    }
-
     export class IncludedProfiles {
         constructor(type: any, id: any, attributes: any, links: any);
 
@@ -781,16 +959,6 @@ declare module 'klaviyo-api' {
         static constructFromObject(data: any, obj: any): any;
     }
 
-    export class ListDeleteQueryAsSubResource {
-        constructor(type: any, id: any);
-
-        static TypeEnum: {
-            list: string;
-        };
-
-        static constructFromObject(data: any, obj: any): any;
-    }
-
     export class ListMembersAddQuery {
         constructor(data: any);
 
@@ -846,7 +1014,7 @@ declare module 'klaviyo-api' {
     }
 
     export class MetricAggregateQueryAsSubResourceAttributes {
-        constructor(metricId: any, measurements: any, interval: any, filter: any, timezone: any);
+        constructor(metricId: any, measurements: any, interval: any, filter: any);
 
         static ByEnum: {
             URL: string;
@@ -1111,6 +1279,30 @@ declare module 'klaviyo-api' {
         static constructFromObject(data: any, obj: any): any;
     }
 
+    export class SendOptionsSubObject {
+        constructor();
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class SendStrategySubObject {
+        constructor(method: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class SendTimeSubObject {
+        constructor(datetime: any, isLocal: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class StaticScheduleOptions {
+        constructor(datetime: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
     export class Subscription {
         constructor();
 
@@ -1167,6 +1359,110 @@ declare module 'klaviyo-api' {
         static constructFromObject(data: any, obj: any): any;
     }
 
+    export class TagCreateQuery {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TagCreateQueryAsSubResource {
+        constructor(type: any, attributes: any);
+
+        static TypeEnum: {
+            tag: string;
+        };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TagCreateQueryAsSubResourceAttributes {
+        constructor(name: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TagGroupCreateQuery {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TagGroupCreateQueryAsSubResource {
+        constructor(type: any, attributes: any);
+
+        static TypeEnum: {
+            tagGroup: string;
+        };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TagGroupCreateQueryAsSubResourceAttributes {
+        constructor(name: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TagGroupUpdateQuery {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TagGroupUpdateQueryAsSubResource {
+        constructor(type: any, id: any, attributes: any);
+
+        static TypeEnum: {
+            tagGroup: string;
+        };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TagGroupUpdateQueryAsSubResourceAttributes {
+        constructor(name: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TagSegmentOp {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TagSegmentOpData {
+        constructor(type: any, id: any);
+
+        static TypeEnum: {
+            segment: string;
+        };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TagUpdateQuery {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TagUpdateQueryAsSubResource {
+        constructor(type: any, id: any, attributes: any);
+
+        static TypeEnum: {
+            tag: string;
+        };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TagUpdateQueryAsSubResourceAttributes {
+        constructor(name: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
     export class TemplateCloneQuery {
         constructor(data: any);
 
@@ -1174,7 +1470,7 @@ declare module 'klaviyo-api' {
     }
 
     export class TemplateCloneQueryAsSubResource {
-        constructor(type: any, attributes: any);
+        constructor(type: any, id: any, attributes: any);
 
         static TypeEnum: {
             template: string;
@@ -1184,7 +1480,7 @@ declare module 'klaviyo-api' {
     }
 
     export class TemplateCloneQueryAsSubResourceAttributes {
-        constructor();
+        constructor(id: any);
 
         static constructFromObject(data: any, obj: any): any;
     }
@@ -1211,12 +1507,24 @@ declare module 'klaviyo-api' {
         static constructFromObject(data: any, obj: any): any;
     }
 
-    export class TemplateDeleteQueryAsSubResource {
-        constructor(type: any, id: any);
+    export class TemplateRenderQuery {
+        constructor(data: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TemplateRenderQueryAsSubResource {
+        constructor(type: any, attributes: any);
 
         static TypeEnum: {
             template: string;
         };
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TemplateRenderQueryAsSubResourceAttributes {
+        constructor(id: any, context: any);
 
         static constructFromObject(data: any, obj: any): any;
     }
@@ -1243,6 +1551,24 @@ declare module 'klaviyo-api' {
         static constructFromObject(data: any, obj: any): any;
     }
 
+    export class ThrottledScheduleOptions {
+        constructor(datetime: any, throttlePercentage: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class TrackingOptionsSubObject {
+        constructor();
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
+    export class UTMParamsSubObject {
+        constructor(name: any, value: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
     export class UnsubscriptionCreateJobCreateQuery {
         constructor(data: any);
 
@@ -1260,7 +1586,7 @@ declare module 'klaviyo-api' {
     }
 
     export class UnsubscriptionCreateJobCreateQueryAsSubResourceAttributes {
-        constructor(listId: any);
+        constructor();
 
         static constructFromObject(data: any, obj: any): any;
     }
@@ -1281,30 +1607,20 @@ declare module 'klaviyo-api' {
         static constructFromObject(data: any, obj: any): any;
     }
 
+    export class UnsuppressionCreateJobCreateQueryAsSubResourceAttributes {
+        constructor(suppressions: any);
+
+        static constructFromObject(data: any, obj: any): any;
+    }
+
     export class UtmParamInfo {
         constructor(name: any, value: any);
 
         static constructFromObject(data: any, obj: any): any;
     }
 
-    export class V2TemplateRenderQuery {
-        constructor(data: any);
-
-        static constructFromObject(data: any, obj: any): any;
-    }
-
     export class V2TemplateRenderQueryAsSubResource {
-        constructor(type: any, attributes: any);
-
-        static TypeEnum: {
-            template: string;
-        };
-
-        static constructFromObject(data: any, obj: any): any;
-    }
-
-    export class V2TemplateRenderQueryAsSubResourceAttributes {
-        constructor(context: any);
+        constructor(id: any);
 
         static constructFromObject(data: any, obj: any): any;
     }
@@ -1314,6 +1630,8 @@ declare module 'klaviyo-api' {
     export function ClientApi(apiClient: any, ...args: any[]): any;
 
     export function ConfigWrapper(authKey: any, ...args: any[]): any;
+
+    export function DataPrivacyApi(apiClient: any, ...args: any[]): any;
 
     export function EventsApi(apiClient: any, ...args: any[]): any;
 
@@ -1335,10 +1653,20 @@ declare module 'klaviyo-api' {
 
     export function SegmentsApi(apiClient: any, ...args: any[]): any;
 
+    export function TagsApi(apiClient: any, ...args: any[]): any;
+
     export function TemplatesApi(apiClient: any, ...args: any[]): any;
 
     export namespace ApiClient {
         namespace instance {
+            const RETRY_CODES: number[];
+
+            const RETRY_MAX_ATTEMPTS: number;
+
+            const STARTING_DELAY: number;
+
+            const TIME_MULTIPLE: number;
+
             const authentications: {
                 'Klaviyo-API-Key': {
                     in: string;
@@ -1630,6 +1958,14 @@ declare module 'klaviyo-api' {
         function updateCatalogVariant(_x86: any, _x87: any, ...args: any[]): any;
 
         namespace apiClient {
+            const RETRY_CODES: number[];
+
+            const RETRY_MAX_ATTEMPTS: number;
+
+            const STARTING_DELAY: number;
+
+            const TIME_MULTIPLE: number;
+
             const authentications: {
                 'Klaviyo-API-Key': {
                     in: string;
@@ -1821,6 +2157,14 @@ declare module 'klaviyo-api' {
         function createClientSubscription(_x5: any, _x6: any, ...args: any[]): any;
 
         namespace apiClient {
+            const RETRY_CODES: number[];
+
+            const RETRY_MAX_ATTEMPTS: number;
+
+            const STARTING_DELAY: number;
+
+            const TIME_MULTIPLE: number;
+
             const authentications: {
                 'Klaviyo-API-Key': {
                     in: string;
@@ -2004,6 +2348,201 @@ declare module 'klaviyo-api' {
         }
     }
 
+    export namespace DataPrivacy {
+        function requestProfileDeletion(_x: any, ...args: any[]): any;
+
+        namespace apiClient {
+            const RETRY_CODES: number[];
+
+            const RETRY_MAX_ATTEMPTS: number;
+
+            const STARTING_DELAY: number;
+
+            const TIME_MULTIPLE: number;
+
+            const authentications: {
+                'Klaviyo-API-Key': {
+                    in: string;
+                    name: string;
+                    type: string;
+                };
+            };
+
+            const basePath: string;
+
+            const cache: boolean;
+
+            const defaultHeaders: {
+                'User-Agent': string;
+                revision: string;
+            };
+
+            const enableCookies: boolean;
+
+            const requestAgent: any;
+
+            const timeout: number;
+
+            function applyAuthToRequest(request: any, authNames: any): void;
+
+            function buildCollectionParam(param: any, collectionFormat: any): any;
+
+            function buildUrl(path: any, pathParams: any): any;
+
+            function callApi(
+                path: any,
+                httpMethod: any,
+                pathParams: any,
+                queryParams: any,
+                headerParams: any,
+                formParams: any,
+                bodyParam: any,
+                authNames: any,
+                contentTypes: any,
+                accepts: any,
+                returnType: any,
+            ): any;
+
+            function deserialize(response: any, returnType: any): any;
+
+            function isFileParam(param: any): any;
+
+            function isJsonMime(contentType: any): any;
+
+            function jsonPreferredMime(contentTypes: any): any;
+
+            function normalizeParams(params: any): any;
+
+            function paramToString(param: any): any;
+
+            namespace agent {
+                function accept(...args: any[]): any;
+
+                function acl(url: any, fn: any): any;
+
+                function auth(...args: any[]): any;
+
+                function bind(url: any, fn: any): any;
+
+                function buffer(...args: any[]): any;
+
+                function ca(...args: any[]): any;
+
+                function cert(...args: any[]): any;
+
+                function checkout(url: any, fn: any): any;
+
+                function connect(url: any, fn: any): any;
+
+                function copy(url: any, fn: any): any;
+
+                function del(url: any, fn: any): any;
+
+                function disableTLSCerts(...args: any[]): any;
+
+                function get(url: any, fn: any): any;
+
+                function head(url: any, fn: any): any;
+
+                function key(...args: any[]): any;
+
+                function link(url: any, fn: any): any;
+
+                function lock(url: any, fn: any): any;
+
+                function merge(url: any, fn: any): any;
+
+                function mkactivity(url: any, fn: any): any;
+
+                function mkcalendar(url: any, fn: any): any;
+
+                function mkcol(url: any, fn: any): any;
+
+                function move(url: any, fn: any): any;
+
+                function notify(url: any, fn: any): any;
+
+                function ok(...args: any[]): any;
+
+                function on(...args: any[]): any;
+
+                function once(...args: any[]): any;
+
+                function options(url: any, fn: any): any;
+
+                function parse(...args: any[]): any;
+
+                function patch(url: any, fn: any): any;
+
+                function pfx(...args: any[]): any;
+
+                function post(url: any, fn: any): any;
+
+                function propfind(url: any, fn: any): any;
+
+                function proppatch(url: any, fn: any): any;
+
+                function purge(url: any, fn: any): any;
+
+                function put(url: any, fn: any): any;
+
+                function query(...args: any[]): any;
+
+                function rebind(url: any, fn: any): any;
+
+                function redirects(...args: any[]): any;
+
+                function report(url: any, fn: any): any;
+
+                function retry(...args: any[]): any;
+
+                function search(url: any, fn: any): any;
+
+                function serialize(...args: any[]): any;
+
+                function set(...args: any[]): any;
+
+                function sortQuery(...args: any[]): any;
+
+                function source(url: any, fn: any): any;
+
+                function subscribe(url: any, fn: any): any;
+
+                function timeout(...args: any[]): any;
+
+                function trace(url: any, fn: any): any;
+
+                function type(...args: any[]): any;
+
+                function unbind(url: any, fn: any): any;
+
+                function unlink(url: any, fn: any): any;
+
+                function unlock(url: any, fn: any): any;
+
+                function unsubscribe(url: any, fn: any): any;
+
+                function use(...args: any[]): any;
+
+                function withCredentials(...args: any[]): any;
+
+                namespace jar {
+                    // Too-deep object hierarchy from klaviyo_api.DataPrivacy.apiClient.agent.jar
+                    const getCookie: any;
+
+                    // Too-deep object hierarchy from klaviyo_api.DataPrivacy.apiClient.agent.jar
+                    const getCookies: any;
+
+                    // Too-deep object hierarchy from klaviyo_api.DataPrivacy.apiClient.agent.jar
+                    const setCookie: any;
+
+                    // Too-deep object hierarchy from klaviyo_api.DataPrivacy.apiClient.agent.jar
+                    const setCookies: any;
+                }
+            }
+        }
+    }
+
     export namespace Events {
         function createEvent(_x: any, ...args: any[]): any;
 
@@ -2018,6 +2557,14 @@ declare module 'klaviyo-api' {
         function getEvents(_x10: any, ...args: any[]): any;
 
         namespace apiClient {
+            const RETRY_CODES: number[];
+
+            const RETRY_MAX_ATTEMPTS: number;
+
+            const STARTING_DELAY: number;
+
+            const TIME_MULTIPLE: number;
+
             const authentications: {
                 'Klaviyo-API-Key': {
                     in: string;
@@ -2220,13 +2767,23 @@ declare module 'klaviyo-api' {
 
         function getFlowMessageRelationships(_x18: any, _x19: any, ...args: any[]): any;
 
-        function getFlowRelationships(_x20: any, _x21: any, _x22: any, ...args: any[]): any;
+        function getFlowRelationships(_x20: any, _x21: any, ...args: any[]): any;
 
-        function getFlows(_x23: any, ...args: any[]): any;
+        function getFlowTags(_x22: any, _x23: any, ...args: any[]): any;
 
-        function updateFlow(_x24: any, _x25: any, ...args: any[]): any;
+        function getFlows(_x24: any, ...args: any[]): any;
+
+        function updateFlow(_x25: any, _x26: any, ...args: any[]): any;
 
         namespace apiClient {
+            const RETRY_CODES: number[];
+
+            const RETRY_MAX_ATTEMPTS: number;
+
+            const STARTING_DELAY: number;
+
+            const TIME_MULTIPLE: number;
+
             const authentications: {
                 'Klaviyo-API-Key': {
                     in: string;
@@ -2425,11 +2982,21 @@ declare module 'klaviyo-api' {
 
         function getListRelationships(_x13: any, _x14: any, _x15: any, ...args: any[]): any;
 
-        function getLists(_x16: any, ...args: any[]): any;
+        function getListTags(_x16: any, _x17: any, ...args: any[]): any;
 
-        function updateList(_x17: any, _x18: any, ...args: any[]): any;
+        function getLists(_x18: any, ...args: any[]): any;
+
+        function updateList(_x19: any, _x20: any, ...args: any[]): any;
 
         namespace apiClient {
+            const RETRY_CODES: number[];
+
+            const RETRY_MAX_ATTEMPTS: number;
+
+            const STARTING_DELAY: number;
+
+            const TIME_MULTIPLE: number;
+
             const authentications: {
                 'Klaviyo-API-Key': {
                     in: string;
@@ -2621,6 +3188,14 @@ declare module 'klaviyo-api' {
         function queryMetricAggregates(_x4: any, ...args: any[]): any;
 
         namespace apiClient {
+            const RETRY_CODES: number[];
+
+            const RETRY_MAX_ATTEMPTS: number;
+
+            const STARTING_DELAY: number;
+
+            const TIME_MULTIPLE: number;
+
             const authentications: {
                 'Klaviyo-API-Key': {
                     in: string;
@@ -2831,7 +3406,7 @@ declare module 'klaviyo-api' {
 
         function getProfileSegments(_x8: any, _x9: any, ...args: any[]): any;
 
-        function getProfiles(_x10?: any, ...args: any[]): any;
+        function getProfiles(_x10: any, ...args: any[]): any;
 
         function subscribeProfiles(_x11: any, ...args: any[]): any;
 
@@ -2844,6 +3419,14 @@ declare module 'klaviyo-api' {
         function updateProfile(_x15: any, _x16: any, ...args: any[]): any;
 
         namespace apiClient {
+            const RETRY_CODES: number[];
+
+            const RETRY_MAX_ATTEMPTS: number;
+
+            const STARTING_DELAY: number;
+
+            const TIME_MULTIPLE: number;
+
             const authentications: {
                 'Klaviyo-API-Key': {
                     in: string;
@@ -3034,11 +3617,21 @@ declare module 'klaviyo-api' {
 
         function getSegmentRelationships(_x5: any, _x6: any, _x7: any, ...args: any[]): any;
 
-        function getSegments(_x8: any, ...args: any[]): any;
+        function getSegmentTags(_x8: any, _x9: any, ...args: any[]): any;
 
-        function updateSegment(_x9: any, _x10: any, ...args: any[]): any;
+        function getSegments(_x10: any, ...args: any[]): any;
+
+        function updateSegment(_x11: any, _x12: any, ...args: any[]): any;
 
         namespace apiClient {
+            const RETRY_CODES: number[];
+
+            const RETRY_MAX_ATTEMPTS: number;
+
+            const STARTING_DELAY: number;
+
+            const TIME_MULTIPLE: number;
+
             const authentications: {
                 'Klaviyo-API-Key': {
                     in: string;
@@ -3222,22 +3815,255 @@ declare module 'klaviyo-api' {
         }
     }
 
+    export namespace Tags {
+        function createTag(_x: any, ...args: any[]): any;
+
+        function createTagGroup(_x2: any, ...args: any[]): any;
+
+        function createTagRelationships(_x3: any, _x4: any, _x5: any, ...args: any[]): any;
+
+        function deleteTag(_x6: any, ...args: any[]): any;
+
+        function deleteTagGroup(_x7: any, ...args: any[]): any;
+
+        function deleteTagRelationships(_x8: any, _x9: any, _x10: any, ...args: any[]): any;
+
+        function getTag(_x11: any, _x12: any, ...args: any[]): any;
+
+        function getTagGroup(_x13: any, _x14: any, ...args: any[]): any;
+
+        function getTagGroupRelationships(_x15: any, _x16: any, ...args: any[]): any;
+
+        function getTagGroupTags(_x17: any, _x18: any, ...args: any[]): any;
+
+        function getTagGroups(_x19: any, ...args: any[]): any;
+
+        function getTagRelationships(_x20: any, _x21: any, ...args: any[]): any;
+
+        function getTagTagGroup(_x22: any, _x23: any, ...args: any[]): any;
+
+        function getTags(_x24: any, ...args: any[]): any;
+
+        function updateTag(_x25: any, _x26: any, ...args: any[]): any;
+
+        function updateTagGroup(_x27: any, _x28: any, ...args: any[]): any;
+
+        namespace apiClient {
+            const RETRY_CODES: number[];
+
+            const RETRY_MAX_ATTEMPTS: number;
+
+            const STARTING_DELAY: number;
+
+            const TIME_MULTIPLE: number;
+
+            const authentications: {
+                'Klaviyo-API-Key': {
+                    in: string;
+                    name: string;
+                    type: string;
+                };
+            };
+
+            const basePath: string;
+
+            const cache: boolean;
+
+            const defaultHeaders: {
+                'User-Agent': string;
+                revision: string;
+            };
+
+            const enableCookies: boolean;
+
+            const requestAgent: any;
+
+            const timeout: number;
+
+            function applyAuthToRequest(request: any, authNames: any): void;
+
+            function buildCollectionParam(param: any, collectionFormat: any): any;
+
+            function buildUrl(path: any, pathParams: any): any;
+
+            function callApi(
+                path: any,
+                httpMethod: any,
+                pathParams: any,
+                queryParams: any,
+                headerParams: any,
+                formParams: any,
+                bodyParam: any,
+                authNames: any,
+                contentTypes: any,
+                accepts: any,
+                returnType: any,
+            ): any;
+
+            function deserialize(response: any, returnType: any): any;
+
+            function isFileParam(param: any): any;
+
+            function isJsonMime(contentType: any): any;
+
+            function jsonPreferredMime(contentTypes: any): any;
+
+            function normalizeParams(params: any): any;
+
+            function paramToString(param: any): any;
+
+            namespace agent {
+                function accept(...args: any[]): any;
+
+                function acl(url: any, fn: any): any;
+
+                function auth(...args: any[]): any;
+
+                function bind(url: any, fn: any): any;
+
+                function buffer(...args: any[]): any;
+
+                function ca(...args: any[]): any;
+
+                function cert(...args: any[]): any;
+
+                function checkout(url: any, fn: any): any;
+
+                function connect(url: any, fn: any): any;
+
+                function copy(url: any, fn: any): any;
+
+                function del(url: any, fn: any): any;
+
+                function disableTLSCerts(...args: any[]): any;
+
+                function get(url: any, fn: any): any;
+
+                function head(url: any, fn: any): any;
+
+                function key(...args: any[]): any;
+
+                function link(url: any, fn: any): any;
+
+                function lock(url: any, fn: any): any;
+
+                function merge(url: any, fn: any): any;
+
+                function mkactivity(url: any, fn: any): any;
+
+                function mkcalendar(url: any, fn: any): any;
+
+                function mkcol(url: any, fn: any): any;
+
+                function move(url: any, fn: any): any;
+
+                function notify(url: any, fn: any): any;
+
+                function ok(...args: any[]): any;
+
+                function on(...args: any[]): any;
+
+                function once(...args: any[]): any;
+
+                function options(url: any, fn: any): any;
+
+                function parse(...args: any[]): any;
+
+                function patch(url: any, fn: any): any;
+
+                function pfx(...args: any[]): any;
+
+                function post(url: any, fn: any): any;
+
+                function propfind(url: any, fn: any): any;
+
+                function proppatch(url: any, fn: any): any;
+
+                function purge(url: any, fn: any): any;
+
+                function put(url: any, fn: any): any;
+
+                function query(...args: any[]): any;
+
+                function rebind(url: any, fn: any): any;
+
+                function redirects(...args: any[]): any;
+
+                function report(url: any, fn: any): any;
+
+                function retry(...args: any[]): any;
+
+                function search(url: any, fn: any): any;
+
+                function serialize(...args: any[]): any;
+
+                function set(...args: any[]): any;
+
+                function sortQuery(...args: any[]): any;
+
+                function source(url: any, fn: any): any;
+
+                function subscribe(url: any, fn: any): any;
+
+                function timeout(...args: any[]): any;
+
+                function trace(url: any, fn: any): any;
+
+                function type(...args: any[]): any;
+
+                function unbind(url: any, fn: any): any;
+
+                function unlink(url: any, fn: any): any;
+
+                function unlock(url: any, fn: any): any;
+
+                function unsubscribe(url: any, fn: any): any;
+
+                function use(...args: any[]): any;
+
+                function withCredentials(...args: any[]): any;
+
+                namespace jar {
+                    // Too-deep object hierarchy from klaviyo_api.Tags.apiClient.agent.jar
+                    const getCookie: any;
+
+                    // Too-deep object hierarchy from klaviyo_api.Tags.apiClient.agent.jar
+                    const getCookies: any;
+
+                    // Too-deep object hierarchy from klaviyo_api.Tags.apiClient.agent.jar
+                    const setCookie: any;
+
+                    // Too-deep object hierarchy from klaviyo_api.Tags.apiClient.agent.jar
+                    const setCookies: any;
+                }
+            }
+        }
+    }
+
     export namespace Templates {
         function createTemplate(_x: any, ...args: any[]): any;
 
-        function createTemplateClone(_x2: any, _x3: any, ...args: any[]): any;
+        function createTemplateClone(_x2: any, ...args: any[]): any;
 
-        function createTemplateRender(_x4: any, _x5: any, ...args: any[]): any;
+        function createTemplateRender(_x3: any, ...args: any[]): any;
 
-        function deleteTemplate(_x6: any, ...args: any[]): any;
+        function deleteTemplate(_x4: any, ...args: any[]): any;
 
-        function getTemplate(_x7: any, _x8: any, ...args: any[]): any;
+        function getTemplate(_x5: any, _x6: any, ...args: any[]): any;
 
-        function getTemplates(_x9: any, ...args: any[]): any;
+        function getTemplates(_x7: any, ...args: any[]): any;
 
-        function updateTemplate(_x10: any, _x11: any, ...args: any[]): any;
+        function updateTemplate(_x8: any, _x9: any, ...args: any[]): any;
 
         namespace apiClient {
+            const RETRY_CODES: number[];
+
+            const RETRY_MAX_ATTEMPTS: number;
+
+            const STARTING_DELAY: number;
+
+            const TIME_MULTIPLE: number;
+
             const authentications: {
                 'Klaviyo-API-Key': {
                     in: string;

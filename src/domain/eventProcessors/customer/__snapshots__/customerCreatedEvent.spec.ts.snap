@@ -16,7 +16,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
         "zip": "WE1 2DP",
       },
       "organization": "Klaviyo",
-      "phone_number": "+44 0128472834",
+      "phone_number": "+4407472744666",
       "title": "Mr",
     },
     "meta": {
@@ -45,7 +45,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
         "zip": "WS2 5FX",
       },
       "organization": "Klaviyo",
-      "phone_number": "+44 0128472834",
+      "phone_number": "+4407472744666",
       "title": "Mr",
     },
     "meta": {
@@ -74,7 +74,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
         "zip": "WS2 5FX",
       },
       "organization": "Klaviyo",
-      "phone_number": "+44 0128472834",
+      "phone_number": "+4407472744666",
       "title": "Mr",
     },
     "meta": {
@@ -103,7 +103,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
         "zip": "WS2 5FY",
       },
       "organization": "Klaviyo",
-      "phone_number": "+44 0128472834",
+      "phone_number": "+4407472744666",
       "title": "Mr",
     },
     "meta": {
@@ -125,7 +125,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
       "last_name": "Smith",
       "location": null,
       "organization": "Klaviyo",
-      "phone_number": undefined,
+      "phone_number": null,
       "title": "Mr",
     },
     "meta": {

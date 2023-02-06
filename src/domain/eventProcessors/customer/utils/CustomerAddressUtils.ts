@@ -28,12 +28,13 @@ export const mapCTAddressToKlaviyoLocation = (address?: Address): KlaviyoLocatio
         : null;
 };
 
-export const getPhoneNumber = (phoneNumber?: string): string | undefined => {
-    // if (phoneNumber) {
-    //     const noSpacesNumber = phoneNumber.replace(/\s/, '');
-    //     return E_164_REGEX.test(noSpacesNumber) ? phoneNumber : undefined;
-    // }
-    return phoneNumber;
+export const getPhoneNumber = (address?: Address): string | null => {
+    const phoneNumber = address?.mobile || address?.phone;
+    if (phoneNumber) {
+        const noSpacesNumber = phoneNumber.replace(/\s/, '');
+        return E_164_REGEX.test(noSpacesNumber) ? noSpacesNumber : null;
+    }
+    return null;
 };
 
 const getAddressLine1 = (address?: Address): string | null => {

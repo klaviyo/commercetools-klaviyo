@@ -28,7 +28,7 @@ export const responseHandler = (
                 );
             } else {
                 _5xxError = true;
-                logger.error(`Request failed with a status code ${error.reason.status}.`);
+                logger.error(`Request failed with a status code ${error.reason.status}.`, error);
             }
         });
         if (_5xxError) {

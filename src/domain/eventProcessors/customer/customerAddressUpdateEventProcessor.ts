@@ -36,12 +36,11 @@ export class CustomerAddressUpdateEventProcessor extends AbstractEvent {
         }
         const address = getCTCustomerAddressForKlaviyo(customer);
 
-        // if (JSON.stringify(address) !== JSON.stringify(message.address)) {
         const body: ProfileRequest = {
             data: {
                 type: 'profile',
                 attributes: {
-                    phone_number: getPhoneNumber(address?.phone),
+                    phone_number: getPhoneNumber(address),
                     location: mapCTAddressToKlaviyoLocation(address),
                 },
                 meta: {

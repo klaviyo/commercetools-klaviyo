@@ -30,7 +30,7 @@ export class CustomerCreatedEvent extends AbstractEvent {
                     first_name: message.customer.firstName,
                     last_name: message.customer.lastName,
                     title: message.customer.title,
-                    phone_number: getPhoneNumber(address?.phone),
+                    phone_number: getPhoneNumber(address),
                     organization: message.customer.companyName,
                     location: mapCTAddressToKlaviyoLocation(address),
                 },

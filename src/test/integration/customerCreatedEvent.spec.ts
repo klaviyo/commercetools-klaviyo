@@ -35,7 +35,7 @@ describe('pubSub adapter customer event', () => {
                     zip: 'WE1 2DP',
                 },
                 organization: 'Klaviyo',
-                phone_number: '+44 0128472834',
+                phone_number: '+4407472744666',
             },
             meta: {
                 identifiers: {
@@ -55,6 +55,7 @@ describe('pubSub adapter customer event', () => {
     });
 
     it('should return status 202 when the user profile phone number is invalid', (done) => {
+        // nock.recorder.rec();
         const createProfileNock = klaviyoUpsertClientProfileNock(
             {
                 type: 'profile',
@@ -72,7 +73,7 @@ describe('pubSub adapter customer event', () => {
                         region: 'aRegion',
                         zip: 'WE1 2DP',
                     },
-                    phone_number: '1234-123-4123',
+                    phone_number: '+440128472834',
                 },
                 meta: {
                     identifiers: {
@@ -91,7 +92,7 @@ describe('pubSub adapter customer event', () => {
             region: 'aRegion',
             city: 'London',
             country: 'UK',
-            phone: '1234-123-4123',
+            phone: '+440128472834',
             postalCode: 'WE1 2DP',
             streetName: 'High Road',
             streetNumber: '23',
