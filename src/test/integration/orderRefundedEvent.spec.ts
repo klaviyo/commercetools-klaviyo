@@ -102,6 +102,11 @@ describe('pubSub event that produces 5xx error', () => {
         server.close();
     });
 
+    beforeEach(() => {
+        ctAuthNock();
+        ctGetOrderByIdNock('3456789');
+    });
+
     it('should not acknowledge the message to pub/sub and return status 500 when the request is invalid', (done) => {
         // recorder.rec();
 

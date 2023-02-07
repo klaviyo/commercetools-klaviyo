@@ -1,10 +1,10 @@
-import { AbstractEvent } from './abstractEvent';
-import logger from '../../utils/log';
+import { AbstractEvent } from '../abstractEvent';
+import logger from '../../../utils/log';
 import { OrderCreatedMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
 import { Order, OrderState } from '@commercetools/platform-sdk';
-import { getTypedMoneyAsNumber } from '../../utils/get-typed-money-as-number';
-import { getConfigProperty } from '../../utils/prop-mapper';
-import { getCustomerProfileFromOrder } from '../../utils/get-customer-profile-from-order';
+import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
+import { getConfigProperty } from '../../../utils/prop-mapper';
+import { getCustomerProfileFromOrder } from '../../../utils/get-customer-profile-from-order';
 
 export class OrderCreatedEvent extends AbstractEvent {
     isEventValid(): boolean {

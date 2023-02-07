@@ -11,6 +11,7 @@ import {
     getPhoneNumber,
     mapCTAddressToKlaviyoLocation,
 } from './utils/CustomerAddressUtils';
+import { getConfigProperty } from '../../../utils/prop-mapper';
 
 export class CustomerAddressUpdateEventProcessor extends AbstractEvent {
     isEventValid(): boolean {
@@ -20,7 +21,7 @@ export class CustomerAddressUpdateEventProcessor extends AbstractEvent {
             | CustomerAddressChangedMessage;
         return (
             message.resource.typeId === 'customer' &&
-            ['CustomerAddressAdded', 'CustomerAddressRemoved', 'CustomerAddressChanged'].includes(message.type)
+            Boolean(getConfigProperty('customer.addressChangeMessages', message.type))
         );
     }
 

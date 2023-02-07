@@ -1,6 +1,6 @@
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import { CustomerCreatedEvent } from './eventProcessors/customer/customerCreatedEvent';
-import { OrderCreatedEvent } from './eventProcessors/orderCreatedEvent';
+import { OrderCreatedEvent } from './eventProcessors/order/orderCreatedEvent';
 import { AbstractEvent } from './eventProcessors/abstractEvent';
 import logger from '../utils/log';
 import { responseHandler } from './responseHandler';
@@ -9,8 +9,8 @@ import { CustomerLastNameSetEventProcessor } from './eventProcessors/customer/cu
 import { CustomerTitleSetEventProcessor } from './eventProcessors/customer/customerTitleSetEventProcessor';
 import { CustomerCompanyNameSetEventProcessor } from './eventProcessors/customer/customerCompanyNameSetEventProcessor';
 import { CustomerAddressUpdateEventProcessor } from './eventProcessors/customer/customerAddressUpdateEventProcessor';
-import { OrderStateChangedEvent } from './eventProcessors/orderStateChangedEvent';
-import { OrderRefundedEvent } from './eventProcessors/orderRefundedEvent';
+import { OrderStateChangedEvent } from './eventProcessors/order/orderStateChangedEvent';
+import { OrderRefundedEvent } from './eventProcessors/order/orderRefundedEvent';
 import { sendEventToKlaviyo } from './klaviyoService'; // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {
 
 // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {

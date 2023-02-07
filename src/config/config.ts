@@ -27,6 +27,14 @@ const config = {
             },
         ],
     },
+    customer: {
+        addressChangeMessages: [
+            {
+                sources: ['CustomerAddressAdded', 'CustomerAddressRemoved', 'CustomerAddressChanged'],
+                value: true,
+            },
+        ],
+    },
 };
 
 export default config;

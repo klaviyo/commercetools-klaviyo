@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ctService > getCustomerProfile should get the customer profile from commercetools by id 1`] = `
+{
+  "addresses": [
+    {
+      "city": "Brookefort",
+      "country": "NL",
+      "email": "jane.doe@example.com",
+      "firstName": "Coleman",
+      "id": "M5Q94Hg5",
+      "lastName": "Pouros",
+      "mobile": "+39 3234567892",
+      "phone": "+39 3234567892",
+      "postalCode": "12345",
+      "streetName": "First Street",
+      "streetNumber": "12",
+      "title": "Mrs.",
+    },
+    {
+      "city": "Example City",
+      "country": "NL",
+      "email": "jane.doe@example.com",
+      "firstName": "Jane",
+      "id": "VnDQjIJZ",
+      "lastName": "Doe",
+      "mobile": "+3112345679",
+      "phone": "+3112345678",
+      "postalCode": "12345",
+      "streetName": "Third Street",
+      "streetNumber": "34",
+      "title": "Head of factory",
+    },
+  ],
+  "authenticationMode": "Password",
+  "billingAddressIds": [],
+  "createdAt": "2023-02-01T14:14:56.605Z",
+  "createdBy": {
+    "clientId": "3bdbmCvX60kN6G-HfzLxcmlB",
+  },
+  "email": "Alfred_Lebsack@hotmail.com",
+  "firstName": "Jailyn",
+  "id": "77d8e6f4-2dee-4ac9-bd21-4035b6ba76d8",
+  "isEmailVerified": false,
+  "key": "testcustomer",
+  "lastModifiedAt": "2023-02-01T14:14:56.605Z",
+  "lastModifiedBy": {
+    "clientId": "3bdbmCvX60kN6G-HfzLxcmlB",
+  },
+  "lastName": "Hilll",
+  "password": "****bpU=",
+  "shippingAddressIds": [],
+  "stores": [],
+  "title": "Miss",
+  "version": 1,
+}
+`;
+
+exports[`ctService > getOrderById should get the order from commercetools by id 1`] = `
+{
+  "createdAt": "2023-01-27T15:00:00.000Z",
+  "customLineItems": [],
+  "customerEmail": "test@klaviyo.com",
+  "customerId": "123-123-123",
+  "id": "3456789",
+  "lastModifiedAt": "2023-01-27T15:00:00.000Z",
+  "lineItems": [],
+  "orderState": "Open",
+  "origin": "Customer",
+  "refusedGifts": [],
+  "shipping": [],
+  "shippingMode": "Single",
+  "syncInfo": [],
+  "totalPrice": {
+    "centAmount": 1300,
+    "currencyCode": "USD",
+    "fractionDigits": 2,
+    "type": "centPrecision",
+  },
+  "version": 24,
+}
+`;

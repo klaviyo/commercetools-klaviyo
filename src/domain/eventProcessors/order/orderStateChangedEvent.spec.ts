@@ -2,8 +2,8 @@ import { expect as exp } from 'chai';
 import { mockDeep } from 'jest-mock-extended';
 import { OrderStateChangedEvent } from './orderStateChangedEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
-import { ctAuthNock, ctGetOrderByIdNock } from '../../test/integration/nocks/commercetoolsNock';
-import * as ctService from '../ctService';
+import { ctAuthNock, ctGetOrderByIdNock } from '../../../test/integration/nocks/commercetoolsNock';
+import * as ctService from '../../ctService';
 
 describe('orderStateChangedEvent > isEventValid', () => {
     it('should return valid when order is in Cancelled state', async () => {

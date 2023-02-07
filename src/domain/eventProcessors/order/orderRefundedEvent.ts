@@ -1,11 +1,11 @@
-import { AbstractEvent } from './abstractEvent';
-import logger from '../../utils/log';
+import { AbstractEvent } from '../abstractEvent';
+import logger from '../../../utils/log';
 import { ReturnInfoSetMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
-import { Order, OrderState, ReturnInfo } from '@commercetools/platform-sdk';
-import { getTypedMoneyAsNumber } from '../../utils/get-typed-money-as-number';
-import { getConfigProperty } from '../../utils/prop-mapper';
-import { getCustomerProfileFromOrder } from '../../utils/get-customer-profile-from-order';
-import { getOrderById } from '../ctService';
+import { OrderState, ReturnInfo } from '@commercetools/platform-sdk';
+import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
+import { getConfigProperty } from '../../../utils/prop-mapper';
+import { getCustomerProfileFromOrder } from '../../../utils/get-customer-profile-from-order';
+import { getOrderById } from '../../ctService';
 
 export class OrderRefundedEvent extends AbstractEvent {
     isEventValid(): boolean {
