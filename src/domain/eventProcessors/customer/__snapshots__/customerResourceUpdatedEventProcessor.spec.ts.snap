@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CustomerResourceUpdatedEventProcessor > generateKlaviyoEvent should generate the klaviyo event when the input customer ResourceUpdated event is valid 1`] = `
+{
+  "data": {
+    "attributes": {
+      "email": "Alfred_Lebsack@hotmail.com",
+      "first_name": "Jailyn",
+      "last_name": "Hilll",
+      "location": {
+        "address1": "12, First Street",
+        "address2": "",
+        "city": "Brookefort",
+        "country": "NL",
+        "region": undefined,
+        "zip": "12345",
+      },
+      "organization": undefined,
+      "phone_number": "+393234567892",
+      "title": "Miss",
+    },
+    "id": "someId",
+    "type": "profile",
+  },
+}
+`;

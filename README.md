@@ -119,9 +119,6 @@ gcloud run services update dev-klaviyo-ct-plugin \
 --update-secrets=CT_API_CLIENT=commercetools_api_client:latest
 ```
 
-gcloud run deploy SERVICE --image IMAGE_URL  \
---update-secrets=KLAVIYO_AUTH_KEY=klaviyo_secret:2
-
 ## End-to-end tests
 
 To write and run end-to-end tests check the [documentation](docs/e2e-tests.md)

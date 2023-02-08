@@ -27,11 +27,8 @@ locals {
       topic             = "${var.gcp_environment_namespace}-commercetools-topic"
       resource_type_ids = ["customer"]
       resource_type_id  = "customer"
-      types = [
-        "CustomerCreated", "CustomerFirstNameSet", "CustomerLastNameSet", "CustomerTitleSet", "CustomerCompanyNameSet",
-        "CustomerAddressChanged", "CustomerAddressRemoved", "CustomerAddressAdded"
-      ]
-      queue_ref = google_pubsub_topic.commercetools
+      types             = ["CustomerCreated"]
+      queue_ref         = google_pubsub_topic.commercetools
     }
   ]
 }

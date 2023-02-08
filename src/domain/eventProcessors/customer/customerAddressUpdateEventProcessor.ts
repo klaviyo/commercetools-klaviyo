@@ -6,11 +6,8 @@ import {
     CustomerAddressRemovedMessage,
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
 import { getCustomerProfile } from '../../ctService';
-import {
-    getCTCustomerAddressForKlaviyo,
-    getPhoneNumber,
-    mapCTAddressToKlaviyoLocation,
-} from './utils/CustomerAddressUtils';
+import { getCTCustomerAddressForKlaviyo, getPhoneNumber } from './utils/CustomerAddressUtils';
+import { mapCTAddressToKlaviyoLocation } from './mappers/CTAddressToKlaviyoLocationMapper';
 import { getConfigProperty } from '../../../utils/prop-mapper';
 
 export class CustomerAddressUpdateEventProcessor extends AbstractEvent {

@@ -11,7 +11,7 @@ export class CustomerCompanyNameSetEventProcessor extends AbstractEvent {
     generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {
         const message = this.ctMessage as unknown as CustomerCompanyNameSetMessage;
         logger.info(`processing CT ${message.type} message`);
-        const body = {
+        const body: ProfileRequest = {
             data: {
                 type: 'profile',
                 attributes: {

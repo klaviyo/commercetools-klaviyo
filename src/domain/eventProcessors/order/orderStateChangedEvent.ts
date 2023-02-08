@@ -27,7 +27,7 @@ export class OrderStateChangedEvent extends AbstractEvent {
             return [];
         }
 
-        const body = {
+        const body: EventRequest = {
             data: {
                 type: 'event',
                 attributes: {

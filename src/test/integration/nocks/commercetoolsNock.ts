@@ -10,13 +10,14 @@ export const ctAuthNock = () => {
         .reply(200, {}, []);
 };
 
-export const ctGetCustomerNock = (customerId: string, addresses: Address[] = [], status = 200) => {
+export const ctGetCustomerNock = (customerId: string, responseStatusCode = 200, addresses: Address[] = []) => {
     return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
+        .persist()
         .get(`/klaviyo-dev/customers/${customerId}`)
         .reply(
-            status,
+            responseStatusCode,
             {
-                id: '2925dd3a-5417-4b51-a76c-d6721472530f',
+                id: customerId,
                 version: 1,
                 versionModifiedAt: '2023-01-20T09:39:21.359Z',
                 lastMessageSequenceNumber: 1,
@@ -36,9 +37,9 @@ export const ctGetCustomerNock = (customerId: string, addresses: Address[] = [],
                         id: 'bf334730-755c-4c0f-8703-3954b9f0393a',
                     },
                 },
-                email: 'roberto.losanno@e2x.com',
+                email: 'roberto.smith@klaviyo.com',
                 firstName: 'Roberto',
-                lastName: 'Losanno',
+                lastName: 'Smith',
                 middleName: '',
                 title: 'Mr',
                 salutation: '',
@@ -55,7 +56,8 @@ export const ctGetCustomerNock = (customerId: string, addresses: Address[] = [],
 };
 
 export const ctGetOrderByIdNock = (orderId: string, status = 200) => {
-    return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
+    return nock(/https:\/\/api\..*\.gcp.commercetools\.com\:443/, { encodedQueryParams: true })
+        .persist()
         .get(`/klaviyo-dev/orders/${orderId}`)
         .reply(status, {
             customerId: '123-123-123',

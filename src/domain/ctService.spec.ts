@@ -40,14 +40,12 @@ describe('ctService > getCustomerProfile', () => {
         expect(customer).toMatchSnapshot();
     });
 
-    it('should return undefined on error', async () => {
+    it('should throw error when the CT sdk throws error', async () => {
         jest.spyOn(ctPlatformSdk, 'createApiBuilderFromCtpClient').mockImplementationOnce(() => {
             throw Error('Unexpected Error');
         });
 
-        const customer = await getCustomerProfile('123456');
-
-        expect(customer).toEqual(undefined);
+        await expect(getCustomerProfile('123456')).rejects.toThrow(Error);
     });
 });
 

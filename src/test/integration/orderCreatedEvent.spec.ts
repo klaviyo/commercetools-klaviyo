@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { app } from '../../adapter/cloudRunAdapter';
-import { klaviyoCreateEventNock } from './nocks/KlaviyoCreateEventNock';
+import { klaviyoEventNock } from './nocks/KlaviyoEventNock';
 import { sampleOrderCreatedMessage } from '../testData/orderData';
 import { ctAuthNock, ctGetOrderByIdNock } from './nocks/commercetoolsNock';
 
@@ -36,7 +36,7 @@ describe('pubSub adapter event', () => {
     it('should return status 204 when the request is valid and processed', (done) => {
         // recorder.rec();
 
-        const createEventNock = klaviyoCreateEventNock({
+        const createEventNock = klaviyoEventNock({
             type: 'event',
             attributes: {
                 profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
@@ -105,7 +105,7 @@ describe('pubSub event that produces 5xx error', () => {
     it('should not acknowledge the message to pub/sub and return status 500 when the request is invalid', (done) => {
         // recorder.rec();
 
-        const createEventNock = klaviyoCreateEventNock(
+        const createEventNock = klaviyoEventNock(
             {
                 type: 'event',
                 attributes: {

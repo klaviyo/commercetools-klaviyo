@@ -22,7 +22,7 @@ export class OrderCreatedEvent extends AbstractEvent {
         const orderCreatedMessage = this.ctMessage as unknown as OrderCreatedMessage;
         logger.info('Processing order created event');
 
-        const body = {
+        const body: EventRequest = {
             data: {
                 type: 'event',
                 attributes: {

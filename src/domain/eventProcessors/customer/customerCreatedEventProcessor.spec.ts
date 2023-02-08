@@ -1,4 +1,4 @@
-import { CustomerCreatedEvent } from './customerCreatedEvent';
+import { CustomerCreatedEventProcessor } from './customerCreatedEventProcessor';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import { mockDeep } from 'jest-mock-extended';
 import { expect as exp } from 'chai';
@@ -11,7 +11,7 @@ describe('customerCreatedEvent > isEventValid', () => {
         Object.defineProperty(ctMessageMock, 'type', { value: 'CustomerCreated' });
         Object.defineProperty(ctMessageMock, 'customer', { value: { email: 'some@email.com' } });
 
-        const event = CustomerCreatedEvent.instance(ctMessageMock);
+        const event = CustomerCreatedEventProcessor.instance(ctMessageMock);
 
         exp(event.isEventValid()).to.be.true;
     });
@@ -27,7 +27,7 @@ describe('customerCreatedEvent > isEventValid', () => {
         Object.defineProperty(ctMessageMock, 'type', { value: type });
         Object.defineProperty(ctMessageMock, 'customer', { value: customer });
 
-        const event = CustomerCreatedEvent.instance(ctMessageMock);
+        const event = CustomerCreatedEventProcessor.instance(ctMessageMock);
 
         exp(event.isEventValid()).to.be.false;
     });
@@ -52,7 +52,7 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
             additionalAddressInfo: 'additional address info',
             state: 'a state',
         });
-        const event = CustomerCreatedEvent.instance(message as unknown as MessageDeliveryPayload);
+        const event = CustomerCreatedEventProcessor.instance(message as unknown as MessageDeliveryPayload);
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
@@ -97,7 +97,7 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
         Object.defineProperty(message, 'customer', {
             value: { ...message.customer, defaultBillingAddressId: 'billing-address-id' },
         }); //mock readonly property
-        const event = CustomerCreatedEvent.instance(message as unknown as MessageDeliveryPayload);
+        const event = CustomerCreatedEventProcessor.instance(message as unknown as MessageDeliveryPayload);
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
@@ -164,7 +164,7 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
             },
         }); //mock readonly property
 
-        const event = CustomerCreatedEvent.instance(message as unknown as MessageDeliveryPayload);
+        const event = CustomerCreatedEventProcessor.instance(message as unknown as MessageDeliveryPayload);
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
@@ -216,7 +216,7 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
             },
         }); //mock readonly property
 
-        const event = CustomerCreatedEvent.instance(message as unknown as MessageDeliveryPayload);
+        const event = CustomerCreatedEventProcessor.instance(message as unknown as MessageDeliveryPayload);
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
@@ -237,7 +237,7 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
             },
         }); //mock readonly property
 
-        const event = CustomerCreatedEvent.instance(message as unknown as MessageDeliveryPayload);
+        const event = CustomerCreatedEventProcessor.instance(message as unknown as MessageDeliveryPayload);
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
 

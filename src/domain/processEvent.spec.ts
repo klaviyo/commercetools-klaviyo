@@ -15,8 +15,13 @@ describe('processEvent', () => {
         generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {
             return Promise.resolve([
                 {
-                    type: 'event',
-                    body: 'something',
+                    type: 'profileCreated',
+                    body: {
+                        data: {
+                            type: 'profile',
+                            attributes: {},
+                        },
+                    },
                 },
             ]);
         }
@@ -46,17 +51,22 @@ describe('processEvent', () => {
         };
         const sendEventToKlaviyoResponse = new Promise((resolve) => resolve('something'));
         sendEventToKlaviyoMock.mockReturnValueOnce(sendEventToKlaviyoResponse);
-        responseHandlerMock.mockReturnValueOnce({ status: 'OK' });
+        responseHandlerMock.mockReturnValue({ status: 'OK' });
 
         const response = await processEvent(message, [TestEvent]);
 
         exp(response).to.eql({ status: 'OK' });
         expect(sendEventToKlaviyoMock).toHaveBeenCalledTimes(1);
         expect(sendEventToKlaviyoMock).toHaveBeenCalledWith({
-            body: 'something',
-            type: 'event',
+            type: 'profileCreated',
+            body: {
+                data: {
+                    type: 'profile',
+                    attributes: {},
+                },
+            },
         });
-        expect(responseHandlerMock).toHaveBeenCalledTimes(1);
+        expect(responseHandlerMock).toHaveBeenCalledTimes(2);
         expect(responseHandlerMock).toHaveBeenCalledWith(
             await Promise.allSettled([sendEventToKlaviyoResponse]),
             message,
@@ -78,11 +88,36 @@ describe('processEvent', () => {
             sequenceNumber: 0,
             version: 0,
         };
-        responseHandlerMock.mockReturnValueOnce({ status: 'OK' });
+        responseHandlerMock.mockReturnValue({ status: 'OK' });
 
         const response = await processEvent(message, [TestEvent]);
 
         exp(response).to.eql({ status: 'OK' });
+        expect(sendEventToKlaviyoMock).toHaveBeenCalledTimes(0);
+        expect(responseHandlerMock).toHaveBeenCalledTimes(2);
+        expect(responseHandlerMock).toHaveBeenCalledWith(await Promise.allSettled([]), message);
+    });
+
+    it('should return error when fails to generate the klaviyo event', async () => {
+        const message: MessageDeliveryPayload = {
+            createdAt: '',
+            id: '',
+            lastModifiedAt: '',
+            notificationType: 'Message',
+            projectKey: '',
+            resource: {
+                typeId: 'quote',
+                id: 'someId',
+            },
+            resourceVersion: 0,
+            sequenceNumber: 0,
+            version: 0,
+        };
+        responseHandlerMock.mockReturnValueOnce({ status: '4xx' });
+
+        const response = await processEvent(message, [TestEvent]);
+
+        exp(response).to.eql({ status: '4xx' });
         expect(sendEventToKlaviyoMock).toHaveBeenCalledTimes(0);
         expect(responseHandlerMock).toHaveBeenCalledTimes(1);
         expect(responseHandlerMock).toHaveBeenCalledWith(await Promise.allSettled([]), message);

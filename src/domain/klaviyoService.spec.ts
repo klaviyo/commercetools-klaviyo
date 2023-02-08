@@ -1,5 +1,6 @@
 import { sendEventToKlaviyo } from './klaviyoService';
 import { Events, Profiles } from 'klaviyo-api';
+import { mockDeep } from 'jest-mock-extended';
 
 jest.mock('klaviyo-api', () => {
     const module = jest.createMockFromModule<any>('klaviyo-api');
@@ -10,7 +11,15 @@ jest.mock('klaviyo-api', () => {
 
 describe('klaviyoService > sendEventToKlaviyo', () => {
     test("should create a profile in klaviyo when the input event is of type 'profileCreated'", async () => {
-        const klaviyoEvent: KlaviyoEvent = { type: 'profileCreated', body: { email: 'test@klaviyo.com' } };
+        const klaviyoEvent: KlaviyoEvent = {
+            type: 'profileCreated',
+            body: {
+                data: {
+                    type: 'profile',
+                    attributes: {},
+                },
+            },
+        };
 
         await sendEventToKlaviyo(klaviyoEvent);
 
@@ -19,7 +28,14 @@ describe('klaviyoService > sendEventToKlaviyo', () => {
     });
 
     test("should create an event in klaviyo when the input event is of type 'event'", async () => {
-        const klaviyoEvent: KlaviyoEvent = { type: 'event', body: { orderId: '1234567' } };
+        const eventTypeMock: EventType = mockDeep<EventType>();
+
+        const klaviyoEvent: KlaviyoEvent = {
+            type: 'event',
+            body: {
+                data: eventTypeMock,
+            },
+        };
 
         await sendEventToKlaviyo(klaviyoEvent);
 

@@ -1,7 +1,8 @@
 import { AuthMiddlewareOptions, Client, ClientBuilder, HttpMiddlewareOptions } from '@commercetools/sdk-client-v2';
 import { ApiRoot, createApiBuilderFromCtpClient, Customer, Order } from '@commercetools/platform-sdk';
 import logger from '../utils/log';
-import fetch from 'cross-fetch';
+import fetch from 'node-fetch';
+import { StatusError } from '../types/errors/StatusError';
 
 type ByProjectKeyRequestBuilder = ReturnType<ApiRoot['withProjectKey']>;
 
@@ -48,10 +49,12 @@ export const getCustomerProfile = async (customerId: string): Promise<Customer |
 
     try {
         ctCustomer = (await getApiRoot().customers().withId({ ID: customerId }).get().execute()).body;
-    } catch (error) {
-        console.log(error);
-        // throw new Error(`Customer not found on commercetools with ID ${customerId}`);
-        return undefined;
+    } catch (error: any) {
+        logger.error(`Error getting customer in CT with id ${customerId}, status: ${error.statusCode}`, error);
+        throw new StatusError(
+            error.statusCode,
+            `CT get customer api returns failed with status code ${error.statusCode}, msg: ${error.message}`,
+        );
     }
 
     return ctCustomer;

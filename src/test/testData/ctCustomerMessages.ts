@@ -8,7 +8,7 @@ import {
     CustomerLastNameSetMessage,
     CustomerTitleSetMessage,
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
-import { Address } from '@commercetools/platform-sdk';
+import { Address, ResourceUpdatedDeliveryPayload } from '@commercetools/platform-sdk';
 
 export const getSampleCustomerCreatedMessage = () => {
     return { ...sampleCustomerCreatedMessage };
@@ -37,6 +37,10 @@ export const getSampleCustomerTitleSetMessage = () => {
 
 export const getSampleCustomerCompanyNameSetMessage = () => {
     return { ...sampleCustomerCompanyNameSetMessage };
+};
+
+export const getSampleCustomerResourceUpdatedMessage = () => {
+    return { ...sampleCustomerResourceUpdatedMessage };
 };
 
 const sampleCustomerCreatedMessage: CustomerCreatedMessage = {
@@ -185,4 +189,19 @@ const sampleCustomerCompanyNameSetMessage: CustomerCompanyNameSetMessage = {
     version: 1,
     id: '60809018-034b-4b37-bcd7-635fa2591d92',
     type: 'CustomerCompanyNameSet',
+};
+
+const sampleCustomerResourceUpdatedMessage: ResourceUpdatedDeliveryPayload = {
+    version: 6,
+    projectKey: 'klaviyo-dev',
+    resource: {
+        typeId: 'customer',
+        id: 'e54d8233-be41-4ce0-ae68-5d0674dd8517',
+    },
+    modifiedAt: '2023-02-06T16:13:23.528Z',
+    notificationType: 'ResourceUpdated',
+    resourceUserProvidedIdentifiers: {
+        key: 'testcustomer',
+    },
+    oldVersion: 5,
 };

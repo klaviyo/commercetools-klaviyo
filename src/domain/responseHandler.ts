@@ -1,12 +1,13 @@
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import logger from '../utils/log';
+import { isFulfilled, isRejected } from '../utils/promise';
 
 export const responseHandler = (
     results: Array<PromiseSettledResult<Awaited<Promise<any>>>>,
     ctMessage: MessageDeliveryPayload,
 ): ProcessingResult => {
-    const rejected = results.filter((result): result is PromiseRejectedResult => result.status === 'rejected');
-    const fulfilled = results.filter((result) => result.status === 'fulfilled');
+    const rejected = results.filter(isRejected);
+    const fulfilled = results.filter(isFulfilled);
 
     if (results.length === 0) {
         logger.warn(
@@ -22,20 +23,22 @@ export const responseHandler = (
         logger.error(`Events failed: ${rejected.length}`);
         rejected.forEach((error, index) => {
             logger.error(`Request ${index + 1} failed with error`, error);
-            if (error.reason && error.reason.status && error.reason.status >= 400 && error.reason.status < 500) {
+            if (error?.reason?.status >= 400 && error.reason?.status < 500) {
                 logger.error(
                     `Request ${index + 1} returned with status code ${error.reason.status} needs manual intervention.`,
                 );
-            } else {
+            } else if (error?.reason?.status >= 500) {
                 _5xxError = true;
-                logger.error(`Request failed with a status code ${error.reason.status}.`, error);
+                logger.error(`Request failed with a 5xx status code ${error?.reason?.status}.`, error);
+            } else {
+                logger.error(`Request failed with a status code ${error?.reason?.status}.`, error);
             }
         });
         if (_5xxError) {
             logger.error(
                 'One or more requests failed with error 5xx, sending message back to queue for retry or manual intervention.',
             );
-            throw new Error('Failed to send data to klaviyo');
+            throw new Error(`Failed to process request for message: ${ctMessage.id}`);
         }
         return {
             status: '4xx',
