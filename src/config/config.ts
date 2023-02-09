@@ -28,7 +28,7 @@ const config = {
         ],
         messageTypes: [
             {
-                sources: ['OrderCreated', 'OrderImported'],
+                sources: ['OrderCreated', 'OrderImported', 'OrderCustomerSet'],
                 value: true,
             },
         ],

@@ -2,7 +2,8 @@ import {
     OrderCreatedMessage,
     OrderStateChangedMessage,
     ReturnInfoSetMessage,
-} from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
+    OrderCustomerSetMessage,
+} from '@commercetools/platform-sdk';
 
 export const sampleOrderCreatedMessage: OrderCreatedMessage = {
     id: '123123123',
@@ -70,4 +71,25 @@ export const sampleReturnInfoSetMessage: ReturnInfoSetMessage = {
             ],
         },
     ],
+};
+
+export const sampleOrderCustomerSetMessage: OrderCustomerSetMessage = {
+    id: '123123123',
+    version: 1,
+    sequenceNumber: 2,
+    resource: {
+        typeId: 'order',
+        id: '3456789',
+    },
+    resourceVersion: 2,
+    resourceUserProvidedIdentifiers: {
+        orderNumber: '201612010001',
+    },
+    type: 'OrderCustomerSet',
+    customer: {
+        typeId: 'customer',
+        id: '2925dd3a-5417-4b51-a76c-d6721472530f',
+    },
+    createdAt: '2023-02-08T19:35:53.302Z',
+    lastModifiedAt: '2023-02-08T19:35:53.302Z',
 };

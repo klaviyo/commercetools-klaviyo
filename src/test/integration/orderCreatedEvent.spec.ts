@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { app } from '../../adapter/cloudRunAdapter';
 import { klaviyoEventNock } from './nocks/KlaviyoEventNock';
-import { sampleOrderCreatedMessage } from '../testData/orderData';
+import { sampleOrderCreatedMessage, sampleOrderCustomerSetMessage } from '../testData/orderData';
 import { ctAuthNock, ctGetOrderByIdNock } from './nocks/commercetoolsNock';
 
 chai.use(chaiHttp);
@@ -33,7 +33,7 @@ describe('pubSub adapter event', () => {
             });
     });
 
-    it('should return status 204 when the request is valid and processed', (done) => {
+    it('should return status 204 when the request is valid and processed (OrderCreated)', (done) => {
         // recorder.rec();
 
         const createEventNock = klaviyoEventNock({
@@ -53,6 +53,33 @@ describe('pubSub adapter event', () => {
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(sampleOrderCreatedMessage)) } })
+            .end((res, err) => {
+                expect(err.status).to.eq(204);
+                expect(createEventNock.isDone()).to.be.true;
+                done();
+            });
+    });
+
+    it('should return status 204 when the request is valid and processed (OrderCustomerSet)', (done) => {
+        // recorder.rec();
+
+        const createEventNock = klaviyoEventNock({
+            type: 'event',
+            attributes: {
+                profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
+                metric: { name: 'Order created' },
+                value: 13,
+                properties: {
+                    ...sampleOrderCreatedMessage.order,
+                },
+                unique_id: '3456789',
+                time: '2023-01-27T15:00:00.000Z',
+            },
+        });
+
+        chai.request(server)
+            .post('/')
+            .send({ message: { data: Buffer.from(JSON.stringify(sampleOrderCustomerSetMessage)) } })
             .end((res, err) => {
                 expect(err.status).to.eq(204);
                 expect(createEventNock.isDone()).to.be.true;

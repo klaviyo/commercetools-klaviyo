@@ -1,46 +1,52 @@
 import { AbstractEvent } from '../abstractEvent';
 import logger from '../../../utils/log';
-import { OrderCreatedMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
+import { OrderCreatedMessage, OrderCustomerSetMessage } from '@commercetools/platform-sdk';
 import { Order, OrderState } from '@commercetools/platform-sdk';
 import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
 import { getConfigProperty } from '../../../utils/prop-mapper';
 import { getCustomerProfileFromOrder } from '../../../utils/get-customer-profile-from-order';
+import { getOrderById } from '../../ctService';
 
 export class OrderCreatedEvent extends AbstractEvent {
     isEventValid(): boolean {
-        const orderCreatedMessage = this.ctMessage as unknown as OrderCreatedMessage;
+        const message = this.ctMessage as unknown as OrderCreatedMessage | OrderCustomerSetMessage;
         return (
-            orderCreatedMessage.resource.typeId === 'order' &&
-            this.isValidMessageType(orderCreatedMessage.type) &&
-            !!orderCreatedMessage.order &&
-            (!!orderCreatedMessage.order.customerEmail || !!orderCreatedMessage.order.customerId) &&
-            this.isValidState(orderCreatedMessage.order?.orderState)
+            message.resource.typeId === 'order' &&
+            this.isValidMessageType(message.type) &&
+            this.hasExpectedMessageProperties(message)
         );
     }
 
-    generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {
-        const orderCreatedMessage = this.ctMessage as unknown as OrderCreatedMessage;
+    async generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {
+        const message = this.ctMessage as unknown as OrderCreatedMessage | OrderCustomerSetMessage;
         logger.info('Processing order created event');
+
+        let order: Order;
+        if ('order' in message) {
+            order = message.order;
+        } else {
+            order = (await getOrderById(message.resource.id)) as Order;
+        }
 
         const body: EventRequest = {
             data: {
                 type: 'event',
                 attributes: {
-                    profile: getCustomerProfileFromOrder(orderCreatedMessage.order),
+                    profile: getCustomerProfileFromOrder(order),
                     metric: {
                         name: this.getOrderMetric('OrderCreated'),
                     },
-                    value: getTypedMoneyAsNumber(orderCreatedMessage.order?.totalPrice),
-                    properties: { ...orderCreatedMessage.order } as any,
-                    unique_id: orderCreatedMessage.order.id,
-                    time: orderCreatedMessage.order.createdAt,
+                    value: getTypedMoneyAsNumber(order?.totalPrice),
+                    properties: { ...order } as any,
+                    unique_id: order.id,
+                    time: order.createdAt,
                 },
             },
         };
 
         const events: KlaviyoEvent[] = [{ body, type: 'event' }];
 
-        this.getProductOrderedEventsFromOrder(events, orderCreatedMessage.order);
+        this.getProductOrderedEventsFromOrder(events, order);
 
         return Promise.resolve(events);
     }
@@ -89,5 +95,15 @@ export class OrderCreatedEvent extends AbstractEvent {
 
     private getOrderMetric(type: string): string {
         return getConfigProperty('order.createdStates', type);
+    }
+
+    private hasExpectedMessageProperties(message: OrderCreatedMessage | OrderCustomerSetMessage) {
+        return (
+            !!(message as OrderCustomerSetMessage).customer ||
+            (!!(message as OrderCreatedMessage).order &&
+                (!!(message as OrderCreatedMessage).order?.customerEmail ||
+                    !!(message as OrderCreatedMessage).order?.customerId) &&
+                this.isValidState((message as OrderCreatedMessage).order?.orderState))
+        );
     }
 }
