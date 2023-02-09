@@ -4,7 +4,18 @@ import { OrderCreatedEvent } from './orderCreatedEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 
 describe('orderCreatedEvent > isEventValid', () => {
-    it('should return valid when is an orderCreated message', async () => {
+    it('should return valid when is an Imported message', async () => {
+        const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
+        Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'order' } }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'type', { value: 'OrderImported' });
+        Object.defineProperty(ctMessageMock, 'order', { value: { customerId: '123-1230-123', orderState: 'Open' } });
+
+        const event = OrderCreatedEvent.instance(ctMessageMock);
+
+        exp(event.isEventValid()).to.be.true;
+    });
+
+    it('should return valid when is an OrderImported message', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'order' } }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'type', { value: 'OrderCreated' }); //mock readonly property
@@ -20,16 +31,19 @@ describe('orderCreatedEvent > isEventValid', () => {
         ${'invalid'} | ${'OrderCreated'} | ${{ customerId: '123-1230-123' }}
         ${'order'}   | ${'invalid'}      | ${{}}
         ${'order'}   | ${'OrderCreated'} | ${null}
-    `('should return invalid when is not an orderCreated message', ({ resource, type, order }) => {
-        const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
-        Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: resource } }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'type', { value: type }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'order', { value: order }); //mock readonly property
+    `(
+        'should return invalid when is not an orderCreated message, resource: $resource type: $type',
+        ({ resource, type, order }) => {
+            const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
+            Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: resource } }); //mock readonly property
+            Object.defineProperty(ctMessageMock, 'type', { value: type }); //mock readonly property
+            Object.defineProperty(ctMessageMock, 'order', { value: order }); //mock readonly property
 
-        const event = OrderCreatedEvent.instance(ctMessageMock);
+            const event = OrderCreatedEvent.instance(ctMessageMock);
 
-        exp(event.isEventValid()).to.be.false;
-    });
+            exp(event.isEventValid()).to.be.false;
+        },
+    );
 
     it('should return invalid when the orderState is invalid', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();

@@ -26,6 +26,12 @@ const config = {
                 value: 'Refunded Order',
             },
         ],
+        messageTypes: [
+            {
+                sources: ['OrderCreated', 'OrderImported'],
+                value: true,
+            },
+        ],
     },
     customer: {
         addressChangeMessages: [

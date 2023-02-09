@@ -11,7 +11,7 @@ export class OrderCreatedEvent extends AbstractEvent {
         const orderCreatedMessage = this.ctMessage as unknown as OrderCreatedMessage;
         return (
             orderCreatedMessage.resource.typeId === 'order' &&
-            orderCreatedMessage.type === 'OrderCreated' &&
+            this.isValidMessageType(orderCreatedMessage.type) &&
             !!orderCreatedMessage.order &&
             (!!orderCreatedMessage.order.customerEmail || !!orderCreatedMessage.order.customerId) &&
             this.isValidState(orderCreatedMessage.order?.orderState)
@@ -56,10 +56,6 @@ export class OrderCreatedEvent extends AbstractEvent {
         return profile;
     }
 
-    private isValidState(orderState: OrderState): boolean {
-        return Boolean(getConfigProperty('order.createdStates', orderState));
-    }
-
     private getProductOrderedEventsFromOrder(events: KlaviyoEvent[], order: Order) {
         order?.lineItems?.forEach((lineItem) => {
             events.push({
@@ -81,6 +77,14 @@ export class OrderCreatedEvent extends AbstractEvent {
                 type: 'event',
             });
         });
+    }
+
+    private isValidState(orderState: OrderState): boolean {
+        return Boolean(getConfigProperty('order.createdStates', orderState));
+    }
+
+    private isValidMessageType(type: string): boolean {
+        return Boolean(getConfigProperty('order.messageTypes', type));
     }
 
     private getOrderMetric(type: string): string {
