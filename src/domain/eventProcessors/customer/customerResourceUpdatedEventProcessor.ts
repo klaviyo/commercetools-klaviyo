@@ -4,7 +4,6 @@ import { getCustomerProfile } from '../../ctService';
 import { ResourceUpdatedDeliveryPayload } from '@commercetools/platform-sdk';
 import { getKlaviyoProfileByExternalId } from '../../klaviyoService';
 import { mapCTCustomerToKlaviyoProfile } from './mappers/CTCustomerToKlaviyoProfileMapper';
-import { StatusError } from '../../../types/errors/StatusError';
 
 export class CustomerResourceUpdatedEventProcessor extends AbstractEvent {
     isEventValid(): boolean {
@@ -19,22 +18,29 @@ export class CustomerResourceUpdatedEventProcessor extends AbstractEvent {
             return [];
         }
         const klaviyoProfile = await getKlaviyoProfileByExternalId(message.resource.id);
+        let klaviyoEvent: KlaviyoEvent;
         if (!klaviyoProfile || !klaviyoProfile.id) {
-            throw new StatusError(404, `Profile not found in klaviyo with external id ${message.resource.id}`);
-        }
-
-        const body: ProfileRequest = {
-            data: {
-                type: 'profile',
-                id: klaviyoProfile?.id,
-                attributes: mapCTCustomerToKlaviyoProfile(customer),
-            },
-        };
-        return [
-            {
-                body: body,
+            klaviyoEvent = {
+                body: {
+                    data: {
+                        type: 'profile',
+                        attributes: mapCTCustomerToKlaviyoProfile(customer),
+                    },
+                },
+                type: 'profileCreated',
+            };
+        } else {
+            klaviyoEvent = {
+                body: {
+                    data: {
+                        type: 'profile',
+                        id: klaviyoProfile?.id,
+                        attributes: mapCTCustomerToKlaviyoProfile(customer),
+                    },
+                },
                 type: 'profileResourceUpdated',
-            },
-        ];
+            };
+        }
+        return [klaviyoEvent];
     }
 }

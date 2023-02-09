@@ -275,7 +275,13 @@
 									"pm.variables.replaceIn('{{$randomFirstName}}')",
 									"pm.variables.replaceIn('{{$randomLastName}}')",
 									"pm.variables.replaceIn('{{$randomCity}}')",
-									"pm.variables.replaceIn('{{$randomPhoneNumber}}')"
+									"// const coll = pm.collectionVariables.replaceIn('{{$randomPhoneNumberExt}}')",
+									"// console.log(pm.request.body.raw)",
+									"JSON.parse(pm.request.body.raw).addresses?.forEach(address => {",
+									"    const phoneNumber = \"+\"+pm.variables.replaceIn('{{$randomPhoneNumberExt}}')",
+									"    address.mobile = phoneNumber",
+									"    console.log(address.mobile)",
+									"    })"
 								],
 								"type": "text/javascript"
 							}
@@ -311,7 +317,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Miss\",\n    \"email\": \"{{$randomEmail}}\",\n    \"key\": \"{{customer-key}}\",\n    \"firstName\": \"{{$randomFirstName}}\",\n    \"lastName\": \"{{$randomLastName}}\",\n    \"password\": \"secret123\",\n    \"addresses\": [\n        {\n            \"id\": \"lgDP675C\",\n            \"title\": \"Mrs.\",\n            \"firstName\": \"{{$randomFirstName}}\",\n            \"lastName\": \"{{$randomLastName}}\",\n            \"streetName\": \"First Street\",\n            \"streetNumber\": \"12\",\n            \"postalCode\": \"12345\",\n            \"city\": \"{{$randomCity}}\",\n            \"country\": \"NL\",\n            \"phone\": \"+39 3234567892\",\n            \"mobile\": \"+39 3234567892\",\n            \"email\": \"jane.doe@example.com\"\n        },\n        {\n            \"id\": \"hKSGcsgu\",\n            \"title\": \"Head of factory\",\n            \"firstName\": \"Jane\",\n            \"lastName\": \"Doe\",\n            \"streetName\": \"Third Street\",\n            \"streetNumber\": \"34\",\n            \"postalCode\": \"12345\",\n            \"city\": \"Example City\",\n            \"country\": \"NL\",\n            \"phone\": \"+31102455400\",\n            \"mobile\": \"+31102455400\",\n            \"email\": \"jane.doe@example.com\"\n        }\n    ]\n}"
+							"raw": "{\n    \"title\": \"Miss\",\n    \"email\": \"{{$randomEmail}}\",\n    \"key\": \"{{customer-key}}\",\n    \"firstName\": \"{{$randomFirstName}}\",\n    \"lastName\": \"{{$randomLastName}}\",\n    \"password\": \"secret123\",\n    \"addresses\": [\n        {\n            \"id\": \"lgDP675C\",\n            \"title\": \"Mrs.\",\n            \"firstName\": \"{{$randomFirstName}}\",\n            \"lastName\": \"{{$randomLastName}}\",\n            \"streetName\": \"First Street\",\n            \"streetNumber\": \"12\",\n            \"postalCode\": \"12345\",\n            \"city\": \"{{$randomCity}}\",\n            \"country\": \"NL\",\n            \"phone\": \"+39 3234567892\",\n            \"mobile\": \"{{$randomPhoneNumberExt}}\",\n            \"email\": \"jane.doe@example.com\"\n        },\n        {\n            \"id\": \"hKSGcsgu\",\n            \"title\": \"Head of factory\",\n            \"firstName\": \"Jane\",\n            \"lastName\": \"Doe\",\n            \"streetName\": \"Third Street\",\n            \"streetNumber\": \"34\",\n            \"postalCode\": \"12345\",\n            \"city\": \"Example City\",\n            \"country\": \"NL\",\n            \"phone\": \"+31102455400\",\n            \"mobile\": \"+31102455400\",\n            \"email\": \"jane.doe@example.com\"\n        }\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{ct_host}}/{{project-key}}/customers",
@@ -1193,6 +1199,109 @@
 					"response": []
 				},
 				{
+					"name": "03 [then] Get Profile in klaviyo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var expectedHttpStatus = 200;",
+									"var maxNumberOfTries = 5;",
+									"var sleepBetweenTries = 2000;",
+									"",
+									"if (!pm.environment.get(\"collection_tries\")) {",
+									"    pm.environment.set(\"collection_tries\", 1);",
+									"}",
+									"const jsonData = pm.response.json();",
+									"if ((pm.response.code != expectedHttpStatus || jsonData.data.length == 0) && (pm.environment.get(\"collection_tries\") < maxNumberOfTries)) {",
+									"    console.log(\"retry\")",
+									"     var tries = parseInt(pm.environment.get(\"collection_tries\"), 10);",
+									"     pm.environment.set(\"collection_tries\", tries + 1);",
+									"     setTimeout(function() {}, sleepBetweenTries);",
+									"     postman.setNextRequest(request.name);",
+									" } else {",
+									"     pm.environment.unset(\"collection_tries\");",
+									"",
+									"     pm.test(\"Profile was created in klaviyo\", function () {",
+									"          pm.response.to.have.status(expectedHttpStatus);",
+									"          pm.expect(jsonData.data.length).to.be.above(0);",
+									"          pm.expect(jsonData.data[0].attributes.email.toLowerCase()).to.eql(pm.environment.get(\"customer-email\").toLowerCase());",
+									"     });",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "Klaviyo-API-Key {{klaviyoPrivateKey}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "(Required) API endpoint revision (format: YYYY-MM-DD[.suffix])",
+								"key": "revision",
+								"value": "2022-10-17"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{klaviyoBaseUrl}}/api/profiles/?filter=equals(email,\"{{customer-email}}\")",
+							"host": [
+								"{{klaviyoBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"profiles",
+								""
+							],
+							"query": [
+								{
+									"key": "fields[profile]",
+									"value": "<string>,<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#sparse-fieldsets",
+									"disabled": true
+								},
+								{
+									"key": "page[cursor]",
+									"value": "<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#pagination",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "<string>",
+									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#sorting",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "equals(email,\"{{customer-email}}\")"
+								}
+							]
+						},
+						"description": "Get all profiles in an account.\nProfiles can be sorted by the following fields in ascending and descending order: `id`, `created`, `email`\nUse filters to narrow your results. Request specific fields using [sparse fieldsets](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#sparse-fieldsets).\nReturns a maximum of 20 profiles per page, which can be paginated with [cursor-based pagination](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#pagination).<br><br>*Rate limits*:<br>Burst: `10/s`<br>Steady: `150/m`\n\n**Scopes:**\n`Profiles Write`"
+					},
+					"response": []
+				},
+				{
 					"name": "03 [given] Create Cart in CT",
 					"event": [
 						{
@@ -1343,109 +1452,6 @@
 							]
 						},
 						"description": "Creates an order from a Cart.\nThe cart must have a shipping address set before creating an order.\nWhen using the Platform TaxMode, the shipping address is used for tax calculation.\n"
-					},
-					"response": []
-				},
-				{
-					"name": "03 [then] Get Profile in klaviyo",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"var expectedHttpStatus = 200;",
-									"var maxNumberOfTries = 5;",
-									"var sleepBetweenTries = 2000;",
-									"",
-									"if (!pm.environment.get(\"collection_tries\")) {",
-									"    pm.environment.set(\"collection_tries\", 1);",
-									"}",
-									"const jsonData = pm.response.json();",
-									"if ((pm.response.code != expectedHttpStatus || jsonData.data.length == 0) && (pm.environment.get(\"collection_tries\") < maxNumberOfTries)) {",
-									"    console.log(\"retry\")",
-									"     var tries = parseInt(pm.environment.get(\"collection_tries\"), 10);",
-									"     pm.environment.set(\"collection_tries\", tries + 1);",
-									"     setTimeout(function() {}, sleepBetweenTries);",
-									"     postman.setNextRequest(request.name);",
-									" } else {",
-									"     pm.environment.unset(\"collection_tries\");",
-									"",
-									"     pm.test(\"Profile was created in klaviyo\", function () {",
-									"          pm.response.to.have.status(expectedHttpStatus);",
-									"          pm.expect(jsonData.data.length).to.be.above(0);",
-									"          pm.expect(jsonData.data[0].attributes.email.toLowerCase()).to.eql(pm.environment.get(\"customer-email\").toLowerCase());",
-									"     });",
-									"}",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "apikey",
-							"apikey": [
-								{
-									"key": "value",
-									"value": "Klaviyo-API-Key {{klaviyoPrivateKey}}",
-									"type": "string"
-								},
-								{
-									"key": "key",
-									"value": "Authorization",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"description": "(Required) API endpoint revision (format: YYYY-MM-DD[.suffix])",
-								"key": "revision",
-								"value": "2022-10-17"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{klaviyoBaseUrl}}/api/profiles/?filter=equals(email,\"{{customer-email}}\")",
-							"host": [
-								"{{klaviyoBaseUrl}}"
-							],
-							"path": [
-								"api",
-								"profiles",
-								""
-							],
-							"query": [
-								{
-									"key": "fields[profile]",
-									"value": "<string>,<string>",
-									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#sparse-fieldsets",
-									"disabled": true
-								},
-								{
-									"key": "page[cursor]",
-									"value": "<string>",
-									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#pagination",
-									"disabled": true
-								},
-								{
-									"key": "sort",
-									"value": "<string>",
-									"description": "For more information please visit https://developers.klaviyo.com/en/v2022-10-17/reference/api-overview#sorting",
-									"disabled": true
-								},
-								{
-									"key": "filter",
-									"value": "equals(email,\"{{customer-email}}\")"
-								}
-							]
-						},
-						"description": "Get all profiles in an account.\nProfiles can be sorted by the following fields in ascending and descending order: `id`, `created`, `email`\nUse filters to narrow your results. Request specific fields using [sparse fieldsets](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#sparse-fieldsets).\nReturns a maximum of 20 profiles per page, which can be paginated with [cursor-based pagination](https://developers.klaviyo.com/en/v2022-10-17/reference/api_overview#pagination).<br><br>*Rate limits*:<br>Burst: `10/s`<br>Steady: `150/m`\n\n**Scopes:**\n`Profiles Write`"
 					},
 					"response": []
 				},

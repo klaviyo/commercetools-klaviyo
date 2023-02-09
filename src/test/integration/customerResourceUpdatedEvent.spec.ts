@@ -4,7 +4,7 @@ import { app } from '../../adapter/cloudRunAdapter';
 import { getSampleCustomerResourceUpdatedMessage } from '../testData/ctCustomerMessages';
 import http from 'http';
 import { ctAuthNock, ctGetCustomerNock } from './nocks/commercetoolsNock';
-import { klaviyoGetProfilesNock, klaviyoPatchProfileNock } from './nocks/KlaviyoProfileNock';
+import { klaviyoCreateProfileNock, klaviyoGetProfilesNock, klaviyoPatchProfileNock } from './nocks/KlaviyoProfileNock';
 import nock from 'nock';
 
 chai.use(chaiHttp);
@@ -80,6 +80,37 @@ describe('pubSub adapter customer resource updated message', () => {
             });
     });
 
+    it('should return status code 204 and create the customer in klaviyo when the get profile from Klaviyo returns no matching profiles', (done) => {
+        const inputMessage = getSampleCustomerResourceUpdatedMessage();
+
+        const authNock = ctAuthNock();
+        const getCustomerNock = ctGetCustomerNock(inputMessage.resource.id);
+        const getKlaviyoGetProfilesNock = klaviyoGetProfilesNock(200, true);
+        const getKlaviyoPatchProfileNock = klaviyoCreateProfileNock({
+            type: 'profile',
+            attributes: {
+                email: 'roberto.smith@klaviyo.com',
+                first_name: 'Roberto',
+                last_name: 'Smith',
+                title: 'Mr',
+                phone_number: null,
+                location: null,
+            },
+        });
+
+        chai.request(server)
+            .post('/')
+            .send({ message: { data: Buffer.from(JSON.stringify(inputMessage)) } })
+            .end((res, err) => {
+                expect(err.status).to.eq(204);
+                expect(authNock.isDone()).to.be.true;
+                expect(getCustomerNock.isDone()).to.be.true;
+                expect(getKlaviyoGetProfilesNock.isDone()).to.be.true;
+                expect(getKlaviyoPatchProfileNock.isDone()).to.be.true;
+                done();
+            });
+    });
+
     it('should return status code 202 when the get profile from Klaviyo fails with status code 400', (done) => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
 
@@ -94,7 +125,7 @@ describe('pubSub adapter customer resource updated message', () => {
                 expect(err.status).to.eq(202);
                 expect(authNock.isDone()).to.be.true;
                 expect(getCustomerNock.isDone()).to.be.true;
-                // expect(getKlaviyoGetProfilesNock.isDone()).to.be.true;
+                expect(getKlaviyoGetProfilesNock.isDone()).to.be.true;
                 done();
             });
     });

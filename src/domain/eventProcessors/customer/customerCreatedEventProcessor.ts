@@ -14,7 +14,7 @@ export class CustomerCreatedEventProcessor extends AbstractEvent {
         );
     }
 
-    generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {
+    async generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {
         const message = this.ctMessage as unknown as CustomerCreatedMessage;
         logger.info(`processing CT ${message.type} message`);
         const body: ProfileRequest = {
@@ -28,11 +28,11 @@ export class CustomerCreatedEventProcessor extends AbstractEvent {
                 },
             },
         };
-        return Promise.resolve([
+        return [
             {
                 body,
                 type: 'profileUpdated',
             },
-        ]);
+        ];
     }
 }
