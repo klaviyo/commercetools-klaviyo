@@ -5,16 +5,17 @@ import { isFulfilled, isRejected } from '../utils/promise';
 export const responseHandler = (
     results: Array<PromiseSettledResult<Awaited<Promise<any>>>>,
     ctMessage: MessageDeliveryPayload,
+    logEventStats = true,
 ): ProcessingResult => {
     const rejected = results.filter(isRejected);
     const fulfilled = results.filter(isFulfilled);
 
-    if (results.length === 0) {
+    if (results.length === 0 && logEventStats) {
         logger.warn(
             `No processor found to handle the message. Message with notification type ${ctMessage.notificationType} and resource type '${ctMessage.resource.typeId}' ignored`,
         );
     }
-    if (results.length > 0) {
+    if (results.length > 0 && logEventStats) {
         logger.info(`Events to be sent to klaviyo: ${results.length}`);
         logger.info(`Events sent correctly: ${fulfilled.length}`);
     }

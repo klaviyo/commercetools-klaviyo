@@ -3,8 +3,17 @@ import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declara
 import { mockDeep } from 'jest-mock-extended';
 import { expect as exp } from 'chai';
 import { getSampleCustomerCreatedMessage } from '../../../test/testData/ctCustomerMessages';
+import { getKlaviyoProfileByExternalId } from '../../klaviyoService';
+import mocked = jest.mocked;
+
+jest.mock('../../klaviyoService');
+const getKlaviyoProfileMock = mocked(getKlaviyoProfileByExternalId);
 
 describe('customerCreatedEvent > isEventValid', () => {
+    beforeEach(() => {
+        getKlaviyoProfileMock.mockResolvedValue(undefined);
+    });
+
     it('should return valid when the customer created resource has all the required fields', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'customer' } }); //mock readonly property
@@ -34,7 +43,11 @@ describe('customerCreatedEvent > isEventValid', () => {
 });
 
 describe('customerCreatedEvent > generateKlaviyoEvent', () => {
-    it('should generate the klaviyo event when the input customer created event is valid', async () => {
+    beforeEach(() => {
+        getKlaviyoProfileMock.mockResolvedValue(undefined);
+        //todo add tests with profile available
+    });
+    it('should generate the klaviyo create profile event when the input customer created event is valid', async () => {
         const message = getSampleCustomerCreatedMessage();
         message.customer.addresses.splice(0, message.customer.addresses.length);
         message.customer.addresses.push({
@@ -42,7 +55,7 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
             region: 'aRegion',
             city: 'London',
             country: 'UK',
-            phone: '+4407472744666',
+            phone: '+4407476588266',
             postalCode: 'WE1 2DP',
             streetName: 'High Road',
             streetNumber: '23',
@@ -58,10 +71,10 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
 
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
-        expect(klaviyoEvent[0].body).toMatchSnapshot();
+        expect(klaviyoEvent[0]).toMatchSnapshot();
     });
 
-    it('should generate the klaviyo event with the default billing address when set', async () => {
+    it('should generate the klaviyo create profile event with the default billing address when is available', async () => {
         const message = getSampleCustomerCreatedMessage();
         message.customer.addresses.splice(0, message.customer.addresses.length);
         message.customer.addresses.push({
@@ -69,7 +82,7 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
             region: 'aRegion',
             city: 'London',
             country: 'UK',
-            phone: '+4407472744666',
+            phone: '+4407476588266',
             postalCode: 'SE1 5XG',
             streetName: 'some road',
             streetNumber: '23',
@@ -84,7 +97,7 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
             region: 'aRegion',
             city: 'London',
             country: 'UK',
-            phone: '+4407472744666',
+            phone: '+4407476588266',
             postalCode: 'WS2 5FX',
             streetName: "I'm the default billing address",
             streetNumber: '23',
@@ -104,10 +117,10 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
         exp(message.customer.addresses.length).to.equal(2);
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
-        expect(klaviyoEvent[0].body).toMatchSnapshot();
+        expect(klaviyoEvent[0]).toMatchSnapshot();
     });
 
-    it('should generate the klaviyo event with the first billing address available when no default billing address is set', async () => {
+    it('should generate the klaviyo create profile event with the first billing address available when no default billing address is set', async () => {
         const message = getSampleCustomerCreatedMessage();
         message.customer.addresses.splice(0, message.customer.addresses.length);
         message.customer.addresses.push({
@@ -115,7 +128,7 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
             region: 'aRegion',
             city: 'London',
             country: 'UK',
-            phone: '+4407472744666',
+            phone: '+4407476588266',
             postalCode: 'SE1 5XG',
             streetName: 'some road',
             streetNumber: '23',
@@ -130,7 +143,7 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
             region: 'aRegion',
             city: 'London',
             country: 'UK',
-            phone: '+4407472744666',
+            phone: '+4407476588266',
             postalCode: 'WS2 5FX',
             streetName: "I'm a billing address",
             streetNumber: '23',
@@ -145,7 +158,7 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
             region: 'aRegion',
             city: 'London',
             country: 'UK',
-            phone: '+4407472744666',
+            phone: '+4407476588266',
             postalCode: 'WS2 5FY',
             streetName: "I'm another billing address",
             streetNumber: '23',
@@ -171,10 +184,10 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
         exp(message.customer.addresses.length).to.equal(3);
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
-        expect(klaviyoEvent[0].body).toMatchSnapshot();
+        expect(klaviyoEvent[0]).toMatchSnapshot();
     });
 
-    it('should generate the klaviyo event with the first address when no billing address ids are set', async () => {
+    it('should generate the klaviyo create profile event with the first address when no billing address ids are set', async () => {
         const message = getSampleCustomerCreatedMessage();
         message.customer.addresses.splice(0, message.customer.addresses.length);
         message.customer.addresses.push({
@@ -182,7 +195,7 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
             region: 'aRegion',
             city: 'London',
             country: 'UK',
-            phone: '+4407472744666',
+            phone: '+4407476588266',
             postalCode: 'WS2 5FX',
             streetName: "I'm a random address",
             streetNumber: '23',
@@ -197,7 +210,7 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
             region: 'aRegion',
             city: 'London',
             country: 'UK',
-            phone: '+4407472744666',
+            phone: '+4407476588266',
             postalCode: 'WS2 5FY',
             streetName: "I'm another random address",
             streetNumber: '23',
@@ -223,10 +236,10 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
         exp(message.customer.addresses.length).to.equal(2);
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
-        expect(klaviyoEvent[0].body).toMatchSnapshot();
+        expect(klaviyoEvent[0]).toMatchSnapshot();
     });
 
-    it('should generate the klaviyo event without customer address inf when no address is available', async () => {
+    it('should generate the klaviyo create profile event without customer address inf when no address is available', async () => {
         const message = getSampleCustomerCreatedMessage();
         message.customer.addresses.splice(0, message.customer.addresses.length);
         Object.defineProperty(message, 'customer', {
@@ -244,6 +257,6 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
         exp(message.customer.addresses.length).to.equal(0);
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
-        expect(klaviyoEvent[0].body).toMatchSnapshot();
+        expect(klaviyoEvent[0]).toMatchSnapshot();
     });
 });

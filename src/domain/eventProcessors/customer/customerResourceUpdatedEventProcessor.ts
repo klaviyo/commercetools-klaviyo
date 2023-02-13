@@ -14,9 +14,6 @@ export class CustomerResourceUpdatedEventProcessor extends AbstractEvent {
         const message = this.ctMessage as unknown as ResourceUpdatedDeliveryPayload;
         logger.info(`processing CT ${message.resource.typeId}${message.notificationType} message`);
         const customer = await getCustomerProfile(message.resource.id);
-        if (!customer) {
-            return [];
-        }
         const klaviyoProfile = await getKlaviyoProfileByExternalId(message.resource.id);
         let klaviyoEvent: KlaviyoEvent;
         if (!klaviyoProfile || !klaviyoProfile.id) {

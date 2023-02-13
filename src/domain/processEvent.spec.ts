@@ -113,13 +113,13 @@ describe('processEvent', () => {
             sequenceNumber: 0,
             version: 0,
         };
-        responseHandlerMock.mockReturnValueOnce({ status: '4xx' });
+        responseHandlerMock.mockReturnValueOnce({ status: 'OK' }).mockReturnValueOnce({ status: '4xx' });
 
         const response = await processEvent(message, [TestEvent]);
 
         exp(response).to.eql({ status: '4xx' });
         expect(sendEventToKlaviyoMock).toHaveBeenCalledTimes(0);
-        expect(responseHandlerMock).toHaveBeenCalledTimes(1);
+        expect(responseHandlerMock).toHaveBeenCalledTimes(2);
         expect(responseHandlerMock).toHaveBeenCalledWith(await Promise.allSettled([]), message);
     });
 });

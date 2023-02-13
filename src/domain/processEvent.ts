@@ -34,7 +34,7 @@ export const processEvent = async (
             .filter((eventProcessor) => eventProcessor.isEventValid())
             .map((eventProcessor) => eventProcessor.generateKlaviyoEvents()),
     );
-    const response = responseHandler(klaviyoRequestsPromises, ctMessage);
+    const response = responseHandler(klaviyoRequestsPromises, ctMessage, false);
     if (response.status != 'OK') {
         return response;
     }

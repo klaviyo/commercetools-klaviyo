@@ -8,7 +8,7 @@ exports[`CustomerFirstNameSetEventProcessor > generateKlaviyoEvent should genera
     },
     "meta": {
       "identifiers": {
-        "external_id": "2925dd3a-5417-4b51-a76c-d6721472530f",
+        "external_id": "e54d8233-be41-4ce0-ae68-5d0674dd8517",
       },
     },
     "type": "profile",

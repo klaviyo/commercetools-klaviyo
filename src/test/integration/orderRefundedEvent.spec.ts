@@ -27,8 +27,9 @@ describe('pubSub adapter event', () => {
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(data)) } })
-            .end((res, err) => {
-                expect(err.status).to.eq(204);
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.status).to.eq(204);
                 done();
             });
     });
@@ -53,8 +54,9 @@ describe('pubSub adapter event', () => {
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(sampleReturnInfoSetMessage)) } })
-            .end((res, err) => {
-                expect(err.status).to.eq(204);
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.status).to.eq(204);
                 expect(createEventNock.isDone()).to.be.true;
                 done();
             });
@@ -75,8 +77,9 @@ describe('pubSub event that produces 4xx error', () => {
         chai.request(server)
             .post('/')
             .send({ invalidData: '123' })
-            .end((res, err) => {
-                expect(err.status).to.eq(400);
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.status).to.eq(400);
                 done();
             });
     });
@@ -85,8 +88,9 @@ describe('pubSub event that produces 4xx error', () => {
         chai.request(server)
             .post('/')
             // .send(undefined)
-            .end((res, err) => {
-                expect(err.status).to.eq(400);
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.status).to.eq(400);
                 done();
             });
     });
@@ -130,8 +134,9 @@ describe('pubSub event that produces 5xx error', () => {
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(sampleReturnInfoSetMessage)) } })
-            .end((res, err) => {
-                expect(err.status).to.eq(500);
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.status).to.eq(500);
                 expect(createEventNock.isDone()).to.be.true;
                 done();
             });

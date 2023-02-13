@@ -10,6 +10,8 @@ import mocked = jest.mocked;
 
 jest.mock('../../ctService');
 jest.mock('../../klaviyoService');
+
+const getCustomerProfileMock = mocked(getCustomerProfile);
 describe('CustomerResourceUpdatedEventProcessor > isEventValid', () => {
     it('should return valid when the customer event has all the required fields', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
@@ -40,14 +42,47 @@ describe('CustomerResourceUpdatedEventProcessor > isEventValid', () => {
 });
 
 describe('CustomerResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
-    it('should generate the klaviyo event when the input customer ResourceUpdated event is valid', async () => {
+    beforeEach(() => {
+        jest.resetAllMocks();
+    });
+
+    it('should generate the klaviyo update profile event when the input customer ResourceUpdated event is valid', async () => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
         const message = inputMessage as unknown as MessageDeliveryPayload;
         const event = CustomerResourceUpdatedEventProcessor.instance(message);
-        const getCustomerProfileMock = mocked(getCustomerProfile);
         getCustomerProfileMock.mockResolvedValue(getSampleCustomerApiResponse());
         const getKlaviyoProfileMock = mocked(getKlaviyoProfileByExternalId);
         getKlaviyoProfileMock.mockResolvedValue({ type: 'profile', id: 'someId', attributes: {} });
+
+        const klaviyoEvent = await event.generateKlaviyoEvents();
+
+        exp(klaviyoEvent).to.not.be.undefined;
+        exp(klaviyoEvent.length).to.be.eq(1);
+        expect(klaviyoEvent[0].body).toMatchSnapshot();
+    });
+
+    it('should generate the klaviyo create profile event when the input customer ResourceUpdated event is valid and the profile is not found in Klaviyo', async () => {
+        const inputMessage = getSampleCustomerResourceUpdatedMessage();
+        const message = inputMessage as unknown as MessageDeliveryPayload;
+        const event = CustomerResourceUpdatedEventProcessor.instance(message);
+        getCustomerProfileMock.mockResolvedValue(getSampleCustomerApiResponse());
+        const getKlaviyoProfileMock = mocked(getKlaviyoProfileByExternalId);
+        getKlaviyoProfileMock.mockResolvedValue(undefined);
+
+        const klaviyoEvent = await event.generateKlaviyoEvents();
+
+        exp(klaviyoEvent).to.not.be.undefined;
+        exp(klaviyoEvent.length).to.be.eq(1);
+        expect(klaviyoEvent[0].body).toMatchSnapshot();
+    });
+
+    it('should not generate the klaviyo event when the customer is not found in CT', async () => {
+        const inputMessage = getSampleCustomerResourceUpdatedMessage();
+        const message = inputMessage as unknown as MessageDeliveryPayload;
+        const event = CustomerResourceUpdatedEventProcessor.instance(message);
+        getCustomerProfileMock.mockResolvedValue(getSampleCustomerApiResponse());
+        const getKlaviyoProfileMock = mocked(getKlaviyoProfileByExternalId);
+        getKlaviyoProfileMock.mockResolvedValue(undefined);
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
 

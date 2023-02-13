@@ -16,23 +16,16 @@ export class CustomerCreatedEventProcessor extends AbstractEvent {
 
     async generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {
         const message = this.ctMessage as unknown as CustomerCreatedMessage;
-        logger.info(`processing CT ${message.type} message`);
-        const body: ProfileRequest = {
-            data: {
-                type: 'profile',
-                attributes: mapCTCustomerToKlaviyoProfile(message.customer),
-                meta: {
-                    identifiers: {
-                        external_id: message.resource.id,
-                    },
+        logger.info(`processing CT ${message.resource.typeId}${message.type} message`);
+        const klaviyoEvent: KlaviyoEvent = {
+            body: {
+                data: {
+                    type: 'profile',
+                    attributes: mapCTCustomerToKlaviyoProfile(message.customer),
                 },
             },
+            type: 'profileCreated',
         };
-        return [
-            {
-                body,
-                type: 'profileUpdated',
-            },
-        ];
+        return [klaviyoEvent];
     }
 }

@@ -1,6 +1,8 @@
 import { sendEventToKlaviyo } from './klaviyoService';
 import { Events, Profiles } from 'klaviyo-api';
 import { mockDeep } from 'jest-mock-extended';
+import { StatusError } from '../types/errors/StatusError';
+import { KlaviyoError } from '../test/utils/KlaviyoError';
 
 jest.mock('klaviyo-api', () => {
     const module = jest.createMockFromModule<any>('klaviyo-api');
@@ -24,6 +26,51 @@ describe('klaviyoService > sendEventToKlaviyo', () => {
         await sendEventToKlaviyo(klaviyoEvent);
 
         expect(Profiles.createProfile).toBeCalledTimes(1);
+        expect(Profiles.createProfile).toBeCalledWith(klaviyoEvent.body);
+    });
+
+    test("should update a profile in klaviyo when the input event is of type 'profileCreated' but the profile already exists in klaviyo", async () => {
+        const klaviyoEvent: KlaviyoEvent = {
+            type: 'profileCreated',
+            body: {
+                data: {
+                    type: 'profile',
+                    attributes: {},
+                },
+            },
+        };
+        const responseError: KlaviyoError = new KlaviyoError(409);
+        responseError.setResponse({
+            error: {
+                text: '{"errors":[{"meta":{"duplicate_profile_id":"01GRKR887TDV7JS4JGM003ANYJ"}}]}',
+            },
+        });
+        Profiles.createProfile = jest.fn().mockRejectedValue(responseError);
+
+        await sendEventToKlaviyo(klaviyoEvent);
+
+        expect(Profiles.createProfile).toBeCalledTimes(1);
+        expect(Profiles.updateProfile).toBeCalledTimes(1);
+        expect(Profiles.createProfile).toBeCalledWith(klaviyoEvent.body);
+        expect(Profiles.updateProfile).toBeCalledWith(klaviyoEvent.body, '01GRKR887TDV7JS4JGM003ANYJ');
+    });
+
+    test("should throw error when the input event is of type 'profileCreated' but the profile already exists in klaviyo and the error response doesn't contain the ID of the duplicated profile", async () => {
+        const klaviyoEvent: KlaviyoEvent = {
+            type: 'profileCreated',
+            body: {
+                data: {
+                    type: 'profile',
+                    attributes: {},
+                },
+            },
+        };
+        Profiles.createProfile = jest.fn().mockRejectedValue(new StatusError(409, 'Duplicated profile'));
+
+        await expect(sendEventToKlaviyo(klaviyoEvent)).rejects.toThrow(StatusError);
+
+        expect(Profiles.createProfile).toBeCalledTimes(1);
+        expect(Profiles.updateProfile).toBeCalledTimes(0);
         expect(Profiles.createProfile).toBeCalledWith(klaviyoEvent.body);
     });
 

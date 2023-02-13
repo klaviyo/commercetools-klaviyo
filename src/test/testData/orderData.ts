@@ -1,8 +1,8 @@
 import {
     OrderCreatedMessage,
+    OrderCustomerSetMessage,
     OrderStateChangedMessage,
     ReturnInfoSetMessage,
-    OrderCustomerSetMessage,
 } from '@commercetools/platform-sdk';
 
 export const sampleOrderCreatedMessage: OrderCreatedMessage = {
@@ -88,7 +88,7 @@ export const sampleOrderCustomerSetMessage: OrderCustomerSetMessage = {
     type: 'OrderCustomerSet',
     customer: {
         typeId: 'customer',
-        id: '2925dd3a-5417-4b51-a76c-d6721472530f',
+        id: 'e54d8233-be41-4ce0-ae68-5d0674dd8517',
     },
     createdAt: '2023-02-08T19:35:53.302Z',
     lastModifiedAt: '2023-02-08T19:35:53.302Z',

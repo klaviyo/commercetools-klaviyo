@@ -29,9 +29,6 @@ export class CustomerAddressUpdateEventProcessor extends AbstractEvent {
             | CustomerAddressChangedMessage;
         logger.info(`processing CT ${message.type} message`);
         const customer = await getCustomerProfile(message.resource.id);
-        if (!customer) {
-            return [];
-        }
         const address = getCTCustomerAddressForKlaviyo(customer);
 
         const body: ProfileRequest = {

@@ -51,8 +51,9 @@ describe('pubSub adapter customer resource updated message', () => {
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(inputMessage)) } })
-            .end((res, err) => {
-                expect(err.status).to.eq(204);
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.status).to.eq(204);
                 expect(authNock.isDone()).to.be.true;
                 expect(getCustomerNock.isDone()).to.be.true;
                 expect(getKlaviyoGetProfilesNock.isDone()).to.be.true;
@@ -61,26 +62,29 @@ describe('pubSub adapter customer resource updated message', () => {
             });
     });
 
-    it('should return status code 202 when the get customer call to CT fails with status code 400', (done) => {
+    it('should return status code 202 and not send the event to klaviyo when the get customer call to CT fails with status code 400', (done) => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
 
         const authNock = ctAuthNock();
         const getCustomerNock = ctGetCustomerNock(inputMessage.resource.id, 400);
         const getKlaviyoGetProfilesNock = klaviyoGetProfilesNock();
+        const getKlaviyoPatchProfileNock = klaviyoPatchProfileNock();
 
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(inputMessage)) } })
-            .end((res, err) => {
-                expect(err.status).to.eq(202);
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.status).to.eq(202);
                 expect(authNock.isDone()).to.be.true;
                 expect(getCustomerNock.isDone()).to.be.true;
                 expect(getKlaviyoGetProfilesNock.isDone()).to.be.false;
+                expect(getKlaviyoPatchProfileNock.isDone()).to.be.false;
                 done();
             });
     });
 
-    it('should return status code 204 and create the customer in klaviyo when the get profile from Klaviyo returns no matching profiles', (done) => {
+    it('should return status code 204 and create the profile in klaviyo', (done) => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
 
         const authNock = ctAuthNock();
@@ -90,10 +94,12 @@ describe('pubSub adapter customer resource updated message', () => {
             type: 'profile',
             attributes: {
                 email: 'roberto.smith@klaviyo.com',
+                external_id: 'e54d8233-be41-4ce0-ae68-5d0674dd8517',
                 first_name: 'Roberto',
                 last_name: 'Smith',
                 title: 'Mr',
                 phone_number: null,
+                organization: 'Klaviyo',
                 location: null,
             },
         });
@@ -101,8 +107,9 @@ describe('pubSub adapter customer resource updated message', () => {
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(inputMessage)) } })
-            .end((res, err) => {
-                expect(err.status).to.eq(204);
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.status).to.eq(204);
                 expect(authNock.isDone()).to.be.true;
                 expect(getCustomerNock.isDone()).to.be.true;
                 expect(getKlaviyoGetProfilesNock.isDone()).to.be.true;
@@ -121,8 +128,9 @@ describe('pubSub adapter customer resource updated message', () => {
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(inputMessage)) } })
-            .end((res, err) => {
-                expect(err.status).to.eq(202);
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.status).to.eq(202);
                 expect(authNock.isDone()).to.be.true;
                 expect(getCustomerNock.isDone()).to.be.true;
                 expect(getKlaviyoGetProfilesNock.isDone()).to.be.true;
@@ -134,18 +142,19 @@ describe('pubSub adapter customer resource updated message', () => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
 
         const authNock = ctAuthNock();
-        const getCustomerNock = ctGetCustomerNock(inputMessage.resource.id, 200);
+        const getCustomerNock = ctGetCustomerNock(inputMessage.resource.id);
         const getKlaviyoGetProfilesNock = klaviyoGetProfilesNock(500);
         const getKlaviyoPatchProfileNock = klaviyoPatchProfileNock();
 
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(inputMessage)) } })
-            .end((res, err) => {
+            .end((err, res) => {
+                expect(err).to.be.null;
                 expect(authNock.isDone()).to.be.true;
                 expect(getCustomerNock.isDone()).to.be.true;
                 expect(getKlaviyoGetProfilesNock.isDone()).to.be.true;
-                expect(err.status).to.eq(500);
+                expect(res.status).to.eq(500);
                 expect(getKlaviyoPatchProfileNock.isDone()).to.be.false;
                 done();
             });

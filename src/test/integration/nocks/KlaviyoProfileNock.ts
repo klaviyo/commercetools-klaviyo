@@ -1,11 +1,11 @@
 import nock from 'nock';
 
-export const klaviyoCreateProfileNock = (data: any, responseCode = 201) => {
+export const klaviyoCreateProfileNock = (data: any, responseCode = 201, responseBody = {}) => {
     return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
         .post('/api/profiles/', {
             data,
         })
-        .reply(responseCode, '');
+        .reply(responseCode, responseBody);
 };
 
 export const klaviyoUpsertClientProfileNock = (
@@ -97,10 +97,12 @@ export const klaviyoPatchProfileNock = (responseStatus = 200) => {
                 id: '01GRKR887TDV7JS4JGM003ANYJ',
                 attributes: {
                     email: 'roberto.smith@klaviyo.com',
+                    external_id: 'e54d8233-be41-4ce0-ae68-5d0674dd8517',
                     first_name: 'Roberto',
                     last_name: 'Smith',
                     title: 'Mr',
                     phone_number: '+4407476588266',
+                    organization: 'Klaviyo',
                     location: {
                         address1: 'C, Tall Tower, 23, High Road',
                         address2: 'private access, additional address info',

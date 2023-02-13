@@ -4,6 +4,7 @@ import { app } from '../../adapter/cloudRunAdapter';
 import { klaviyoEventNock } from './nocks/KlaviyoEventNock';
 import { sampleOrderCreatedMessage, sampleOrderCustomerSetMessage } from '../testData/orderData';
 import { ctAuthNock, ctGetOrderByIdNock } from './nocks/commercetoolsNock';
+import nock from 'nock';
 
 chai.use(chaiHttp);
 
@@ -18,7 +19,9 @@ describe('pubSub adapter event', () => {
     });
 
     beforeEach(() => {
+        nock.cleanAll();
         ctAuthNock();
+        jest.clearAllMocks();
         ctGetOrderByIdNock('3456789');
     });
 
@@ -53,8 +56,9 @@ describe('pubSub adapter event', () => {
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(sampleOrderCreatedMessage)) } })
-            .end((res, err) => {
-                expect(err.status).to.eq(204);
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.status).to.eq(204);
                 expect(createEventNock.isDone()).to.be.true;
                 done();
             });

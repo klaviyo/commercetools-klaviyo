@@ -8,15 +8,23 @@ import { mapCTAddressToKlaviyoLocation } from './CTAddressToKlaviyoLocationMappe
  */
 export const mapCTCustomerToKlaviyoProfile = (customer: Customer): Profile => {
     const address = getCTCustomerAddressForKlaviyo(customer);
-    const { email, firstName, lastName, title, companyName } = customer;
+    const {
+        email,
+        firstName: first_name,
+        lastName: last_name,
+        title,
+        companyName: organization,
+        id: external_id,
+    } = customer;
 
     return {
         email,
-        first_name: firstName,
-        last_name: lastName,
+        external_id,
+        first_name,
+        last_name,
         title,
         phone_number: getPhoneNumber(address),
-        organization: companyName,
+        organization,
         location: mapCTAddressToKlaviyoLocation(address),
     };
 };

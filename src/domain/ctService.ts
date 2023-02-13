@@ -43,12 +43,11 @@ const getApiRoot = (): ByProjectKeyRequestBuilder => {
     });
 };
 
-export const getCustomerProfile = async (customerId: string): Promise<Customer | undefined> => {
+export const getCustomerProfile = async (customerId: string): Promise<Customer> => {
     logger.info(`Getting customer ${customerId} in commercetools`);
-    let ctCustomer: Customer;
 
     try {
-        ctCustomer = (await getApiRoot().customers().withId({ ID: customerId }).get().execute()).body;
+        return (await getApiRoot().customers().withId({ ID: customerId }).get().execute()).body;
     } catch (error: any) {
         logger.error(`Error getting customer in CT with id ${customerId}, status: ${error.statusCode}`, error);
         throw new StatusError(
@@ -56,8 +55,6 @@ export const getCustomerProfile = async (customerId: string): Promise<Customer |
             `CT get customer api returns failed with status code ${error.statusCode}, msg: ${error.message}`,
         );
     }
-
-    return ctCustomer;
 };
 
 export const getOrderById = async (orderId: string): Promise<Order | undefined> => {
