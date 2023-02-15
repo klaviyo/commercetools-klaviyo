@@ -1,4 +1,4 @@
-import { AbstractEvent } from '../abstractEvent';
+import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../utils/log';
 import {
     CustomerAddressAddedMessage,
@@ -10,7 +10,7 @@ import { getCTCustomerAddressForKlaviyo, getPhoneNumber } from './utils/Customer
 import { mapCTAddressToKlaviyoLocation } from './mappers/CTAddressToKlaviyoLocationMapper';
 import config from 'config';
 
-export class CustomerAddressUpdateEventProcessor extends AbstractEvent {
+export class CustomerAddressUpdateEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
         const message = this.ctMessage as unknown as
             | CustomerAddressAddedMessage

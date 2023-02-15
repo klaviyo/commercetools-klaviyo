@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { app } from '../../adapter/cloudRunAdapter';
+import { app } from '../../adapter/pubsubAdapter';
 import { klaviyoEventNock } from './nocks/KlaviyoEventNock';
 import { sampleOrderCreatedMessage, sampleOrderStateChangedMessage } from '../testData/orderData';
 import { ctAuthNock, ctGetOrderByIdNock } from './nocks/commercetoolsNock';

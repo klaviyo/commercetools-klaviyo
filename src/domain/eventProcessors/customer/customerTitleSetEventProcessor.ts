@@ -1,8 +1,8 @@
-import { AbstractEvent } from '../abstractEvent';
+import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../utils/log';
 import { CustomerTitleSetMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
 
-export class CustomerTitleSetEventProcessor extends AbstractEvent {
+export class CustomerTitleSetEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
         const message = this.ctMessage as unknown as CustomerTitleSetMessage;
         return message.resource.typeId === 'customer' && message.type === 'CustomerTitleSet';

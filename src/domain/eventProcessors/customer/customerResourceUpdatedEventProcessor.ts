@@ -1,11 +1,11 @@
-import { AbstractEvent } from '../abstractEvent';
+import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../utils/log';
 import { getCustomerProfile } from '../../ctService';
 import { ResourceUpdatedDeliveryPayload } from '@commercetools/platform-sdk';
 import { getKlaviyoProfileByExternalId } from '../../klaviyoService';
 import { mapCTCustomerToKlaviyoProfile } from './mappers/CTCustomerToKlaviyoProfileMapper';
 
-export class CustomerResourceUpdatedEventProcessor extends AbstractEvent {
+export class CustomerResourceUpdatedEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
         return this.ctMessage.notificationType === 'ResourceUpdated' && this.ctMessage.resource.typeId === 'customer';
     }

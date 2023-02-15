@@ -1,7 +1,7 @@
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import { CustomerCreatedEventProcessor } from './eventProcessors/customer/customerCreatedEventProcessor';
 import { OrderCreatedEvent } from './eventProcessors/order/orderCreatedEvent';
-import { AbstractEvent } from './eventProcessors/abstractEvent';
+import { AbstractEventProcessor } from './eventProcessors/abstractEventProcessor';
 import logger from '../utils/log';
 import { responseHandler } from './responseHandler';
 import { CustomerCompanyNameSetEventProcessor } from './eventProcessors/customer/customerCompanyNameSetEventProcessor';
@@ -17,8 +17,7 @@ const context: Context = {
 };
 
 // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {
-// eslint-disable-next-line prettier/prettier
-const defaultProcessors: (typeof AbstractEvent)[] = [
+const defaultProcessors: (typeof AbstractEventProcessor)[] = [
     CustomerCreatedEventProcessor,
     CustomerCompanyNameSetEventProcessor,
     OrderCreatedEvent,
@@ -29,7 +28,7 @@ const defaultProcessors: (typeof AbstractEvent)[] = [
 
 export const processEvent = async (
     ctMessage: MessageDeliveryPayload,
-    eventProcessors: (typeof AbstractEvent)[] = defaultProcessors,
+    eventProcessors: (typeof AbstractEventProcessor)[] = defaultProcessors,
 ): Promise<ProcessingResult> => {
     // todo check ctMessage.payloadNotIncluded;
     logger.info('Processing commercetools message', ctMessage);

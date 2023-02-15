@@ -1,6 +1,6 @@
 import { processEvent } from './processEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
-import { AbstractEvent } from './eventProcessors/abstractEvent';
+import { AbstractEventProcessor } from './eventProcessors/abstractEventProcessor';
 import { sendEventToKlaviyo } from './klaviyoService';
 import { expect as exp } from 'chai';
 import { responseHandler } from './responseHandler';
@@ -11,7 +11,7 @@ jest.mock('./responseHandler');
 describe('processEvent', () => {
     //todo mock api call to create klaviyo client
 
-    class TestEvent extends AbstractEvent {
+    class TestEvent extends AbstractEventProcessor {
         generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {
             return Promise.resolve([
                 {

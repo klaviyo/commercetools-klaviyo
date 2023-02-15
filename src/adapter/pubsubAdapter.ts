@@ -43,7 +43,7 @@ app.post('/', async (req, res) => {
     }
 });
 
-export const cloudRunAdapter: GenericAdapter = (): Promise<any> => {
+export const pubsubAdapter: GenericAdapter = (): Promise<any> => {
     const PORT = 6789;
     app.listen(PORT, () => logger.info(`klaviyo commercetools plugin listening on port ${PORT}`));
     return Promise.resolve(app);

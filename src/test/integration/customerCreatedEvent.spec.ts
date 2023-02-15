@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { app } from '../../adapter/cloudRunAdapter';
+import { app } from '../../adapter/pubsubAdapter';
 import { getSampleCustomerCreatedMessage } from '../testData/ctCustomerMessages';
 import http from 'http';
 import { klaviyoCreateProfileNock, klaviyoPatchProfileNock } from './nocks/KlaviyoProfileNock';

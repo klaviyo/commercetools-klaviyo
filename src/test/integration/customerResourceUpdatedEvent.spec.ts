@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { app } from '../../adapter/cloudRunAdapter';
+import { app } from '../../adapter/pubsubAdapter';
 import { getSampleCustomerResourceUpdatedMessage } from '../testData/ctCustomerMessages';
 import http from 'http';
 import { ctAuthNock, ctGetCustomerNock } from './nocks/commercetoolsNock';

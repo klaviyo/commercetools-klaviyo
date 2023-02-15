@@ -1,4 +1,4 @@
-import { AbstractEvent } from '../abstractEvent';
+import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../utils/log';
 import { ReturnInfoSetMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
 import { ReturnInfo } from '@commercetools/platform-sdk';
@@ -8,7 +8,7 @@ import { getOrderById } from '../../ctService';
 import { mapAllowedProperties } from '../../../utils/property-mapper';
 import config from 'config';
 
-export class OrderRefundedEvent extends AbstractEvent {
+export class OrderRefundedEvent extends AbstractEventProcessor {
     isEventValid(): boolean {
         const returnInfoSetMessage = this.ctMessage as unknown as ReturnInfoSetMessage;
 

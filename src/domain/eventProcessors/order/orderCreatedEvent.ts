@@ -1,4 +1,4 @@
-import { AbstractEvent } from '../abstractEvent';
+import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../utils/log';
 import { Order, OrderCreatedMessage, OrderCustomerSetMessage, OrderState } from '@commercetools/platform-sdk';
 import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
@@ -7,7 +7,7 @@ import { getOrderById } from '../../ctService';
 import { mapAllowedProperties } from '../../../utils/property-mapper';
 import config from 'config';
 
-export class OrderCreatedEvent extends AbstractEvent {
+export class OrderCreatedEvent extends AbstractEventProcessor {
     isEventValid(): boolean {
         const message = this.ctMessage as unknown as OrderCreatedMessage | OrderCustomerSetMessage;
         return (

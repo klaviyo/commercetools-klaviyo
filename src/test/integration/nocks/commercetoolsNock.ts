@@ -57,7 +57,7 @@ export const ctGetCustomerNock = (customerId: string, responseStatusCode = 200, 
 };
 
 export const ctGetOrderByIdNock = (orderId: string, status = 200) => {
-    return nock(/https:\/\/api\..*\.gcp.commercetools\.com\:443/, { encodedQueryParams: true })
+    return nock(/https:\/\/api\..*\.gcp.commercetools\.com:443/, { encodedQueryParams: true })
         .persist()
         .get(`/klaviyo-dev/orders/${orderId}`)
         .reply(status, {

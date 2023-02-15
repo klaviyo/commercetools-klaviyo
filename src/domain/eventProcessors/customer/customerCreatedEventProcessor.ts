@@ -1,9 +1,9 @@
-import { AbstractEvent } from '../abstractEvent';
+import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../utils/log';
 import { CustomerCreatedMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
 import { mapCTCustomerToKlaviyoProfile } from './mappers/CTCustomerToKlaviyoProfileMapper';
 
-export class CustomerCreatedEventProcessor extends AbstractEvent {
+export class CustomerCreatedEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
         const customerCreatedMessage = this.ctMessage as unknown as CustomerCreatedMessage;
         return (
