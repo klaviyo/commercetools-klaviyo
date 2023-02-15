@@ -1,4 +1,4 @@
-const config = {
+const config: any = {
     order: {
         changedStates: [
             {
@@ -32,6 +32,17 @@ const config = {
                 value: true,
             },
         ],
+        allowedProperties: {
+            customerId: null,
+            customerEmail: null,
+            id: 'orderId',
+            createdAt: null,
+            lastModifiedAt: null,
+            lineItems: 'items',
+            customLineItems: 'customItems',
+            totalPrice: null,
+            orderState: null,
+        },
     },
     customer: {
         addressChangeMessages: [

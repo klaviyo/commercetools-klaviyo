@@ -5,7 +5,7 @@ exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo ev
   "data": {
     "attributes": {
       "metric": {
-        "name": "Order created",
+        "name": "Placed Order",
       },
       "profile": {
         "$email": "test@klaviyo.com",
@@ -37,7 +37,7 @@ exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo ev
   "data": {
     "attributes": {
       "metric": {
-        "name": "Order created",
+        "name": "Placed Order",
       },
       "profile": {
         "$email": "test@klaviyo.com",
@@ -45,25 +45,19 @@ exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo ev
       },
       "properties": {
         "createdAt": "2023-01-27T15:00:00.000Z",
-        "customLineItems": [],
+        "customItems": [],
         "customerEmail": "test@klaviyo.com",
         "customerId": "123-123-123",
-        "id": "123123123",
+        "items": [],
         "lastModifiedAt": "2023-01-27T15:00:00.000Z",
-        "lineItems": [],
+        "orderId": "123123123",
         "orderState": "Open",
-        "origin": "Customer",
-        "refusedGifts": [],
-        "shipping": [],
-        "shippingMode": "Single",
-        "syncInfo": [],
         "totalPrice": {
           "centAmount": 1300,
           "currencyCode": "USD",
           "fractionDigits": 2,
           "type": "centPrecision",
         },
-        "version": 24,
       },
       "time": "2023-01-27T15:00:00.000Z",
       "unique_id": "123123123",
@@ -79,7 +73,7 @@ exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo ev
   "data": {
     "attributes": {
       "metric": {
-        "name": "Order created",
+        "name": "Placed Order",
       },
       "profile": {
         "$email": "test@klaviyo.com",
@@ -89,7 +83,7 @@ exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo ev
         "createdAt": "2023-01-27T15:00:00.000Z",
         "customerEmail": "test@klaviyo.com",
         "customerId": "123-123-123",
-        "lineItems": [
+        "items": [
           {
             "id": "123-123-123",
             "name": {

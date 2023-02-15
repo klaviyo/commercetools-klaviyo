@@ -1,11 +1,12 @@
 import { AbstractEvent } from '../abstractEvent';
 import logger from '../../../utils/log';
 import { ReturnInfoSetMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
-import { OrderState, ReturnInfo } from '@commercetools/platform-sdk';
+import { ReturnInfo } from '@commercetools/platform-sdk';
 import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
-import { getConfigProperty } from '../../../utils/prop-mapper';
 import { getCustomerProfileFromOrder } from '../../../utils/get-customer-profile-from-order';
 import { getOrderById } from '../../ctService';
+import { mapAllowedProperties } from '../../../utils/property-mapper';
+import config from 'config';
 
 export class OrderRefundedEvent extends AbstractEvent {
     isEventValid(): boolean {
@@ -35,13 +36,13 @@ export class OrderRefundedEvent extends AbstractEvent {
                 attributes: {
                     profile: getCustomerProfileFromOrder(ctOrder),
                     metric: {
-                        name: this.getOrderMetric('OrderRefunded'),
+                        name: config.get('order.metrics.refundedOrder'),
                     },
                     value: this.context.currencyService.convert(
                         getTypedMoneyAsNumber(ctOrder?.totalPrice),
                         ctOrder.totalPrice.currencyCode,
                     ),
-                    properties: { ...ctOrder } as any,
+                    properties: mapAllowedProperties('order', { ...ctOrder }) as any,
                     unique_id: orderStateChangedMessage.resource.id,
                     time: orderStateChangedMessage.createdAt,
                 },
@@ -63,9 +64,5 @@ export class OrderRefundedEvent extends AbstractEvent {
                 .flat()
                 .find((item) => item.paymentState === 'Refunded'),
         );
-    }
-
-    private getOrderMetric(orderState: OrderState): string {
-        return getConfigProperty('order.refundedStates', orderState);
     }
 }

@@ -3,16 +3,17 @@ import logger from '../../../utils/log';
 import { OrderStateChangedMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
 import { OrderState } from '@commercetools/platform-sdk';
 import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
-import { getConfigProperty } from '../../../utils/prop-mapper';
 import { getCustomerProfileFromOrder } from '../../../utils/get-customer-profile-from-order';
 import { getOrderById } from '../../ctService';
+import { mapAllowedProperties } from '../../../utils/property-mapper';
+import config from 'config';
 
 export class OrderStateChangedEvent extends AbstractEvent {
     isEventValid(): boolean {
         const orderStateChangedMessage = this.ctMessage as unknown as OrderStateChangedMessage;
         return (
             orderStateChangedMessage.resource.typeId === 'order' &&
-            orderStateChangedMessage.type === 'OrderStateChanged' &&
+            this.isValidMessageType(orderStateChangedMessage.type) &&
             this.isValidState(orderStateChangedMessage.orderState)
         );
     }
@@ -39,7 +40,7 @@ export class OrderStateChangedEvent extends AbstractEvent {
                         getTypedMoneyAsNumber(ctOrder?.totalPrice),
                         ctOrder.totalPrice.currencyCode,
                     ),
-                    properties: { ...ctOrder } as any,
+                    properties: mapAllowedProperties('order', { ...ctOrder }) as any,
                     unique_id: orderStateChangedMessage.resource.id,
                     time: orderStateChangedMessage.createdAt,
                 },
@@ -55,10 +56,25 @@ export class OrderStateChangedEvent extends AbstractEvent {
     }
 
     private isValidState(orderState: OrderState): boolean {
-        return Boolean(getConfigProperty('order.changedStates', orderState));
+        return Boolean(
+            config.has('order.states.changed') &&
+                ((config.get('order.states.changed.cancelledOrder') as string[])?.includes(orderState) ||
+                    (config.get('order.states.changed.fulfilledOrder') as string[])?.includes(orderState)),
+        );
+    }
+
+    private isValidMessageType(type: string): boolean {
+        return Boolean(
+            config.has('order.messages.changed') && (config.get('order.messages.changed') as string[])?.includes(type),
+        );
     }
 
     private getOrderMetricByState(orderState: OrderState): string {
-        return getConfigProperty('order.changedStates', orderState);
+        const changedStates: any = config.get('order.states.changed');
+        const orderMetrics: any = config.get('order.metrics');
+        const stateProperty = Object.entries(changedStates).filter((state) =>
+            (state[1] as string[]).includes(orderState),
+        )[0][0];
+        return orderMetrics[stateProperty];
     }
 }

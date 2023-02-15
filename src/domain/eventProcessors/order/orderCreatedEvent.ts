@@ -2,9 +2,10 @@ import { AbstractEvent } from '../abstractEvent';
 import logger from '../../../utils/log';
 import { Order, OrderCreatedMessage, OrderCustomerSetMessage, OrderState } from '@commercetools/platform-sdk';
 import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
-import { getConfigProperty } from '../../../utils/prop-mapper';
 import { getCustomerProfileFromOrder } from '../../../utils/get-customer-profile-from-order';
 import { getOrderById } from '../../ctService';
+import { mapAllowedProperties } from '../../../utils/property-mapper';
+import config from 'config';
 
 export class OrderCreatedEvent extends AbstractEvent {
     isEventValid(): boolean {
@@ -33,13 +34,13 @@ export class OrderCreatedEvent extends AbstractEvent {
                 attributes: {
                     profile: getCustomerProfileFromOrder(order),
                     metric: {
-                        name: this.getOrderMetric('OrderCreated'),
+                        name: config.get('order.metrics.placedOrder'),
                     },
                     value: this.context.currencyService.convert(
                         getTypedMoneyAsNumber(order?.totalPrice),
                         order.totalPrice.currencyCode,
                     ),
-                    properties: { ...order } as any,
+                    properties: mapAllowedProperties('order', { ...order }) as any,
                     unique_id: order.id,
                     time: order.createdAt,
                 },
@@ -73,7 +74,7 @@ export class OrderCreatedEvent extends AbstractEvent {
                         attributes: {
                             profile: this.getCustomerProfile(order),
                             metric: {
-                                name: this.getOrderMetric('OrderedProduct'),
+                                name: config.get('order.metrics.orderedProduct'),
                             },
                             value: getTypedMoneyAsNumber(lineItem.totalPrice),
                             properties: { ...lineItem },
@@ -88,15 +89,16 @@ export class OrderCreatedEvent extends AbstractEvent {
     }
 
     private isValidState(orderState: OrderState): boolean {
-        return Boolean(getConfigProperty('order.createdStates', orderState));
+        return Boolean(
+            config.has('order.states.created') &&
+                (config.get('order.states.created.placedOrder') as string[])?.includes(orderState),
+        );
     }
 
     private isValidMessageType(type: string): boolean {
-        return Boolean(getConfigProperty('order.messageTypes', type));
-    }
-
-    private getOrderMetric(type: string): string {
-        return getConfigProperty('order.createdStates', type);
+        return Boolean(
+            config.has('order.messages.created') && (config.get('order.messages.created') as string[])?.includes(type),
+        );
     }
 
     private hasExpectedMessageProperties(message: OrderCreatedMessage | OrderCustomerSetMessage) {

@@ -5,6 +5,7 @@ import { klaviyoEventNock } from './nocks/KlaviyoEventNock';
 import { sampleOrderCreatedMessage, sampleOrderCustomerSetMessage } from '../testData/orderData';
 import { ctAuthNock, ctGetOrderByIdNock } from './nocks/commercetoolsNock';
 import nock from 'nock';
+import { mapAllowedProperties } from '../../utils/property-mapper';
 
 chai.use(chaiHttp);
 
@@ -20,8 +21,8 @@ describe('pubSub adapter event', () => {
 
     beforeEach(() => {
         nock.cleanAll();
-        ctAuthNock();
         jest.clearAllMocks();
+        ctAuthNock();
         ctGetOrderByIdNock('3456789');
     });
 
@@ -43,10 +44,10 @@ describe('pubSub adapter event', () => {
             type: 'event',
             attributes: {
                 profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                metric: { name: 'Order created' },
+                metric: { name: 'Placed Order' },
                 value: 13,
                 properties: {
-                    ...sampleOrderCreatedMessage.order,
+                    ...mapAllowedProperties('order', { ...sampleOrderCreatedMessage.order }),
                 },
                 unique_id: '3456789',
                 time: '2023-01-27T15:00:00.000Z',
@@ -71,10 +72,10 @@ describe('pubSub adapter event', () => {
             type: 'event',
             attributes: {
                 profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                metric: { name: 'Order created' },
+                metric: { name: 'Placed Order' },
                 value: 13,
                 properties: {
-                    ...sampleOrderCreatedMessage.order,
+                    ...mapAllowedProperties('order', { ...sampleOrderCreatedMessage.order }),
                 },
                 unique_id: '3456789',
                 time: '2023-01-27T15:00:00.000Z',
@@ -141,10 +142,10 @@ describe('pubSub event that produces 5xx error', () => {
                 type: 'event',
                 attributes: {
                     profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                    metric: { name: 'Order created' },
+                    metric: { name: 'Placed Order' },
                     value: 13,
                     properties: {
-                        ...sampleOrderCreatedMessage.order,
+                        ...mapAllowedProperties('order', { ...sampleOrderCreatedMessage.order }),
                     },
                     unique_id: '3456789',
                     time: '2023-01-27T15:00:00.000Z',

@@ -4,6 +4,7 @@ import { app } from '../../adapter/cloudRunAdapter';
 import { klaviyoEventNock } from './nocks/KlaviyoEventNock';
 import { sampleOrderCreatedMessage, sampleOrderStateChangedMessage } from '../testData/orderData';
 import { ctAuthNock, ctGetOrderByIdNock } from './nocks/commercetoolsNock';
+import { mapAllowedProperties } from '../../utils/property-mapper';
 
 chai.use(chaiHttp);
 
@@ -44,7 +45,7 @@ describe('pubSub adapter event', () => {
                 metric: { name: 'Cancelled Order' },
                 value: 13,
                 properties: {
-                    ...sampleOrderCreatedMessage.order,
+                    ...mapAllowedProperties('order', { ...sampleOrderCreatedMessage.order }),
                 },
                 unique_id: '3456789',
                 time: '2023-01-18 09:23:00',
@@ -122,7 +123,7 @@ describe('pubSub event that produces 5xx error', () => {
                     metric: { name: 'Cancelled Order' },
                     value: 13,
                     properties: {
-                        ...sampleOrderCreatedMessage.order,
+                        ...mapAllowedProperties('order', { ...sampleOrderCreatedMessage.order }),
                     },
                     unique_id: '3456789',
                     time: '2023-01-18 09:23:00',

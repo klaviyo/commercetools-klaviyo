@@ -3,6 +3,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { OrderCreatedEvent } from './orderCreatedEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import { ctAuthNock, ctGetOrderByIdNock } from '../../../test/integration/nocks/commercetoolsNock';
+import config from 'config';
 
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 contextMock.currencyService.convert.mockImplementation((value, currency) => value);
