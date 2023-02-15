@@ -35,7 +35,10 @@ export class OrderStateChangedEvent extends AbstractEvent {
                     metric: {
                         name: this.getOrderMetricByState(orderStateChangedMessage.orderState),
                     },
-                    value: getTypedMoneyAsNumber(ctOrder.totalPrice),
+                    value: this.context.currencyService.convert(
+                        getTypedMoneyAsNumber(ctOrder?.totalPrice),
+                        ctOrder.totalPrice.currencyCode,
+                    ),
                     properties: { ...ctOrder } as any,
                     unique_id: orderStateChangedMessage.resource.id,
                     time: orderStateChangedMessage.createdAt,

@@ -9,7 +9,12 @@ import { OrderStateChangedEvent } from './eventProcessors/order/orderStateChange
 import { OrderRefundedEvent } from './eventProcessors/order/orderRefundedEvent';
 import { sendEventToKlaviyo } from './klaviyoService'; // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {
 import { CustomerResourceUpdatedEventProcessor } from './eventProcessors/customer/customerResourceUpdatedEventProcessor';
-import { isFulfilled } from '../utils/promise'; // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {
+import { isFulfilled } from '../utils/promise';
+import { DefaultCurrencyService } from './services/defaultCurrencyService';
+
+const context: Context = {
+    currencyService: new DefaultCurrencyService(),
+};
 
 // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {
 // eslint-disable-next-line prettier/prettier
@@ -30,7 +35,7 @@ export const processEvent = async (
     logger.info('Processing commercetools message', ctMessage);
     const klaviyoRequestsPromises = await Promise.allSettled(
         eventProcessors
-            .map((eventProcessors) => eventProcessors.instance(ctMessage))
+            .map((eventProcessors) => eventProcessors.instance(ctMessage, context))
             .filter((eventProcessor) => eventProcessor.isEventValid())
             .map((eventProcessor) => eventProcessor.generateKlaviyoEvents()),
     );

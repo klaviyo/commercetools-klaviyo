@@ -1,8 +1,10 @@
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
-import { mockDeep } from 'jest-mock-extended';
+import { mock, mockDeep } from 'jest-mock-extended';
 import { expect as exp } from 'chai';
 import { CustomerFirstNameSetEventProcessor } from './customerFirstNameSetEventProcessor';
 import { getSampleCustomerFirstNameSetMessage } from '../../../test/testData/ctCustomerMessages';
+
+const context: Context = mock<Context>();
 
 describe('CustomerFirstNameSetEventProcessor > isEventValid', () => {
     it('should return valid when the customer name set event has all the required fields', async () => {
@@ -10,7 +12,7 @@ describe('CustomerFirstNameSetEventProcessor > isEventValid', () => {
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'customer' } }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'type', { value: 'CustomerFirstNameSet' });
 
-        const event = CustomerFirstNameSetEventProcessor.instance(ctMessageMock);
+        const event = CustomerFirstNameSetEventProcessor.instance(ctMessageMock, context);
 
         exp(event.isEventValid()).to.be.true;
     });
@@ -24,7 +26,7 @@ describe('CustomerFirstNameSetEventProcessor > isEventValid', () => {
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: resource } });
         Object.defineProperty(ctMessageMock, 'type', { value: type });
 
-        const event = CustomerFirstNameSetEventProcessor.instance(ctMessageMock);
+        const event = CustomerFirstNameSetEventProcessor.instance(ctMessageMock, context);
 
         exp(event.isEventValid()).to.be.false;
     });
@@ -34,7 +36,7 @@ describe('CustomerFirstNameSetEventProcessor > generateKlaviyoEvent', () => {
     it('should generate the klaviyo event when the input customer first name set event is valid', async () => {
         const inputMessage = getSampleCustomerFirstNameSetMessage();
         const message = inputMessage as unknown as MessageDeliveryPayload;
-        const event = CustomerFirstNameSetEventProcessor.instance(message);
+        const event = CustomerFirstNameSetEventProcessor.instance(message, context);
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
         exp(klaviyoEvent).to.not.be.undefined;

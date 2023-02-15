@@ -1,9 +1,12 @@
 import { expect as exp } from 'chai';
-import { mockDeep } from 'jest-mock-extended';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { OrderStateChangedEvent } from './orderStateChangedEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import { ctAuthNock, ctGetOrderByIdNock } from '../../../test/integration/nocks/commercetoolsNock';
 import * as ctService from '../../ctService';
+
+const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
+contextMock.currencyService.convert.mockImplementation((value, currency) => value);
 
 describe('orderStateChangedEvent > isEventValid', () => {
     it('should return valid when order is in Cancelled state', async () => {
@@ -17,7 +20,7 @@ describe('orderStateChangedEvent > isEventValid', () => {
         Object.defineProperty(ctMessageMock, 'type', { value: 'OrderStateChanged' }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'orderState', { value: 'Cancelled' }); //mock readonly property
 
-        const event = OrderStateChangedEvent.instance(ctMessageMock);
+        const event = OrderStateChangedEvent.instance(ctMessageMock, contextMock);
 
         exp(event.isEventValid()).to.be.true;
     });
@@ -34,7 +37,7 @@ describe('orderStateChangedEvent > isEventValid', () => {
         }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'type', { value: type }); //mock readonly property
 
-        const event = OrderStateChangedEvent.instance(ctMessageMock);
+        const event = OrderStateChangedEvent.instance(ctMessageMock, contextMock);
 
         exp(event.isEventValid()).to.be.false;
     });
@@ -50,7 +53,7 @@ describe('orderStateChangedEvent > isEventValid', () => {
         Object.defineProperty(ctMessageMock, 'type', { value: 'OrderStateChanged' }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'orderState', { value: 'FakeState' }); //mock readonly property
 
-        const event = OrderStateChangedEvent.instance(ctMessageMock);
+        const event = OrderStateChangedEvent.instance(ctMessageMock, contextMock);
 
         exp(event.isEventValid()).to.be.false;
     });
@@ -71,11 +74,12 @@ describe('orderStateChangedEvent > generateKlaviyoEvent', () => {
 
         ctAuthNock();
 
-        const event = OrderStateChangedEvent.instance(ctMessageMock);
+        const event = OrderStateChangedEvent.instance(ctMessageMock, contextMock);
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(0);
+        expect(contextMock.currencyService.convert).toBeCalledTimes(0);
     });
 
     it('should generate the klaviyo event for an order state changed message', async () => {
@@ -92,11 +96,13 @@ describe('orderStateChangedEvent > generateKlaviyoEvent', () => {
         ctAuthNock();
         ctGetOrderByIdNock('3456789');
 
-        const event = OrderStateChangedEvent.instance(ctMessageMock);
+        const event = OrderStateChangedEvent.instance(ctMessageMock, contextMock);
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
+        expect(contextMock.currencyService.convert).toBeCalledTimes(1);
+        expect(contextMock.currencyService.convert).toBeCalledWith(13, 'USD');
         expect(klaviyoEvent[0].body).toMatchSnapshot();
     });
 });

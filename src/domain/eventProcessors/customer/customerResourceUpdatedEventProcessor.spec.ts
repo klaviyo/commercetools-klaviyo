@@ -1,5 +1,5 @@
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
-import { mockDeep } from 'jest-mock-extended';
+import { mock, mockDeep } from 'jest-mock-extended';
 import { expect as exp } from 'chai';
 import { CustomerResourceUpdatedEventProcessor } from './customerResourceUpdatedEventProcessor';
 import { getSampleCustomerResourceUpdatedMessage } from '../../../test/testData/ctCustomerMessages';
@@ -12,13 +12,15 @@ jest.mock('../../ctService');
 jest.mock('../../klaviyoService');
 
 const getCustomerProfileMock = mocked(getCustomerProfile);
+const context: Context = mock<Context>();
+
 describe('CustomerResourceUpdatedEventProcessor > isEventValid', () => {
     it('should return valid when the customer event has all the required fields', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'customer' } }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'notificationType', { value: 'ResourceUpdated' });
 
-        const event = CustomerResourceUpdatedEventProcessor.instance(ctMessageMock);
+        const event = CustomerResourceUpdatedEventProcessor.instance(ctMessageMock, context);
 
         exp(event.isEventValid()).to.be.true;
     });
@@ -34,7 +36,7 @@ describe('CustomerResourceUpdatedEventProcessor > isEventValid', () => {
             Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: resource } });
             Object.defineProperty(ctMessageMock, 'notificationType', { value: notificationType });
 
-            const event = CustomerResourceUpdatedEventProcessor.instance(ctMessageMock);
+            const event = CustomerResourceUpdatedEventProcessor.instance(ctMessageMock, context);
 
             exp(event.isEventValid()).to.be.false;
         },
@@ -49,7 +51,7 @@ describe('CustomerResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
     it('should generate the klaviyo update profile event when the input customer ResourceUpdated event is valid', async () => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
         const message = inputMessage as unknown as MessageDeliveryPayload;
-        const event = CustomerResourceUpdatedEventProcessor.instance(message);
+        const event = CustomerResourceUpdatedEventProcessor.instance(message, context);
         getCustomerProfileMock.mockResolvedValue(getSampleCustomerApiResponse());
         const getKlaviyoProfileMock = mocked(getKlaviyoProfileByExternalId);
         getKlaviyoProfileMock.mockResolvedValue({ type: 'profile', id: 'someId', attributes: {} });
@@ -64,7 +66,7 @@ describe('CustomerResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
     it('should generate the klaviyo create profile event when the input customer ResourceUpdated event is valid and the profile is not found in Klaviyo', async () => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
         const message = inputMessage as unknown as MessageDeliveryPayload;
-        const event = CustomerResourceUpdatedEventProcessor.instance(message);
+        const event = CustomerResourceUpdatedEventProcessor.instance(message, context);
         getCustomerProfileMock.mockResolvedValue(getSampleCustomerApiResponse());
         const getKlaviyoProfileMock = mocked(getKlaviyoProfileByExternalId);
         getKlaviyoProfileMock.mockResolvedValue(undefined);
@@ -79,7 +81,7 @@ describe('CustomerResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
     it('should not generate the klaviyo event when the customer is not found in CT', async () => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
         const message = inputMessage as unknown as MessageDeliveryPayload;
-        const event = CustomerResourceUpdatedEventProcessor.instance(message);
+        const event = CustomerResourceUpdatedEventProcessor.instance(message, context);
         getCustomerProfileMock.mockResolvedValue(getSampleCustomerApiResponse());
         const getKlaviyoProfileMock = mocked(getKlaviyoProfileByExternalId);
         getKlaviyoProfileMock.mockResolvedValue(undefined);

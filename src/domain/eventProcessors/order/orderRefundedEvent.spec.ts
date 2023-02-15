@@ -1,9 +1,12 @@
 import { expect as exp } from 'chai';
-import { mockDeep } from 'jest-mock-extended';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { OrderRefundedEvent } from './orderRefundedEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import { ctAuthNock, ctGetOrderByIdNock } from '../../../test/integration/nocks/commercetoolsNock';
 import * as ctService from '../../ctService';
+
+const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
+contextMock.currencyService.convert.mockImplementation((value, currency) => value);
 
 describe('orderRefundedEvent > isEventValid', () => {
     it('should return valid when order has refunded items', async () => {
@@ -27,7 +30,7 @@ describe('orderRefundedEvent > isEventValid', () => {
             ],
         }); //mock readonly property
 
-        const event = OrderRefundedEvent.instance(ctMessageMock);
+        const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
 
         exp(event.isEventValid()).to.be.true;
     });
@@ -54,7 +57,7 @@ describe('orderRefundedEvent > isEventValid', () => {
             ],
         }); //mock readonly property
 
-        const event = OrderRefundedEvent.instance(ctMessageMock);
+        const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
 
         exp(event.isEventValid()).to.be.false;
     });
@@ -82,7 +85,7 @@ describe('orderRefundedEvent > isEventValid', () => {
         ctAuthNock();
         ctGetOrderByIdNock('3456789');
 
-        const event = OrderRefundedEvent.instance(ctMessageMock);
+        const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
 
         exp(event.isEventValid()).to.be.false;
     });
@@ -112,11 +115,12 @@ describe('orderRefundedEvent > generateKlaviyoEvent', () => {
         }); //mock readonly property
         jest.spyOn(ctService, 'getOrderById').mockResolvedValueOnce(undefined);
 
-        const event = OrderRefundedEvent.instance(ctMessageMock);
+        const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(0);
+        expect(contextMock.currencyService.convert).toBeCalledTimes(0);
     });
 
     it('should generate the klaviyo event for an order refunded message', async () => {
@@ -143,11 +147,13 @@ describe('orderRefundedEvent > generateKlaviyoEvent', () => {
         ctAuthNock();
         ctGetOrderByIdNock('3456789');
 
-        const event = OrderRefundedEvent.instance(ctMessageMock);
+        const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
+        expect(contextMock.currencyService.convert).toBeCalledTimes(1);
+        expect(contextMock.currencyService.convert).toBeCalledWith(13, 'USD');
         expect(klaviyoEvent[0].body).toMatchSnapshot();
     });
 });

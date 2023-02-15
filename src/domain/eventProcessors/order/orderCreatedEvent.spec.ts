@@ -1,8 +1,11 @@
 import { expect as exp } from 'chai';
-import { mockDeep } from 'jest-mock-extended';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { OrderCreatedEvent } from './orderCreatedEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import { ctAuthNock, ctGetOrderByIdNock } from '../../../test/integration/nocks/commercetoolsNock';
+
+const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
+contextMock.currencyService.convert.mockImplementation((value, currency) => value);
 
 describe('orderCreatedEvent > isEventValid', () => {
     it('should return valid when is an Imported message', async () => {
@@ -11,7 +14,7 @@ describe('orderCreatedEvent > isEventValid', () => {
         Object.defineProperty(ctMessageMock, 'type', { value: 'OrderImported' });
         Object.defineProperty(ctMessageMock, 'order', { value: { customerId: '123-1230-123', orderState: 'Open' } });
 
-        const event = OrderCreatedEvent.instance(ctMessageMock);
+        const event = OrderCreatedEvent.instance(ctMessageMock, contextMock);
 
         exp(event.isEventValid()).to.be.true;
     });
@@ -22,7 +25,7 @@ describe('orderCreatedEvent > isEventValid', () => {
         Object.defineProperty(ctMessageMock, 'type', { value: 'OrderCreated' }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'order', { value: { customerId: '123-1230-123', orderState: 'Open' } }); //mock readonly property
 
-        const event = OrderCreatedEvent.instance(ctMessageMock);
+        const event = OrderCreatedEvent.instance(ctMessageMock, contextMock);
 
         exp(event.isEventValid()).to.be.true;
     });
@@ -42,7 +45,7 @@ describe('orderCreatedEvent > isEventValid', () => {
             Object.defineProperty(ctMessageMock, 'order', { value: order }); //mock readonly property
             Object.defineProperty(ctMessageMock, 'customer', { value: customer }); //mock readonly property
 
-            const event = OrderCreatedEvent.instance(ctMessageMock);
+            const event = OrderCreatedEvent.instance(ctMessageMock, contextMock);
 
             exp(event.isEventValid()).to.be.false;
         },
@@ -57,7 +60,7 @@ describe('orderCreatedEvent > isEventValid', () => {
         }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'customer', { value: null }); //mock readonly property
 
-        const event = OrderCreatedEvent.instance(ctMessageMock);
+        const event = OrderCreatedEvent.instance(ctMessageMock, contextMock);
 
         exp(event.isEventValid()).to.be.false;
     });
@@ -78,12 +81,14 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
             },
         }); //mock readonly property
 
-        const event = OrderCreatedEvent.instance(ctMessageMock);
+        const event = OrderCreatedEvent.instance(ctMessageMock, contextMock);
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.eq(1);
+        expect(contextMock.currencyService.convert).toBeCalledTimes(1);
+        expect(contextMock.currencyService.convert).toBeCalledWith(13, 'USD');
         expect(klaviyoEvent[0].body).toMatchSnapshot();
     });
 
@@ -110,12 +115,14 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
             },
         }); //mock readonly property
 
-        const event = OrderCreatedEvent.instance(ctMessageMock);
+        const event = OrderCreatedEvent.instance(ctMessageMock, contextMock);
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.eq(2);
+        expect(contextMock.currencyService.convert).toBeCalledTimes(1);
+        expect(contextMock.currencyService.convert).toBeCalledWith(13, 'USD');
         klaviyoEvent.forEach((event) => {
             expect(event.body).toMatchSnapshot();
         });
@@ -135,12 +142,14 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
         ctAuthNock();
         ctGetOrderByIdNock('123123123');
 
-        const event = OrderCreatedEvent.instance(ctMessageMock);
+        const event = OrderCreatedEvent.instance(ctMessageMock, contextMock);
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.eq(1);
+        expect(contextMock.currencyService.convert).toBeCalledTimes(1);
+        expect(contextMock.currencyService.convert).toBeCalledWith(13, 'USD');
         expect(klaviyoEvent[0].body).toMatchSnapshot();
     });
 });

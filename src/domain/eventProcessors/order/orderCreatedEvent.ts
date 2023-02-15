@@ -1,7 +1,6 @@
 import { AbstractEvent } from '../abstractEvent';
 import logger from '../../../utils/log';
-import { OrderCreatedMessage, OrderCustomerSetMessage } from '@commercetools/platform-sdk';
-import { Order, OrderState } from '@commercetools/platform-sdk';
+import { Order, OrderCreatedMessage, OrderCustomerSetMessage, OrderState } from '@commercetools/platform-sdk';
 import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
 import { getConfigProperty } from '../../../utils/prop-mapper';
 import { getCustomerProfileFromOrder } from '../../../utils/get-customer-profile-from-order';
@@ -36,7 +35,10 @@ export class OrderCreatedEvent extends AbstractEvent {
                     metric: {
                         name: this.getOrderMetric('OrderCreated'),
                     },
-                    value: getTypedMoneyAsNumber(order?.totalPrice),
+                    value: this.context.currencyService.convert(
+                        getTypedMoneyAsNumber(order?.totalPrice),
+                        order.totalPrice.currencyCode,
+                    ),
                     properties: { ...order } as any,
                     unique_id: order.id,
                     time: order.createdAt,
