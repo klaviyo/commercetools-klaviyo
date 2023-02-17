@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "npm run clean && ./build.js && cp package.json ./dist/package.json",
+    "build": "npm run clean && ./build.js && cp package.json ./dist/package.json && cp -r ./config ./dist",
     "clean": "rm -rf dist/",
     "klaviyo-types": "dts-gen -m klaviyo-api -f src/types/klaviyo-api.d.ts -o",
     "lint": "eslint 'src/**/*.ts' --quiet",

@@ -26,6 +26,7 @@ exports[`orderRefundedEvent > generateKlaviyoEvent should generate the klaviyo e
           "fractionDigits": 2,
           "type": "centPrecision",
         },
+        "version": 24,
       },
       "time": [MockFunction],
       "unique_id": "3456789",

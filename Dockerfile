@@ -15,6 +15,7 @@ RUN yarn install --production --ignore-scripts --prefer-offline --force --frozen
 FROM node:18-slim
 
 ENV NODE_ENV production
+ENV NODE_CONFIG_DIR ./dist/config
 USER node
 
 WORKDIR /usr/src/app

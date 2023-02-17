@@ -1,7 +1,7 @@
 import { mapAllowedProperties } from './property-mapper';
 
 const exampleBadObject = {
-    version: 7,
+    unmappedProperty: '2023-02-17T11:35:31.155Z',
 };
 
 const exampleMappableObject = {

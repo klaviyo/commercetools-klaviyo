@@ -58,6 +58,7 @@ exports[`orderCreatedEvent > generateKlaviyoEvent should generate the klaviyo ev
           "fractionDigits": 2,
           "type": "centPrecision",
         },
+        "version": 24,
       },
       "time": "2023-01-27T15:00:00.000Z",
       "unique_id": "123123123",

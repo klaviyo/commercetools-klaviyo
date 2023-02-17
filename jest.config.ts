@@ -2,6 +2,7 @@ import type { Config } from '@jest/types';
 
 const jestConfig: Config.InitialOptions = {
     // extensionsToTreatAsEsm: ['.ts'],
+    roots: ['src'],
     preset: 'ts-jest',
     testMatch: ['**/*.spec.ts'],
     testEnvironment: 'node',
