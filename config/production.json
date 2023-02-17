@@ -1,0 +1,47 @@
+{
+    "order": {
+        "states": {
+            "changed": {
+                "cancelledOrder": ["Cancelled"],
+                "fulfilledOrder": ["Confirmed", "Complete"]
+            },
+            "created": {
+                "placedOrder": ["Open"]
+            }
+        },
+        "messages": {
+            "changed": ["OrderStateChanged"],
+            "created": ["OrderCreated", "OrderImported", "OrderCustomerSet"]
+        },
+        "properties": {
+            "include": [
+                "customerId",
+                "customerEmail",
+                "id",
+                "createdAt",
+                "lastModifiedAt",
+                "lineItems",
+                "customLineItems",
+                "totalPrice",
+                "orderState"
+            ],
+            "map": {
+                "id": "orderId",
+                "lineItems": "items",
+                "customLineItems": "customItems"
+            }
+        },
+        "metrics": {
+            "cancelledOrder": "Cancelled Order",
+            "fulfilledOrder": "Fulfilled Order",
+            "placedOrder": "Placed Order",
+            "orderedProduct": "Ordered Product",
+            "refundedOrder": "Refunded Order"
+        }
+    },
+    "customer": {
+        "messages": {
+            "addressChanged": ["CustomerAddressAdded", "CustomerAddressRemoved", "CustomerAddressChanged"]
+        }
+    }
+}
