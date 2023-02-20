@@ -1,131 +1,83 @@
 # klaviyo-ct-plugin
 
-The [Klaviyo](https://www.klaviyo.com/) plugin for the integration with [commercetools](https://commercetools.com/).
-
 ![Deployment status](https://github.com/e2x/klaviyo-ct-plugin/actions/workflows/plugin-deploy.yml/badge.svg)
 
-## Infrastructure
+The [Klaviyo](https://www.klaviyo.com/) plugin for [commercetools](https://commercetools.com/) is a Node.js application
+that provides support to sync Commercetools data with Klaviyo.
 
-In this sample implementation, we used Google Cloud Platform (GCP) to host the plugin.
-A single GCP project is created `klaviyo-ct-plugin` which hosts two environments separated by namespace (each
-environment specific resource is prefixed with the environment name `dev` or `prod`).
-The plugin is built into a docker image and deployed on [GCP Cloud Run](https://cloud.google.com/run).
-Commercetools subscriptions are configured via Terraform and communicate to the plugin using a
-single [GCP pub/sub](https://cloud.google.com/pubsub) topic.
-For all the details about the infrastructure configuration check
-the [infrastructure documentation](docs/infrastructure.md)
+The plugin gets data from commercetools in two different ways:
 
-## Local development
+- **Realtime data** - [Commercetools subscriptions](https://docs.commercetools.com/api/projects/subscriptions) are used
+  to sync asynchronously data into Klaviyo in response to an event on commercetools.
+- **Historical data** - A set of API endpoints are provided to manually trigger the data synchronization into Klaviyo.
+  Typical use case include sync of old orders into Klaviyo, synchronization of the product catalogue...
 
-Software required:
+![Klaviyo CT Plugin architecture](./docs/img/arch_diagram.png "Klaviyo Commercetools Plugin Architecture")
 
-* Node.js v18
-* yarn
+## Supported features
 
-Install dependencies:
+Real time data sync from commercetools:
 
-```shell
-yarn 
-```
+- Customer creation
+- Customer update
+- Order placed
+- Order cancelled
+- Order fulfilled
 
-To run integration tests locally create in the root of the project a new file names `.env` with the klaviyo auth key:
+Historical data sync from commercetools:
 
-```dotenv
-KLAVIYO_AUTH_KEY=<the-klaviyo-auth-key>
-```
+- Orders
+- Product catalogue
+- Customers
 
-Run tests:
+## Plugin installation
 
-```shell
-yarn test
-```
+TODO
 
-### Running terraform locally
+## Plugin development
 
-Use an existing service account key or generate a new one:
+See [plugin development documentation](docs/plugin-development.md)
 
-```shell
-gcloud iam service-accounts keys create ./klaviyo-gcp-key.json --iam-account terraform@klaviyo-ct-plugin.iam.gserviceaccount.com
-```
+## Plugin integration details
 
-- Authenticate to Google Cloud platform using the terraform service account key:
+### Realtime events
 
-```shell
-gcloud auth activate-service-account terraform@klaviyo-ct-plugin.iam.gserviceaccount.com --key-file=/path-to-your-key/klaviyo-ct-plugin-a5c9b42d8e43.json --project=klaviyo-ct-plugin
-```
+| Commercetools event | Commercetools subscription event                        | Klaviyo request                                                                                                                                       |
+|---------------------|---------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Customer Created    | `CustomerCreated`                                       | Profiles [create](https://developers.klaviyo.com/en/reference/create_profile) or [update](https://developers.klaviyo.com/en/reference/update_profile) |
+| Customer Updated    | `ResourceUpdated` > `customer`                          | Profiles [update](https://developers.klaviyo.com/en/reference/update_profile)                                                                         |
+| Order created       | `OrderCreated` or `OrderImported` or `OrderCustomerSet` | Events [create event](https://developers.klaviyo.com/en/reference/create_event)                                                                       |
+| Order state changed | `OrderStateChanged`                                     | Events [create event](https://developers.klaviyo.com/en/reference/create_event)                                                                       |
+| Order refunded      | TODO                                                    | Events [create event](https://developers.klaviyo.com/en/reference/create_event)                                                                       |
 
-Add environment variable:
-`export GOOGLE_APPLICATION_CREDENTIALS=~/path-to-your-key/klaviyo-ct-plugin-a5c9b42d8e43.json`
+## Plugin customization
 
-Create a new file `infrastructure/environment/credentials.tfvars` with the following content:
+### Configuration
 
-```terraform
-ct_client_id     = "<add-your-commercetools-client-id>"
-ct_secret        = "<add-your-commercetools-secret>"
-klaviyo_auth_key = "<add-your-klaviyo-auth-key>"
-  ```
+It is possible to change the default behaviour of the plugin by customising the default configuration.  
+The configuration files can be found in the `/config` directory.  
+The configuration can be different per environment (the env variable `NODE_ENV` is used to select the
+current environment), check the [node-config](https://github.com/node-config/node-config#readme) library for more info.
 
-```shell
-cd infrastructure
-```
+#### Configuration options
 
-```shell
-./terraform.sh apply dev
-```
+| Property                              | Default   | Description                                                                                                                                                                                                                                                       |
+|---------------------------------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `order.states.changed.cancelledOrder` | Cancelled | The commercetools `order.orderState` value that triggers an [Cancelled Order](https://developers.klaviyo.com/en/docs/guide_to_integrating_a_platform_without_a_pre_built_klaviyo_integration#fulfilled-order-cancelled-order-and-refunded-order) event in klaviyo |
+| ....                                  | ...       | TODO                                                                                                                                                                                                                                                              |
 
-### Build and deployment to cloud run
+#### Dummy services
 
-Authenticate with Google Cloud platform.
+Some functionalities are specific to the environment where the plugin is installed or different third party service can
+be used. For this reason we provided only the interface of the service with a sample implementation.
 
-Authenticate with your google account if owner of the project
+| Service           | Sample implementation                           | Description                                                                                                                                                                                                                            |
+|-------------------|-------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `CurrencyService` | `src/domain/services/defaultCurrencyService.ts` | Order amounts can be available in different currencies. In order to have a meaningful representation of the data, all amounts should be converted in a single currency. This service should implement the logic to convert currencies. |
 
-```shell
-#run only once
-gcloud auth application-default login
-```
+### Error handling
 
-OR authenticate with service account key
-
-```shell
-gcloud auth activate-service-account terraform@klaviyo-ct-plugin.iam.gserviceaccount.com --key-file=/Users/roberto.losanno/work/klaviyo/gcp/klaviyo-ct-plugin-a5c9b42d8e43.json --project=klaviyo-ct-plugin    
-
-#export GOOGLE_APPLICATION_CREDENTIALS=~/path-to-you-service-acccount-key.json
-```
-
-```shell
-#run only once
-gcloud auth configure-docker us-central1-docker.pkg.dev
-```
-
-```shell
-docker build -t klaviyo-ct-plugin .
-```  
-
-```shell
-docker tag klaviyo-ct-plugin us-central1-docker.pkg.dev/klaviyo-ct-plugin/docker-repo/klaviyo-ct-plugin
-```    
-
-```shell
-docker push us-central1-docker.pkg.dev/klaviyo-ct-plugin/docker-repo/klaviyo-ct-plugin
-```  
-
-```shell
-gcloud run services update dev-klaviyo-ct-plugin \
---image us-central1-docker.pkg.dev/klaviyo-ct-plugin/docker-repo/klaviyo-ct-plugin \
---region=us-central1 \
---port 6789 \
---max-instances=5 \
---update-secrets=KLAVIYO_AUTH_KEY=klaviyo_auth_key:latest \
---update-secrets=CT_API_CLIENT=commercetools_api_client:latest
-```
-
-## End-to-end tests
-
-To write and run end-to-end tests check the [documentation](docs/e2e-tests.md)
-
-## Error handling
-
-### commercetools subscriptions
+#### commercetools subscriptions
 
 commercetools events are sent on the configured queue and consumed by the plugin.  
 The event is filtered, transformed and sent to klaviyo using the `processEvent` method.   
@@ -144,7 +96,7 @@ The following outcomes are possible:
    The `processEvent` method throws an error. The `processEvent` caller should catch the error and not acknowledge the
    message to the queue, so that the message can be reprocessed later.
 
-## Security
+### Security
 
 The klaviyo API key is passed via an environment variable. When deployed on the cloud, use your cloud specific secrets
 manager to store and retrieve the key.
