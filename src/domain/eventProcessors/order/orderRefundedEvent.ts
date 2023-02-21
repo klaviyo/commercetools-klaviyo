@@ -1,35 +1,51 @@
 import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../utils/log';
-import { ReturnInfoSetMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
-import { ReturnInfo } from '@commercetools/platform-sdk';
+import {
+    PaymentTransactionAddedMessage,
+    PaymentTransactionStateChangedMessage,
+    Transaction,
+} from '@commercetools/platform-sdk';
 import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
 import { getCustomerProfileFromOrder } from '../../../utils/get-customer-profile-from-order';
-import { getOrderById } from '../../ctService';
+import { getOrderByPaymentId, getPaymentById } from '../../ctService';
 import { mapAllowedProperties } from '../../../utils/property-mapper';
 import config from 'config';
+import { StatusError } from '../../../types/errors/StatusError'
 
 export class OrderRefundedEvent extends AbstractEventProcessor {
     isEventValid(): boolean {
-        const returnInfoSetMessage = this.ctMessage as unknown as ReturnInfoSetMessage;
+        const message = this.ctMessage as unknown as
+            | PaymentTransactionAddedMessage
+            | PaymentTransactionStateChangedMessage;
 
         return (
-            returnInfoSetMessage.resource.typeId === 'order' &&
-            returnInfoSetMessage.type === 'ReturnInfoSet' &&
-            !!returnInfoSetMessage.returnInfo &&
-            this.isValidState(returnInfoSetMessage.returnInfo)
+            message.resource.typeId === 'payment' &&
+            this.isValidMessageType(message.type) &&
+            this.hasExpectedMessageProperties(message)
         );
     }
 
     async generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {
-        const orderStateChangedMessage = this.ctMessage as unknown as ReturnInfoSetMessage;
-        logger.info('Processing order state changed event');
+        const message = this.ctMessage as unknown as
+            | PaymentTransactionAddedMessage
+            | PaymentTransactionStateChangedMessage;
+        logger.info('Processing payment transaction state changed event');
 
-        const ctOrder = await getOrderById(orderStateChangedMessage.resource.id);
-
-        if (!ctOrder) {
+        const payment = await getPaymentById(message.resource.id);
+        let transaction: Transaction | undefined;
+        if ('transaction' in message) {
+            transaction = message.transaction;
+        } else {
+            transaction = payment.transactions.find(
+                (transaction) => transaction.id === message.transactionId && transaction.type === 'Refund',
+            );
+        }
+        if (!transaction) {
             return [];
         }
 
+        const ctOrder = await getOrderByPaymentId(message.resource.id);
+        
         const body: EventRequest = {
             data: {
                 type: 'event',
@@ -43,8 +59,8 @@ export class OrderRefundedEvent extends AbstractEventProcessor {
                         ctOrder.totalPrice.currencyCode,
                     ),
                     properties: mapAllowedProperties('order', { ...ctOrder }) as any,
-                    unique_id: orderStateChangedMessage.resource.id,
-                    time: orderStateChangedMessage.createdAt,
+                    unique_id: message.resource.id,
+                    time: message.createdAt,
                 },
             },
         };
@@ -57,12 +73,32 @@ export class OrderRefundedEvent extends AbstractEventProcessor {
         ];
     }
 
-    private isValidState(returnInfo: ReturnInfo[]): boolean {
+    private isValidMessageType(type: string): boolean {
         return Boolean(
-            returnInfo
-                .map((x) => x.items)
-                .flat()
-                .find((item) => item.paymentState === 'Refunded'),
+            (config.has('payment.messages.transactionAdded') &&
+                (config.get('payment.messages.transactionAdded') as string[])?.includes(type)) ||
+                (config.has('payment.messages.transactionChanged') &&
+                    (config.get('payment.messages.transactionChanged') as string[])?.includes(type)),
+        );
+    }
+
+    private isValidState(message: PaymentTransactionAddedMessage | PaymentTransactionStateChangedMessage): boolean {
+        return Boolean(
+            config.has('payment.states.validTransactionStates') &&
+                (config.get('payment.states.validTransactionStates') as string[])?.includes(
+                    (message as PaymentTransactionAddedMessage)?.transaction?.state ||
+                        (message as PaymentTransactionStateChangedMessage)?.state,
+                ),
+        );
+    }
+
+    private hasExpectedMessageProperties(
+        message: PaymentTransactionAddedMessage | PaymentTransactionStateChangedMessage,
+    ) {
+        return (
+            ((message as PaymentTransactionAddedMessage)?.transaction?.type === 'Refund' ||
+                !!(message as PaymentTransactionStateChangedMessage)?.transactionId) &&
+            this.isValidState(message)
         );
     }
 }

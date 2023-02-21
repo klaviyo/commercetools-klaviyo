@@ -2,33 +2,51 @@ import { expect as exp } from 'chai';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { OrderRefundedEvent } from './orderRefundedEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
-import { ctAuthNock, ctGetOrderByIdNock } from '../../../test/integration/nocks/commercetoolsNock';
+import {
+    ctAuthNock,
+    ctGetPaymentByIdNock,
+    ctGetOrderByPaymentIdNock,
+} from '../../../test/integration/nocks/commercetoolsNock';
 import * as ctService from '../../ctService';
 
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 contextMock.currencyService.convert.mockImplementation((value, currency) => value);
 
 describe('orderRefundedEvent > isEventValid', () => {
-    it('should return valid when order has refunded items', async () => {
+    it('should return valid when a payment transaction has type "Refund" (PaymentTransactionAdded)', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', {
             value: {
-                typeId: 'order',
+                typeId: 'payment',
                 id: '3456789',
             },
         }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'type', { value: 'ReturnInfoSet' }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'returnInfo', {
-            value: [
-                {
-                    items: [
-                        {
-                            paymentState: 'Refunded',
-                        },
-                    ],
-                },
-            ],
+        Object.defineProperty(ctMessageMock, 'type', { value: 'PaymentTransactionAdded' }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'transaction', {
+            value: {
+                type: 'Refund',
+                state: 'Initial',
+            },
         }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'state', { value: null }); //mock readonly property
+
+        const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
+
+        exp(event.isEventValid()).to.be.true;
+    });
+
+    it('should return valid when a payment transaction has type "Refund" (PaymentTransactionStateChanged)', async () => {
+        const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
+        Object.defineProperty(ctMessageMock, 'resource', {
+            value: {
+                typeId: 'payment',
+                id: '3456789',
+            },
+        }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'type', { value: 'PaymentTransactionStateChanged' }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'transaction', { value: null }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'state', { value: 'Success' }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'transactionId', { value: '123456' }); //mock readonly property
 
         const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
 
@@ -36,84 +54,49 @@ describe('orderRefundedEvent > isEventValid', () => {
     });
 
     it.each`
-        resource     | type
-        ${'invalid'} | ${'ReturnInfoSet'}
-        ${'order'}   | ${'invalid'}
-    `('should return invalid when is not a ReturnInfoSet message', async ({ resource, type }) => {
-        const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
-        Object.defineProperty(ctMessageMock, 'resource', {
-            value: { typeId: resource, id: '3456789' },
-        }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'type', { value: type }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'returnInfo', {
-            value: [
-                {
-                    items: [
-                        {
-                            paymentState: 'Refunded',
-                        },
-                    ],
-                },
-            ],
-        }); //mock readonly property
+        resource     | type                                | transactionId | transaction | state
+        ${'invalid'} | ${'PaymentTransactionAdded'}        | ${null}       | ${null}     | ${null}
+        ${'payment'} | ${'invalid'}                        | ${'123456'}   | ${null}     | ${null}
+        ${'invalid'} | ${'PaymentTransactionStateChanged'} | ${'123456'}   | ${null}     | ${'Success'}
+    `(
+        'should return invalid when is not a valid Payment Transaction message',
+        async ({ resource, type, transactionId, transaction, state }) => {
+            const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
+            Object.defineProperty(ctMessageMock, 'resource', {
+                value: { typeId: resource, id: '3456789' },
+            }); //mock readonly property
+            Object.defineProperty(ctMessageMock, 'type', { value: type }); //mock readonly property
+            Object.defineProperty(ctMessageMock, 'transaction', { value: transaction }); //mock readonly property
+            Object.defineProperty(ctMessageMock, 'transactionId', { value: transactionId }); //mock readonly property
+            Object.defineProperty(ctMessageMock, 'state', { value: state }); //mock readonly property
 
-        const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
+            const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
 
-        exp(event.isEventValid()).to.be.false;
-    });
-
-    it('should return invalid when the order does not have refunded items', async () => {
-        const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
-        Object.defineProperty(ctMessageMock, 'resource', {
-            value: {
-                typeId: 'order',
-                id: '3456789',
-            },
-        }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'type', { value: 'ReturnInfoSet' }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'returnInfo', {
-            value: [
-                {
-                    items: [
-                        {
-                            paymentState: 'Other',
-                        },
-                    ],
-                },
-            ],
-        }); //mock readonly property
-        ctAuthNock();
-        ctGetOrderByIdNock('3456789');
-
-        const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
-
-        exp(event.isEventValid()).to.be.false;
-    });
+            exp(event.isEventValid()).to.be.false;
+        },
+    );
 });
 
 describe('orderRefundedEvent > generateKlaviyoEvent', () => {
-    it("should not generate klaviyo events if it can't find the order in commercetools", async () => {
+    it('should not generate klaviyo events if the transaction is undefined', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', {
             value: {
-                typeId: 'order',
-                id: '3456789',
+                typeId: 'payment',
+                id: '123456',
             },
         }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'type', { value: 'ReturnInfoSet' }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'orderState', { value: 'Cancelled' }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'returnInfo', {
-            value: [
-                {
-                    items: [
-                        {
-                            paymentState: 'Refunded',
-                        },
-                    ],
-                },
-            ],
-        }); //mock readonly property
-        jest.spyOn(ctService, 'getOrderById').mockResolvedValueOnce(undefined);
+        Object.defineProperty(ctMessageMock, 'type', { value: 'PaymentTransactionAdded' }); //mock readonly property
+        jest.spyOn(ctService, 'getPaymentById').mockResolvedValueOnce({
+            id: '123456',
+            createdAt: '2023-02-08T13:57:16.045Z',
+            lastModifiedAt: '2023-02-08T13:57:16.045Z',
+            paymentStatus: {},
+            transactions: [],
+        } as any);
+
+        ctAuthNock();
+        ctGetPaymentByIdNock('3456789');
 
         const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
         const klaviyoEvent = await event.generateKlaviyoEvents();
@@ -123,29 +106,30 @@ describe('orderRefundedEvent > generateKlaviyoEvent', () => {
         expect(contextMock.currencyService.convert).toBeCalledTimes(0);
     });
 
-    it('should generate the klaviyo event for an order refunded message', async () => {
+    it('should generate klaviyo events for a PaymentTransactionAdded message', async () => {
+        // recorder.rec();
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', {
             value: {
-                typeId: 'order',
+                typeId: 'payment',
                 id: '3456789',
             },
         }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'type', { value: 'ReturnInfoSet' }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'orderState', { value: 'Cancelled' }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'returnInfo', {
+        Object.defineProperty(ctMessageMock, 'type', { value: 'PaymentTransactionAdded' }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'transaction', {
             value: [
                 {
-                    items: [
-                        {
-                            paymentState: 'Refunded',
-                        },
-                    ],
+                    id: '123456',
+                    type: 'Refund',
+                    state: 'Initial',
                 },
             ],
         }); //mock readonly property
+
         ctAuthNock();
-        ctGetOrderByIdNock('3456789');
+        ctGetPaymentByIdNock('3456789');
+        ctAuthNock();
+        ctGetOrderByPaymentIdNock('3456789');
 
         const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
         const klaviyoEvent = await event.generateKlaviyoEvents();
@@ -153,7 +137,6 @@ describe('orderRefundedEvent > generateKlaviyoEvent', () => {
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
         expect(contextMock.currencyService.convert).toBeCalledTimes(1);
-        expect(contextMock.currencyService.convert).toBeCalledWith(13, 'USD');
         expect(klaviyoEvent[0].body).toMatchSnapshot();
     });
 });

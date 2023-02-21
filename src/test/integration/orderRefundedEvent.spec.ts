@@ -2,8 +2,9 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { app } from '../../adapter/pubsubAdapter';
 import { klaviyoEventNock } from './nocks/KlaviyoEventNock';
-import { sampleOrderCreatedMessage, sampleReturnInfoSetMessage } from '../testData/orderData';
-import { ctAuthNock, ctGetOrderByIdNock } from './nocks/commercetoolsNock';
+import { sampleOrderCreatedMessage, sampleOrderWithPaymentMessage } from '../testData/orderData';
+import { samplePaymentTransactionAddedMessage } from '../testData/ctPaymentMessages';
+import { ctAuthNock, ctGetOrderByPaymentIdNock, ctGetPaymentByIdNock } from './nocks/commercetoolsNock';
 import { mapAllowedProperties } from '../../utils/property-mapper';
 
 chai.use(chaiHttp);
@@ -20,7 +21,9 @@ describe('pubSub adapter event', () => {
 
     beforeEach(() => {
         ctAuthNock();
-        ctGetOrderByIdNock('3456789');
+        ctGetPaymentByIdNock('3456789');
+        ctAuthNock();
+        ctGetOrderByPaymentIdNock('3456789');
     });
 
     it('should return status 204 when the request is valid but ignored as message type is not supported', (done) => {
@@ -45,7 +48,7 @@ describe('pubSub adapter event', () => {
                 metric: { name: 'Refunded Order' },
                 value: 13,
                 properties: {
-                    ...mapAllowedProperties('order', { ...sampleOrderCreatedMessage.order }),
+                    ...mapAllowedProperties('order', { ...sampleOrderWithPaymentMessage.order }),
                 },
                 unique_id: '3456789',
                 time: '2023-01-18 09:23:00',
@@ -54,7 +57,7 @@ describe('pubSub adapter event', () => {
 
         chai.request(server)
             .post('/')
-            .send({ message: { data: Buffer.from(JSON.stringify(sampleReturnInfoSetMessage)) } })
+            .send({ message: { data: Buffer.from(JSON.stringify(samplePaymentTransactionAddedMessage)) } })
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res.status).to.eq(204);
@@ -72,6 +75,13 @@ describe('pubSub event that produces 4xx error', () => {
 
     afterAll(() => {
         server.close();
+    });
+
+    beforeEach(() => {
+        ctAuthNock();
+        ctGetPaymentByIdNock('3456789');
+        ctAuthNock();
+        ctGetOrderByPaymentIdNock('3456789');
     });
 
     it('should return status 400 when the request is invalid', (done) => {
@@ -109,7 +119,9 @@ describe('pubSub event that produces 5xx error', () => {
 
     beforeEach(() => {
         ctAuthNock();
-        ctGetOrderByIdNock('3456789');
+        ctGetPaymentByIdNock('3456789');
+        ctAuthNock();
+        ctGetOrderByPaymentIdNock('3456789');
     });
 
     it('should not acknowledge the message to pub/sub and return status 500 when the request is invalid', (done) => {
@@ -123,7 +135,7 @@ describe('pubSub event that produces 5xx error', () => {
                     metric: { name: 'Refunded Order' },
                     value: 13,
                     properties: {
-                        ...mapAllowedProperties('order', { ...sampleOrderCreatedMessage.order }),
+                        ...mapAllowedProperties('order', { ...sampleOrderWithPaymentMessage.order }),
                     },
                     unique_id: '3456789',
                     time: '2023-01-18 09:23:00',
@@ -134,9 +146,8 @@ describe('pubSub event that produces 5xx error', () => {
 
         chai.request(server)
             .post('/')
-            .send({ message: { data: Buffer.from(JSON.stringify(sampleReturnInfoSetMessage)) } })
+            .send({ message: { data: Buffer.from(JSON.stringify(samplePaymentTransactionAddedMessage)) } })
             .end((err, res) => {
-                expect(err).to.be.null;
                 expect(res.status).to.eq(500);
                 expect(createEventNock.isDone()).to.be.true;
                 done();

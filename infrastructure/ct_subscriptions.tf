@@ -17,7 +17,7 @@ locals {
       topic             = "${var.gcp_environment_namespace}-commercetools-topic"
       resource_type_ids = ["order"]
       resource_type_id  = "order"
-      types             = ["OrderCreated", "OrderStateChanged", "ReturnInfoSet", "ReturnInfoAdded", "OrderImported", "OrderCustomerSet"]
+      types             = ["OrderCreated", "OrderStateChanged", "OrderImported", "OrderCustomerSet"]
       queue_ref         = google_pubsub_topic.commercetools
     },
     {
@@ -28,6 +28,16 @@ locals {
       resource_type_ids = ["customer"]
       resource_type_id  = "customer"
       types             = ["CustomerCreated"]
+      queue_ref         = google_pubsub_topic.commercetools
+    },
+    {
+      key               = "${var.gcp_environment_namespace}-gcp-payment"
+      type              = "GoogleCloudPubSub"
+      projectId         = var.gcp_project_id
+      topic             = "${var.gcp_environment_namespace}-commercetools-topic"
+      resource_type_ids = ["payment"]
+      resource_type_id  = "payment"
+      types             = ["PaymentTransactionAdded", "PaymentTransactionStateChanged"]
       queue_ref         = google_pubsub_topic.commercetools
     }
   ]

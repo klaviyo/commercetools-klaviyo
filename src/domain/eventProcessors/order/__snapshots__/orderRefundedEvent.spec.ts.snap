@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`orderRefundedEvent > generateKlaviyoEvent should generate the klaviyo event for an order refunded message 1`] = `
+exports[`orderRefundedEvent > generateKlaviyoEvent should generate klaviyo events for a PaymentTransactionAdded message 1`] = `
 {
   "data": {
     "attributes": {
@@ -22,11 +22,11 @@ exports[`orderRefundedEvent > generateKlaviyoEvent should generate the klaviyo e
         "orderState": "Open",
         "totalPrice": {
           "centAmount": 1300,
-          "currencyCode": "USD",
+          "currencyCode": "EUR",
           "fractionDigits": 2,
           "type": "centPrecision",
         },
-        "version": 24,
+        "version": 1,
       },
       "time": [MockFunction],
       "unique_id": "3456789",

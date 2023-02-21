@@ -61,5 +61,18 @@
         "CustomerAddressChanged"
       ]
     }
+  },
+  "payment": {
+    "messages": {
+      "transactionAdded": ["PaymentTransactionAdded"],
+      "transactionChanged": ["PaymentTransactionStateChanged"]
+    },
+    "states": {
+      "validTransactionStates": [
+        "Initial",
+        "Pending",
+        "Success"
+      ]
+    }
   }
 }

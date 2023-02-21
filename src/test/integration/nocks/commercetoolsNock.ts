@@ -78,3 +78,99 @@ export const ctGetOrderByIdNock = (orderId: string, status = 200) => {
             refusedGifts: [],
         });
 };
+
+export const ctGetPaymentByIdNock = (paymentId: string, responseStatusCode = 200) => {
+    return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
+        .get(`/klaviyo-dev/payments/${paymentId}`)
+        .reply(responseStatusCode, {
+            id: paymentId,
+            createdAt: '2023-02-16T22:45:59.072Z',
+            lastModifiedAt: '2023-02-16T22:49:47.526Z',
+            key: '123458',
+            interfaceId: '789013',
+            amountPlanned: {
+                type: 'centPrecision',
+                currencyCode: 'USD',
+                centAmount: 1000,
+                fractionDigits: 2,
+            },
+            paymentMethodInfo: {
+                paymentInterface: 'STRIPE',
+                method: 'CREDIT_CARD',
+                name: {
+                    en: 'Credit Card',
+                },
+            },
+            paymentStatus: {},
+            transactions: [
+                {
+                    id: '123456',
+                    timestamp: '2015-10-20T08:54:24.000Z',
+                    type: 'Refund',
+                    amount: {
+                        type: 'centPrecision',
+                        currencyCode: 'USD',
+                        centAmount: 1000,
+                        fractionDigits: 2,
+                    },
+                    state: 'Success',
+                },
+                {
+                    id: '123456',
+                    type: 'Refund',
+                    amount: {
+                        type: 'centPrecision',
+                        currencyCode: 'EUR',
+                        centAmount: 1000,
+                        fractionDigits: 2,
+                    },
+                    state: 'Initial',
+                },
+            ],
+        });
+};
+
+export const ctGetOrderByPaymentIdNock = (paymentId: string, responseStatusCode = 200) => {
+    return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
+        .get('/klaviyo-dev/orders')
+        .query({
+            limit: '1',
+            where: `paymentInfo%28payments%28id%20%3D%20%22${paymentId}%22%29%29`,
+        })
+        .reply(responseStatusCode, {
+            results: [
+                {
+                    type: 'Order',
+                    id: '3456789',
+                    createdAt: '2023-01-27T15:00:00.000Z',
+                    lastModifiedAt: '2023-01-27T15:00:00.000Z',
+                    customerId: '123-123-123',
+                    customerEmail: 'test@klaviyo.com',
+                    totalPrice: {
+                        type: 'centPrecision',
+                        currencyCode: 'EUR',
+                        centAmount: 1300,
+                        fractionDigits: 2,
+                    },
+                    orderState: 'Open',
+                    returnInfo: [],
+                    lineItems: [],
+                    customLineItems: [],
+                    shippingMode: '',
+                    shipping: [],
+                    version: 1,
+                    syncInfo: [],
+                    origin: '',
+                    refusedGifts: [],
+                    paymentInfo: {
+                        payments: [
+                            {
+                                typeId: 'payment',
+                                id: paymentId,
+                            },
+                        ],
+                    },
+                },
+            ],
+        });
+};

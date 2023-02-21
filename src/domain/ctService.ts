@@ -1,5 +1,5 @@
 import { AuthMiddlewareOptions, Client, ClientBuilder, HttpMiddlewareOptions } from '@commercetools/sdk-client-v2';
-import { ApiRoot, createApiBuilderFromCtpClient, Customer, Order } from '@commercetools/platform-sdk';
+import { ApiRoot, Payment, createApiBuilderFromCtpClient, Customer, Order } from '@commercetools/platform-sdk'
 import logger from '../utils/log';
 import fetch from 'node-fetch';
 import { StatusError } from '../types/errors/StatusError';
@@ -69,4 +69,47 @@ export const getOrderById = async (orderId: string): Promise<Order | undefined> 
     }
 
     return ctOrder;
+};
+
+export const getOrderByPaymentId = async (paymentId: string): Promise<Order> => {
+    logger.info(`Getting order with payment ${paymentId} in commercetools`);
+
+    try {
+        const orderResults = (await getApiRoot().orders().get({
+            queryArgs: {
+                limit: 1,
+                where: `paymentInfo(payments(id = "${paymentId}"))`
+            }
+        }).execute()).body?.results;
+        if (!orderResults?.length) {
+            throw new StatusError(
+                404,
+                `No results returned when querying orders with payment ID ${paymentId}`,
+            );
+        }
+        return orderResults[0];
+    } catch (error: any) {
+        logger.error(`Error getting order in CT with payment id ${paymentId}, status: ${error.status || error.statusCode}`, error);
+        throw new StatusError(
+            error.statusCode,
+            `CT get order by payment id api returns failed with status code ${error.status || error.statusCode}, msg: ${error.message}`,
+        );
+    }
+};
+
+export const getPaymentById = async (paymentId: string): Promise<Payment> => {
+    logger.info(`Getting payment ${paymentId} in commercetools`);
+    let ctPayment: Payment;
+
+    try {
+        ctPayment = (await getApiRoot().payments().withId({ ID: paymentId }).get().execute()).body;
+    } catch (error: any) {
+        logger.error(`Error getting payment in CT with id ${paymentId}, status: ${error.statusCode}`, error);
+        throw new StatusError(
+            error.statusCode,
+            `CT get payment api returns failed with status code ${error.statusCode}, msg: ${error.message}`,
+        );
+    }
+
+    return ctPayment;
 };

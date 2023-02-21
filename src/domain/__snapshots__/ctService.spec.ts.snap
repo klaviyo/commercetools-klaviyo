@@ -80,3 +80,77 @@ exports[`ctService > getOrderById should get the order from commercetools by id 
   "version": 24,
 }
 `;
+
+exports[`ctService > getOrderByPaymentId should get the order from commercetools by payment id 1`] = `
+{
+  "createdAt": "2023-01-27T15:00:00.000Z",
+  "customLineItems": [],
+  "customerEmail": "test@klaviyo.com",
+  "customerId": "123-123-123",
+  "id": "3456789",
+  "lastModifiedAt": "2023-01-27T15:00:00.000Z",
+  "lineItems": [],
+  "orderState": "Open",
+  "origin": "",
+  "paymentInfo": {
+    "payments": [
+      {
+        "id": "3456789",
+        "typeId": "payment",
+      },
+    ],
+  },
+  "refusedGifts": [],
+  "returnInfo": [],
+  "shipping": [],
+  "shippingMode": "",
+  "syncInfo": [],
+  "totalPrice": {
+    "centAmount": 1300,
+    "currencyCode": "EUR",
+    "fractionDigits": 2,
+    "type": "centPrecision",
+  },
+  "version": 1,
+}
+`;
+
+exports[`ctService > getPaymentById should get the payment from commercetools by id 1`] = `
+{
+  "amountPlanned": {
+    "centAmount": 1000,
+    "currencyCode": "USD",
+    "fractionDigits": 2,
+    "type": "centPrecision",
+  },
+  "createdAt": "2023-02-08T13:55:02.247Z",
+  "id": "3456789",
+  "interfaceId": "789011",
+  "interfaceInteractions": [],
+  "key": "123456",
+  "lastModifiedAt": "2023-02-08T13:55:02.247Z",
+  "paymentMethodInfo": {
+    "method": "CREDIT_CARD",
+    "name": {
+      "en": "Credit Card",
+    },
+    "paymentInterface": "STRIPE",
+  },
+  "paymentStatus": {},
+  "transactions": [
+    {
+      "amount": {
+        "centAmount": 1000,
+        "currencyCode": "USD",
+        "fractionDigits": 2,
+        "type": "centPrecision",
+      },
+      "id": "123456",
+      "state": "Initial",
+      "timestamp": "2015-10-20T08:54:24.000Z",
+      "type": "Refund",
+    },
+  ],
+  "version": 1,
+}
+`;
