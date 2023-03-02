@@ -32,7 +32,7 @@ The plugin is built into a docker image and deployed on [GCP Cloud Run](https://
 Commercetools subscriptions are configured via Terraform and communicate to the plugin using a
 single [GCP pub/sub](https://cloud.google.com/pubsub) topic.
 For all the details about the infrastructure configuration check
-the [infrastructure documentation](docs/infrastructure.md)
+the [infrastructure documentation](infrastructure.md)
 
 ### Running terraform locally
 
@@ -115,4 +115,4 @@ gcloud run services update dev-klaviyo-ct-plugin \
 
 ## End-to-end tests
 
-To write and run end-to-end tests check the [documentation](docs/e2e-tests.md)
+To write and run end-to-end tests check the [documentation](e2e-tests.md)

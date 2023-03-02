@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { app } from '../../adapter/pubsubAdapter';
+import { app } from '../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
 import { klaviyoEventNock } from './nocks/KlaviyoEventNock';
 import { sampleOrderCreatedMessage, sampleOrderCustomerSetMessage } from '../testData/orderData';
 import { ctAuthNock, ctGetOrderByIdNock } from './nocks/commercetoolsNock';
@@ -130,8 +130,10 @@ describe('pubSub event that produces 5xx error', () => {
         server = app.listen(0);
     });
 
-    afterAll(() => {
-        server.close();
+    afterAll((done) => {
+        server.close(() => {
+            done();
+        });
     });
 
     it('should not acknowledge the message to pub/sub and return status 500 when the request is invalid', (done) => {

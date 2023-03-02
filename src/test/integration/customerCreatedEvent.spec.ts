@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { app } from '../../adapter/pubsubAdapter';
+import { app } from '../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
 import { getSampleCustomerCreatedMessage } from '../testData/ctCustomerMessages';
 import http from 'http';
 import { klaviyoCreateProfileNock, klaviyoPatchProfileNock } from './nocks/KlaviyoProfileNock';
@@ -13,8 +13,10 @@ describe('pubSub adapter customer event', () => {
         server = app.listen(0);
     });
 
-    afterAll(() => {
-        server.close();
+    afterAll((done) => {
+        server.close(() => {
+            done();
+        });
     });
 
     it('should return status 204 when the request is valid and the profile is sent to klaviyo', (done) => {

@@ -1,12 +1,13 @@
 import nock from 'nock';
 import { Address } from '@commercetools/platform-sdk';
 
-export const ctAuthNock = () => {
+export const ctAuthNock = (times = 1) => {
     return nock('https://auth.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
         .post(
             '/oauth/token',
-            'grant_type=client_credentials&scope=view_customers:klaviyo-dev view_products:klaviyo-dev view_orders:klaviyo-dev',
+            'grant_type=client_credentials&scope=view_orders:klaviyo-dev view_published_products:klaviyo-dev view_products:klaviyo-dev manage_key_value_documents:klaviyo-dev view_customers:klaviyo-dev view_payments:klaviyo-dev',
         )
+        .times(times)
         .reply(200, {}, []);
 };
 
@@ -174,3 +175,28 @@ export const ctGetOrderByPaymentIdNock = (paymentId: string, responseStatusCode 
             ],
         });
 };
+
+export const ctGetCustomObjectNock = (responseCode = 404, body?: any) => {
+  return nock('https://api.us-central1.gcp.commercetools.com:443', {"encodedQueryParams":true})
+    .get('/klaviyo-dev/custom-objects/klaviyo-ct-plugin-lock/orderFullSync')
+    .reply(responseCode, body);
+}
+
+export const ctPostCustomObjectNock = () => {
+  return nock('https://api.us-central1.gcp.commercetools.com:443', {"encodedQueryParams":true})
+    .post('/klaviyo-dev/custom-objects', {"container":"klaviyo-ct-plugin-lock","key":"orderFullSync","value":"1"})
+    .reply(201, {"id":"6d727995-9944-4caf-8e52-393aa1cca641","version":1,"versionModifiedAt":"2023-03-01T13:24:29.810Z","createdAt":"2023-03-01T13:24:29.810Z","lastModifiedAt":"2023-03-01T13:24:29.810Z","lastModifiedBy":{"clientId":"xgL4O7sybQE5i75P-n_Hojdi","isPlatformClient":false},"createdBy":{"clientId":"xgL4O7sybQE5i75P-n_Hojdi","isPlatformClient":false},"container":"klaviyo-ct-plugin-lock","key":"orderFullSync","value":"1"});
+}
+
+export const ctDeleteCustomObjectNock = () => {
+  return nock('https://api.us-central1.gcp.commercetools.com:443', {"encodedQueryParams":true})
+    .delete('/klaviyo-dev/custom-objects/klaviyo-ct-plugin-lock/orderFullSync')
+    .reply(200);
+}
+
+export const getAllOrders = (responseBody = {}) => {
+  return nock('https://api.us-central1.gcp.commercetools.com:443', {"encodedQueryParams":true})
+    .get('/klaviyo-dev/orders')
+    .query({"limit":"20","withTotal":"false","sort":"id%20asc"})
+    .reply(200, responseBody, []);
+}

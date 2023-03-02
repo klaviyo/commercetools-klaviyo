@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { app } from '../../adapter/pubsubAdapter';
+import { app } from '../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
 import { klaviyoEventNock } from './nocks/KlaviyoEventNock';
 import { sampleOrderCreatedMessage, sampleOrderStateChangedMessage } from '../testData/orderData';
 import { ctAuthNock, ctGetOrderByIdNock } from './nocks/commercetoolsNock';
@@ -14,9 +14,11 @@ describe('pubSub adapter event', () => {
         server = app.listen(0);
     });
 
-    afterAll(() => {
-        server.close();
+  afterAll((done) => {
+    server.close(() => {
+      done();
     });
+  });
 
     beforeEach(() => {
         ctAuthNock();
@@ -48,7 +50,7 @@ describe('pubSub adapter event', () => {
                     ...mapAllowedProperties('order', { ...sampleOrderCreatedMessage.order }),
                 },
                 unique_id: '3456789',
-                time: '2023-01-18 09:23:00',
+                time: '2023-01-27T15:00:00.000Z',
             },
         });
 
@@ -126,7 +128,7 @@ describe('pubSub event that produces 5xx error', () => {
                         ...mapAllowedProperties('order', { ...sampleOrderCreatedMessage.order }),
                     },
                     unique_id: '3456789',
-                    time: '2023-01-18 09:23:00',
+                    time: '2023-01-27T15:00:00.000Z',
                 },
             },
             500,

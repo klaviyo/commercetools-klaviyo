@@ -1,7 +1,6 @@
 import type { Config } from '@jest/types';
 
 const jestConfig: Config.InitialOptions = {
-    // extensionsToTreatAsEsm: ['.ts'],
     roots: ['src'],
     preset: 'ts-jest',
     testMatch: ['**/*.spec.ts'],
@@ -10,8 +9,8 @@ const jestConfig: Config.InitialOptions = {
     // Automatically clear mock calls, instances, contexts and results before every test
     clearMocks: true,
     collectCoverage: true,
+    collectCoverageFrom: ['src/**/*.{ts,tsx}', '!**/node_modules/**', '!src/test/**/*.{ts,tsx}', '!src/types/**/*.{ts,tsx}'],
     coverageDirectory: 'coverage',
-    coveragePathIgnorePatterns: ['/node_modules/', '/src/test/'],
     coverageProvider: 'v8',
     coverageThreshold: {
         global: {

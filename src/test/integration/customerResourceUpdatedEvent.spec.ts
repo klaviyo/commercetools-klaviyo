@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { app } from '../../adapter/pubsubAdapter';
+import { app } from '../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
 import { getSampleCustomerResourceUpdatedMessage } from '../testData/ctCustomerMessages';
 import http from 'http';
 import { ctAuthNock, ctGetCustomerNock } from './nocks/commercetoolsNock';
@@ -15,9 +15,11 @@ describe('pubSub adapter customer resource updated message', () => {
         server = app.listen(0);
     });
 
-    afterAll(() => {
-        server.close();
+  afterAll((done) => {
+    server.close(() => {
+      done();
     });
+  });
 
     beforeEach(() => {
         jest.clearAllMocks();

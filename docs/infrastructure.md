@@ -112,6 +112,6 @@ The following pipelines are available in `.github/workflows`
 - `plugin-build-test.yml`
     - runs build, linting and tests
 - `plugin-deploy`
-    - Creates a docker image with the plugin source code
+    - Creates a docker image with the plugin source code. The docker image is tagged with the commit revision number.
     - Deploys the container to Cloud Run _dev_ and _prod_ environment
     - Runs end-to-end tests
