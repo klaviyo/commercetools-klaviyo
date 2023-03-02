@@ -176,27 +176,34 @@ export const ctGetOrderByPaymentIdNock = (paymentId: string, responseStatusCode 
         });
 };
 
-export const ctGetCustomObjectNock = (responseCode = 404, body?: any) => {
+export const ctGetCustomObjectNock = (responseCode = 404, key: string, body?: any) => {
   return nock('https://api.us-central1.gcp.commercetools.com:443', {"encodedQueryParams":true})
-    .get('/klaviyo-dev/custom-objects/klaviyo-ct-plugin-lock/orderFullSync')
+    .get(`/klaviyo-dev/custom-objects/klaviyo-ct-plugin-lock/${key}`)
     .reply(responseCode, body);
 }
 
-export const ctPostCustomObjectNock = () => {
+export const ctPostCustomObjectNock = (key: string) => {
   return nock('https://api.us-central1.gcp.commercetools.com:443', {"encodedQueryParams":true})
-    .post('/klaviyo-dev/custom-objects', {"container":"klaviyo-ct-plugin-lock","key":"orderFullSync","value":"1"})
+    .post('/klaviyo-dev/custom-objects', {"container":"klaviyo-ct-plugin-lock","key":`${key}`,"value":"1"})
     .reply(201, {"id":"6d727995-9944-4caf-8e52-393aa1cca641","version":1,"versionModifiedAt":"2023-03-01T13:24:29.810Z","createdAt":"2023-03-01T13:24:29.810Z","lastModifiedAt":"2023-03-01T13:24:29.810Z","lastModifiedBy":{"clientId":"xgL4O7sybQE5i75P-n_Hojdi","isPlatformClient":false},"createdBy":{"clientId":"xgL4O7sybQE5i75P-n_Hojdi","isPlatformClient":false},"container":"klaviyo-ct-plugin-lock","key":"orderFullSync","value":"1"});
 }
 
-export const ctDeleteCustomObjectNock = () => {
+export const ctDeleteCustomObjectNock = (key: string) => {
   return nock('https://api.us-central1.gcp.commercetools.com:443', {"encodedQueryParams":true})
-    .delete('/klaviyo-dev/custom-objects/klaviyo-ct-plugin-lock/orderFullSync')
+    .delete(`/klaviyo-dev/custom-objects/klaviyo-ct-plugin-lock/${key}`)
     .reply(200);
 }
 
 export const getAllOrders = (responseBody = {}) => {
   return nock('https://api.us-central1.gcp.commercetools.com:443', {"encodedQueryParams":true})
     .get('/klaviyo-dev/orders')
+    .query({"limit":"20","withTotal":"false","sort":"id%20asc"})
+    .reply(200, responseBody, []);
+}
+
+export const getAllCustomers = (responseBody = {}) => {
+  return nock('https://api.us-central1.gcp.commercetools.com:443', {"encodedQueryParams":true})
+    .get('/klaviyo-dev/customers')
     .query({"limit":"20","withTotal":"false","sort":"id%20asc"})
     .reply(200, responseBody, []);
 }
