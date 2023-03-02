@@ -1,42 +1,61 @@
 # Infrastructure
-
 This section details how to configure a cloud environment to run the plugin, configure klaviyo, commercetools and import
-tests
-data.  
+tests data.  
+This plugin requires [CT subscriptions](https://docs.commercetools.com/api/projects/subscriptions#destination), for this reason it can only be hosted in the following cloud providers:
+* Google Cloud (GCP)
+* AWS
+* Azure
+
+On premise providers can be used to host the plugin but still one of the previous cloud providers is required to receive messages from commercetools via subscriptions and forward the messages to the plugin. 
+
+Each cloud provider provides different services and various combination are possible to host the plugin and connect commeretools subscriptions.
+
+| Cloud Provider | Commercetools subscriptions | Plugin deployment | Other                                                                            |
+|----------------|-----------------------------|-------------------|----------------------------------------------------------------------------------|
+ | GCP            | pub/sub                     | Cloud Run         | <ul><li>docker repo: artifact repository</li><li>CI/CD: github actions</li></ul> |
+ | GCP            | pub/sub                     | Cloud Functions   |                                                                                  |
+ | AWS            | SQS                         | Lambda            |                                                                                  |
+ | AWS            | EventBridge                 | Fargate           |                                                                                  |
+
+In this section we'll use the first option in the table that uses GCP, Cloud Run and GitHub actions.
+
+![Sample infrastructure using GCP and GitHub](./img/infra_sample.png)
+
+
+## Manual steps
 The setup and configuration of a new environment for the klaviyo commercetools plugin require some manual steps:
 
-* Commercetools accounts creation
-* Creation of the commercetools API client for terraform
-* Creation of the klaviyo accounts
-* Creation of the klaviyo API keys
+* Commercetools project creation and API client for terraform
+* Creation of the klaviyo accounts and API keys
+* Google Cloud project
 * Configuration of GitHub for running pipelines
 
 The rest of the configuration of the environment (creation of the commercetools subscriptions, queues, docker
 repositories...) can be done using terraform scripts.
 The terraform scripts are available in `/infrastructure`
 
-## Commercetools
+### Commercetools
 
-The initial creation of the commercetools projects and the API client for terraform must be done manually.  
-The commercetools terraform scripts create subscription and test data.
-Check the section [Configuration of the pipelines in GitHub actions](#configuration-of-the-pipelines-in-gitHub-actions)
-on how to configure the API client and run the terraform scripts
+The initial creation of the commercetools projects (if not already existing) and the API client for terraform must be done manually.  
+The commercetools terraform scripts create the subscriptions and the API client for the plugin.
+Check the section [Configuration of the pipelines in GitHub actions](#configuration-of-the-pipelines-in-gitHub-actions) on how to configure the API client and run the terraform scripts
 
-### Importing test data
-
+#### Importing test data
 Check the documentation
 at [https://docs.commercetools.com/sdk/sunrise-data](https://docs.commercetools.com/sdk/sunrise-data)
 
-## Klaviyo
-
+### Klaviyo
 The creation of the Klaviyo accounts needs to be done manually.
 The creation of the API keys also needs to be done manually.
 See [https://help.klaviyo.com/hc/en-us/articles/360002165611-Understand-multi-account-user-privileges](https://help.klaviyo.com/hc/en-us/articles/360002165611-Understand-multi-account-user-privileges)
 for more info.
 
-## Google Cloud project
-
-Run the bootstrap-gcp scripts to setup a new project in GCP (you need project creation rights)
+### Google Cloud project
+In this sample implementation a single GCP project is created `klaviyo-ct-plugin` which hosts two environments separated by namespace (each
+environment specific resource is prefixed with the environment name `dev` or `prod`).
+The plugin is built into a docker image and deployed on [GCP Cloud Run](https://cloud.google.com/run).
+Commercetools subscriptions are configured via Terraform and communicate to the plugin using a single [GCP pub/sub](https://cloud.google.com/pubsub) topic.
+To create a new project if not already existing, run the bootstrap-gcp scripts to setup a new project in GCP (you need project creation rights)
 
 ```shell
 cd insfrastructure/bootstrap-gcp
@@ -46,14 +65,14 @@ cd insfrastructure/bootstrap-gcp
 ./bootstrap.sh <your-user-account>
 ```
 
-The script will generate a new `terraform` service account. Create a service account key that will be used in GitHub.
+The script will generate a new `terraform` service account. Create via console o CLI a service account key that will be used in GitHub.
 
-## Configuration of the pipelines in GitHub actions
+### Configuration of the pipelines in GitHub actions
+The following sections shows how to configure the CI/CD using  [GitHub Actions](https://github.com/features/actions) for CI/CD
 
-### GitHub configuration
+#### GitHub configuration
 
-* Create
-  two [GitHub environments](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#creating-an-environment):
+* Create two [GitHub environments](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#creating-an-environment):
     * dev
     * prod
 * For each commercetools project create a new API client for terraform with the following scopes:
@@ -95,7 +114,7 @@ The script will generate a new `terraform` service account. Create a service acc
         * `CT_PROJECT_ID`: commercetools prod project ID
         * `KLAVIYO_COMPANY_ID`: Klaviyo public api KEY
 
-### Pipelines
+#### Pipelines
 
 The following pipelines are available in `.github/workflows`
 

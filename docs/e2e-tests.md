@@ -1,6 +1,8 @@
 # End-to-end tests
 
-End-to-end tests are written using [Postman](https://learning.postman.com/docs/writing-scripts/test-scripts/)
+End-to-end tests are written using [Postman](https://learning.postman.com/docs/writing-scripts/test-scripts/).  
+These tests must run in an environment where the plugin is installed correctly and communicates with a Commercetools project and a Klaviyo account.
+The end-to-end tests for realtime events use the Commercetools API to create/update data into commercetools and verify that the data was synced correctly into Klaviyo by using the Klaviyo API. These tests don't have direct access to the plugin. 
 
 ## Tests structure
 
