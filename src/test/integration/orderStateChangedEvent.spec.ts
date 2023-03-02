@@ -1,14 +1,15 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { app } from '../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
+import { app } from "../../infrastructure/driving/adapter/eventSync/pubsubAdapter";
 import { klaviyoEventNock } from './nocks/KlaviyoEventNock';
 import { sampleOrderCreatedMessage, sampleOrderStateChangedMessage } from '../testData/orderData';
 import { ctAuthNock, ctGetOrderByIdNock } from './nocks/commercetoolsNock';
 import { mapAllowedProperties } from '../../utils/property-mapper';
+import nock from "nock";
 
 chai.use(chaiHttp);
 
-describe('pubSub adapter event', () => {
+describe('pubSub adapter order state changed message', () => {
     let server: any;
     beforeAll(() => {
         server = app.listen(0);
@@ -18,6 +19,7 @@ describe('pubSub adapter event', () => {
     server.close(() => {
       done();
     });
+    nock.cleanAll();
   });
 
     beforeEach(() => {

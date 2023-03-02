@@ -2,14 +2,14 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { app } from '../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
 import { klaviyoEventNock } from './nocks/KlaviyoEventNock';
-import { sampleOrderCreatedMessage, sampleOrderWithPaymentMessage } from '../testData/orderData';
+import { sampleOrderWithPaymentMessage } from '../testData/orderData';
 import { samplePaymentTransactionAddedMessage } from '../testData/ctPaymentMessages';
 import { ctAuthNock, ctGetOrderByPaymentIdNock, ctGetPaymentByIdNock } from './nocks/commercetoolsNock';
 import { mapAllowedProperties } from '../../utils/property-mapper';
 
 chai.use(chaiHttp);
 
-describe('pubSub adapter event', () => {
+describe('pubSub adapter order refunded mesasge', () => {
     let server: any;
     beforeAll(() => {
         server = app.listen(0);

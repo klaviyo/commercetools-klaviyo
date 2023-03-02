@@ -9,7 +9,7 @@ import { mapAllowedProperties } from '../../utils/property-mapper';
 
 chai.use(chaiHttp);
 
-describe('pubSub adapter event', () => {
+describe('pubSub adapter order created message', () => {
     let server: any;
     beforeAll(() => {
         server = app.listen(0);
