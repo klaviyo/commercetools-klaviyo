@@ -154,10 +154,12 @@ Example:
 ```
 
 ### Security
-
+#### Secrets
 The klaviyo API key is passed via an environment variable. When deployed on the cloud, use your cloud specific secrets
 manager to store and retrieve the key.
 
+#### API endpoints
+The bulk import of data into Klaviyo can be triggered via API calls. The API endpoints should be protected via authentication or only accessible in a private network.
 
 ## Terraform and deploy from local environment
 
@@ -233,10 +235,10 @@ docker push us-central1-docker.pkg.dev/klaviyo-ct-plugin/docker-repo/klaviyo-ct-
 ```  
 
 ```shell
-gcloud run services update dev-klaviyo-ct-plugin \
+gcloud run services update dev-klaviyo-ct-plugin-bulk-import \
 --image us-central1-docker.pkg.dev/klaviyo-ct-plugin/docker-repo/klaviyo-ct-plugin \
 --region=us-central1 \
---port 6789 \
+--port 6779 \
 --max-instances=5 \
 --update-secrets=KLAVIYO_AUTH_KEY=klaviyo_auth_key:latest \
 --update-secrets=CT_API_CLIENT=commercetools_api_client:latest
