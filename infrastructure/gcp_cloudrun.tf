@@ -17,6 +17,34 @@ resource "google_project_service" "iam_api" {
 
 # Cloud Run service
 
+#resource "google_cloud_run_service" "klaviyo_ct_plugin_realtime_events" {
+#  name     = "${local.service_name}-realtime-events"
+#  location = local.location
+#
+#  template {
+#    spec {
+#      containers {
+#        image = local.image
+#      }
+#      service_account_name = google_service_account.cloud_run_executor.email
+#    }
+#  }
+#
+#  traffic {
+#    percent         = 100
+#    latest_revision = true
+#  }
+#
+#  lifecycle {
+#    //noinspection HILUnresolvedReference
+#    ignore_changes = [
+#      template.0.spec.0.containers,
+#    ]
+#  }
+#
+#  depends_on = [google_project_service.run_api, google_project_service.resource_manager_api]
+#}
+
 resource "google_cloud_run_service" "klaviyo_ct_plugin" {
   name     = local.service_name
   location = local.location
@@ -59,6 +87,48 @@ resource "google_pubsub_subscription" "subscription" {
   }
   depends_on = [google_cloud_run_service.klaviyo_ct_plugin, google_pubsub_topic.commercetools]
 }
+#resource "google_pubsub_subscription" "subscription" {
+#  name  = "${var.gcp_environment_namespace}-klaviyo_ct_plugin_on_cloud_run"
+#  topic = google_pubsub_topic.commercetools.name
+#  push_config {
+#    push_endpoint = google_cloud_run_service.klaviyo_ct_plugin_realtime_events.status[0].url
+#    oidc_token {
+#      service_account_email = google_service_account.pubsub_invoker.email
+#    }
+#    attributes = {
+#      x-goog-version = "v1"
+#    }
+#  }
+#  depends_on = [google_cloud_run_service.klaviyo_ct_plugin_realtime_events, google_pubsub_topic.commercetools]
+#}
+
+resource "google_cloud_run_service" "klaviyo_ct_plugin_bulk_import" {
+  name     = "${local.service_name}-bulk-import"
+  location = local.location
+
+  template {
+    spec {
+      containers {
+        image = local.image
+      }
+      service_account_name = google_service_account.cloud_run_executor.email
+    }
+  }
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+
+  lifecycle {
+    //noinspection HILUnresolvedReference
+    ignore_changes = [
+      template.0.spec.0.containers,
+    ]
+  }
+
+  depends_on = [google_project_service.run_api, google_project_service.resource_manager_api]
+}
 
 # Service Account for invoking cloud run
 
@@ -75,6 +145,13 @@ resource "google_cloud_run_service_iam_binding" "pub_sub_cloud_run_invoker_iam" 
   role     = "roles/run.invoker"
   members  = ["serviceAccount:${google_service_account.pubsub_invoker.email}"]
 }
+#
+#resource "google_cloud_run_service_iam_binding" "pub_sub_cloud_run_invoker_iam" {
+#  location = google_cloud_run_service.klaviyo_ct_plugin_realtime_events.location
+#  service  = google_cloud_run_service.klaviyo_ct_plugin_realtime_events.name
+#  role     = "roles/run.invoker"
+#  members  = ["serviceAccount:${google_service_account.pubsub_invoker.email}"]
+#}
 
 # Service account for executing cloud run
 
@@ -130,6 +207,7 @@ resource "google_artifact_registry_repository" "klaviyo-ct-plugin" {
 # Outputs
 
 output "cloud_run_url" {
+  #  value = google_cloud_run_service.klaviyo_ct_plugin_realtime_events.status[0].url
   value = google_cloud_run_service.klaviyo_ct_plugin.status[0].url
 }
 
