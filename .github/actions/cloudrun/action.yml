@@ -11,6 +11,9 @@ inputs:
   region:
     description: 'Cloud Run Region'
     required: true
+  port:
+    description: 'Cloud run port'
+    required: true
   image:
     description: 'the docker image'
     required: true
@@ -50,7 +53,7 @@ runs:
         service: ${{ inputs.service }}
         region: ${{ inputs.region }}
         image: ${{ inputs.image }}
-        flags: '--port 6789'
+        flags: '--port ${{ inputs.port }}'
         env_vars: |
           CT_API_URL=${{ inputs.ct_api_url }}
           CT_AUTH_URL=${{ inputs.ct_auth_url }}
