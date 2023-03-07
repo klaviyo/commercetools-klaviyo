@@ -72,6 +72,12 @@ resource "google_cloud_run_service" "klaviyo_ct_plugin_bulk_import" {
       container_concurrency = 1
       service_account_name  = google_service_account.cloud_run_executor.email
     }
+
+    metadata {
+      annotations = {
+        "run.googleapis.com/cpu-throttling" = false
+      }
+    }
   }
 
   traffic {
