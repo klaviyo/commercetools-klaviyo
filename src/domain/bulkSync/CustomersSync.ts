@@ -5,7 +5,7 @@ import { CustomerMapper } from '../shared/mappers/CustomerMapper';
 import { KlaviyoService } from '../../infrastructure/driven/klaviyo/KlaviyoService';
 import { isFulfilled, isRejected } from '../../utils/promise';
 import { ErrorCodes } from '../../types/errors/StatusError';
-import { Customer } from '@commercetools/platform-sdk'
+import { Customer } from '@commercetools/platform-sdk';
 import { CtCustomerService } from '../../infrastructure/driven/commercetools/CtCustomerService';
 
 export class CustomersSync {
@@ -13,9 +13,9 @@ export class CustomersSync {
         private readonly lockService: LockService,
         private readonly customerMapper: CustomerMapper,
         private readonly klaviyoService: KlaviyoService,
-
         private readonly ctCustomerService: CtCustomerService,
     ) {}
+
     public syncAllCustomers = async () => {
         logger.info('Started sync of all historical customers');
         const lockKey = 'customerFullSync';
@@ -33,8 +33,7 @@ export class CustomersSync {
                 ctCustomerResults = await this.ctCustomerService.getAllCustomers(ctCustomerResults?.lastId);
 
                 const promiseResults = await Promise.allSettled(
-                    ctCustomerResults.data
-                        .flatMap((customer) => this.generateCustomerProfiles(customer)),
+                    ctCustomerResults.data.flatMap((customer) => this.generateCustomerProfiles(customer)),
                 );
 
                 const rejectedPromises = promiseResults.filter(isRejected);
@@ -47,7 +46,9 @@ export class CustomersSync {
                 errored += rejectedPromises.length;
                 succeeded += fulfilledPromises.length;
                 if (rejectedPromises.length) {
-                    rejectedPromises.forEach((rejected) => logger.error('Error syncing profiles with klaviyo', rejected));
+                    rejectedPromises.forEach((rejected) =>
+                        logger.error('Error syncing profiles with klaviyo', rejected),
+                    );
                 }
             } while (ctCustomerResults.hasMore);
             logger.info(
@@ -58,6 +59,8 @@ export class CustomersSync {
             if (e?.code !== ErrorCodes.LOCKED) {
                 logger.error('Error while syncing all historical customers', e);
                 await this.lockService.releaseLock(lockKey);
+            } else {
+                logger.warn('Already locked');
             }
         }
     };

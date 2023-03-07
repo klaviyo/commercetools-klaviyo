@@ -45,6 +45,15 @@ resource "google_api_gateway_api_config" "api_cfg" {
                   description: Request accepted
                   schema:
                     type: string
+          /sync/customers:
+            post:
+              summary: Sync all commercetools customers to Klaviyo
+              operationId: sync-customers
+              responses:
+                '202':
+                  description: Request accepted
+                  schema:
+                    type: string
     EOF
       )
     }

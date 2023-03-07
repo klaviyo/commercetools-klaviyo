@@ -14,7 +14,7 @@ export abstract class KlaviyoService {
             const remaining = response?.value?.headers['ratelimit-remaining'];
             const reset = response?.value?.headers['ratelimit-reset'];
             logger.debug(
-                `Fulfillled promise rate limit values. Limit ${limit} - Remaining ${remaining} - Reset: ${reset}`,
+                `Fulfilled promise rate limit values. Limit ${limit} - Remaining ${remaining} - Reset: ${reset}`,
                 {
                     limit,
                     remaining,
