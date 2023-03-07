@@ -26,7 +26,7 @@ resource "google_cloud_run_service" "klaviyo_ct_plugin_realtime_events" {
       containers {
         image = local.image
       }
-      service_account_name  = google_service_account.cloud_run_executor.email
+      service_account_name = google_service_account.cloud_run_executor.email
     }
   }
 
@@ -70,7 +70,7 @@ resource "google_cloud_run_service" "klaviyo_ct_plugin_bulk_import" {
         image = local.image
       }
       container_concurrency = 1
-      service_account_name = google_service_account.cloud_run_executor.email
+      service_account_name  = google_service_account.cloud_run_executor.email
     }
   }
 
