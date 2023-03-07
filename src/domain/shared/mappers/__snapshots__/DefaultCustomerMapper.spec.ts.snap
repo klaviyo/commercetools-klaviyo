@@ -20,6 +20,33 @@ exports[`map CT customer to Klaviyo profile should map a commercetools customer 
       "phone_number": "+393234567892",
       "title": "Miss",
     },
+    "id": undefined,
+    "type": "profile",
+  },
+}
+`;
+
+exports[`map CT customer to Klaviyo profile should map a commercetools customer to a klaviyo profile with an existing profile id 1`] = `
+{
+  "data": {
+    "attributes": {
+      "email": "Alfred_Lebsack@hotmail.com",
+      "external_id": "77d8e6f4-2dee-4ac9-bd21-4035b6ba76d8",
+      "first_name": "Jailyn",
+      "last_name": "Hilll",
+      "location": {
+        "address1": "12, First Street",
+        "address2": "",
+        "city": "Brookefort",
+        "country": "NL",
+        "region": undefined,
+        "zip": "12345",
+      },
+      "organization": undefined,
+      "phone_number": "+393234567892",
+      "title": "Miss",
+    },
+    "id": "123456",
     "type": "profile",
   },
 }

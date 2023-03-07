@@ -37,7 +37,7 @@ export class CTCustomObjectLockService implements LockService {
             }
 
         }
-        logger.error('Lock ${this.container} > ${key} already exists');
+        logger.error(`Lock ${this.container} > ${key} already exists`);
         throw new StatusError(
             409,
             `Lock already exists. Container: ${this.container}, key: ${key}`,

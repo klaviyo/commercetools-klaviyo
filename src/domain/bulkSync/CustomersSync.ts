@@ -9,6 +9,7 @@ import { Customer } from '@commercetools/platform-sdk';
 import { CtCustomerService } from '../../infrastructure/driven/commercetools/CtCustomerService';
 
 export class CustomersSync {
+    lockKey = 'customerFullSync';
     constructor(
         private readonly lockService: LockService,
         private readonly customerMapper: CustomerMapper,
@@ -18,10 +19,9 @@ export class CustomersSync {
 
     public syncAllCustomers = async () => {
         logger.info('Started sync of all historical customers');
-        const lockKey = 'customerFullSync';
         try {
             //ensures that only one sync at the time is running
-            await this.lockService.acquireLock(lockKey);
+            await this.lockService.acquireLock(this.lockKey);
 
             let ctCustomerResults: PaginatedCustomerResults | undefined;
             let succeeded = 0,
@@ -54,11 +54,11 @@ export class CustomersSync {
             logger.info(
                 `Historical customers import. Total customers to be imported ${totalCustomers}, total klaviyo profiles: ${totalKlaviyoProfiles}, successfully imported: ${succeeded}, errored: ${errored}`,
             );
-            await this.lockService.releaseLock(lockKey);
+            await this.lockService.releaseLock(this.lockKey);
         } catch (e: any) {
             if (e?.code !== ErrorCodes.LOCKED) {
                 logger.error('Error while syncing all historical customers', e);
-                await this.lockService.releaseLock(lockKey);
+                await this.lockService.releaseLock(this.lockKey);
             } else {
                 logger.warn('Already locked');
             }
@@ -76,4 +76,8 @@ export class CustomersSync {
         );
         return klaviyoProfilePromises;
     };
+
+    public async releaseLockExternally(): Promise<void> {
+        await this.lockService.releaseLock(this.lockKey);
+    }
 }

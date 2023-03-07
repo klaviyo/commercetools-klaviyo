@@ -12,6 +12,7 @@ import { CtOrderService } from '../../infrastructure/driven/commercetools/CtOrde
 import { getElapsedSeconds, startTime } from '../../utils/time-utils';
 
 export class OrdersSync {
+    lockKey = 'orderFullSync';
     constructor(
         private readonly lockService: LockService,
         private readonly orderMapper: OrderMapper,
@@ -21,10 +22,9 @@ export class OrdersSync {
 
     public syncAllOrders = async () => {
         logger.info('Started sync of all historical orders');
-        const lockKey = 'orderFullSync';
         try {
             //ensures that only one sync at the time is running
-            await this.lockService.acquireLock(lockKey);
+            await this.lockService.acquireLock(this.lockKey);
 
             let ctOrdersResult: PaginatedOrderResults | undefined;
             let succeeded = 0,
@@ -58,11 +58,11 @@ export class OrdersSync {
                     _startTime,
                 )} seconds`,
             );
-            await this.lockService.releaseLock(lockKey);
+            await this.lockService.releaseLock(this.lockKey);
         } catch (e: any) {
             if (e?.code !== ErrorCodes.LOCKED) {
                 logger.error('Error while syncing all historical orders', e);
-                await this.lockService.releaseLock(lockKey);
+                await this.lockService.releaseLock(this.lockKey);
             } else {
                 logger.warn('Already locked');
             }
@@ -112,4 +112,8 @@ export class OrdersSync {
         );
         return klaviyoEventPromises;
     };
+
+    public async releaseLockExternally(): Promise<void> {
+        await this.lockService.releaseLock(this.lockKey);
+    }
 }

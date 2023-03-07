@@ -2,7 +2,6 @@ import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
 import { getCustomerProfile } from '../../../../infrastructure/driven/commercetools/ctService';
 import { ResourceUpdatedDeliveryPayload } from '@commercetools/platform-sdk';
-import { mapCTCustomerToKlaviyoProfile } from './mappers/CTCustomerToKlaviyoProfileMapper';
 
 export class CustomerResourceUpdatedEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
@@ -17,23 +16,12 @@ export class CustomerResourceUpdatedEventProcessor extends AbstractEventProcesso
         let klaviyoEvent: KlaviyoEvent;
         if (!klaviyoProfile || !klaviyoProfile.id) {
             klaviyoEvent = {
-                body: {
-                    data: {
-                        type: 'profile',
-                        attributes: mapCTCustomerToKlaviyoProfile(customer),
-                    },
-                },
+                body: this.context.customerMapper.mapCtCustomerToKlaviyoProfile(customer),
                 type: 'profileCreated',
             };
         } else {
             klaviyoEvent = {
-                body: {
-                    data: {
-                        type: 'profile',
-                        id: klaviyoProfile?.id,
-                        attributes: mapCTCustomerToKlaviyoProfile(customer),
-                    },
-                },
+                body: this.context.customerMapper.mapCtCustomerToKlaviyoProfile(customer, klaviyoProfile?.id),
                 type: 'profileResourceUpdated',
             };
         }

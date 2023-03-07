@@ -21,6 +21,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
         "phone_number": "+4407476588266",
         "title": "Mr",
       },
+      "id": undefined,
       "type": "profile",
     },
   },
@@ -49,6 +50,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
         "phone_number": "+4407476588266",
         "title": "Mr",
       },
+      "id": undefined,
       "type": "profile",
     },
   },
@@ -77,6 +79,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
         "phone_number": "+4407476588266",
         "title": "Mr",
       },
+      "id": undefined,
       "type": "profile",
     },
   },
@@ -105,6 +108,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
         "phone_number": "+4407476588266",
         "title": "Mr",
       },
+      "id": undefined,
       "type": "profile",
     },
   },
@@ -126,10 +130,10 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
         "phone_number": null,
         "title": "Mr",
       },
+      "id": undefined,
       "type": "profile",
     },
   },
   "type": "profileCreated",
 }
 `;
-

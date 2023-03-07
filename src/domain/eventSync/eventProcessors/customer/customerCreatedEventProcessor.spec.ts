@@ -1,12 +1,17 @@
 import { CustomerCreatedEventProcessor } from './customerCreatedEventProcessor';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { DeepMockProxy, mockDeep, mock } from 'jest-mock-extended';
 import { expect as exp } from 'chai';
 import { getSampleCustomerCreatedMessage } from '../../../../test/testData/ctCustomerMessages';
 import { Context } from '../../../../types/klaviyo-context';
+import { DefaultCustomerMapper } from '../../../shared/mappers/DefaultCustomerMapper';
 
 jest.mock('../../../../infrastructure/driven/klaviyo/KlaviyoService');
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
+
+contextMock.customerMapper.mapCtCustomerToKlaviyoProfile.mockImplementation(
+    (customer, klaviyoProfileId) => (new DefaultCustomerMapper()).mapCtCustomerToKlaviyoProfile(customer, klaviyoProfileId),
+);
 
 
 describe('customerCreatedEvent > isEventValid', () => {
@@ -71,6 +76,8 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
 
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
+        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledTimes(1);
+        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledWith(message.customer);
         expect(klaviyoEvent[0]).toMatchSnapshot();
     });
 
@@ -117,6 +124,8 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
         exp(message.customer.addresses.length).to.equal(2);
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
+        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledTimes(1);
+        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledWith(message.customer);
         expect(klaviyoEvent[0]).toMatchSnapshot();
     });
 
@@ -184,6 +193,8 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
         exp(message.customer.addresses.length).to.equal(3);
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
+        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledTimes(1);
+        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledWith(message.customer);
         expect(klaviyoEvent[0]).toMatchSnapshot();
     });
 
@@ -236,6 +247,8 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
         exp(message.customer.addresses.length).to.equal(2);
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
+        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledTimes(1);
+        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledWith(message.customer);
         expect(klaviyoEvent[0]).toMatchSnapshot();
     });
 
@@ -257,6 +270,8 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
         exp(message.customer.addresses.length).to.equal(0);
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
+        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledTimes(1);
+        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledWith(message.customer);
         expect(klaviyoEvent[0]).toMatchSnapshot();
     });
 });

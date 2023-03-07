@@ -1,9 +1,9 @@
-import { KlaviyoService } from "../infrastructure/driven/klaviyo/KlaviyoService";
-import { CurrencyService } from "../domain/shared/services/CurrencyService";
-import { OrderMapper } from "../domain/shared/mappers/OrderMapper";
+import { KlaviyoService } from '../infrastructure/driven/klaviyo/KlaviyoService';
+import { OrderMapper } from '../domain/shared/mappers/OrderMapper';
+import { CustomerMapper } from '../domain/shared/mappers/CustomerMapper';
 
 type Context = {
-  klaviyoService: KlaviyoService;
-  orderMapper: OrderMapper;
+    klaviyoService: KlaviyoService;
+    orderMapper: OrderMapper;
+    customerMapper: CustomerMapper;
 };
-

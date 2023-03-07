@@ -12,12 +12,14 @@ import { isFulfilled } from '../../utils/promise';
 import { DummyCurrencyService } from '../shared/services/dummyCurrencyService';
 import { KlaviyoService } from '../../infrastructure/driven/klaviyo/KlaviyoService';
 import { KlaviyoSdkService } from '../../infrastructure/driven/klaviyo/KlaviyoSdkService';
-import { Context } from "../../types/klaviyo-context";
-import { DefaultOrderMapper } from "../shared/mappers/DefaultOrderMapper";
+import { Context } from '../../types/klaviyo-context';
+import { DefaultOrderMapper } from '../shared/mappers/DefaultOrderMapper';
+import { DefaultCustomerMapper } from '../shared/mappers/DefaultCustomerMapper';
 
 const context: Context = {
     klaviyoService: new KlaviyoSdkService(),
     orderMapper: new DefaultOrderMapper(new DummyCurrencyService()),
+    customerMapper: new DefaultCustomerMapper(),
 };
 
 // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {
@@ -60,7 +62,9 @@ export const processEvent = async (
         return response;
     }
     const validRequests = klaviyoRequestsPromises.filter(isFulfilled).map((done) => done.value);
-    const klaviyoRequestPromises = validRequests.flat().map((klaviyoEvent) => klaviyoService.sendEventToKlaviyo(klaviyoEvent));
+    const klaviyoRequestPromises = validRequests
+        .flat()
+        .map((klaviyoEvent) => klaviyoService.sendEventToKlaviyo(klaviyoEvent));
     const results = await Promise.allSettled(klaviyoRequestPromises);
     return responseHandler(results, ctMessage);
 };
