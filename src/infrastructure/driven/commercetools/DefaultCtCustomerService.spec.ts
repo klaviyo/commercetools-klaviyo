@@ -53,3 +53,34 @@ describe('getAllCustomers', () => {
         expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
     });
 });
+
+describe('getCustomersByIdRange', () => {
+    it('should return a page of customers from CT', async () => {
+        mockGetCustomObjectApiRequest.execute.mockResolvedValueOnce({
+            body: {
+                limit: 0,
+                count: 1,
+                results: [mock<Customer>()],
+                offset: 0,
+                total: 0,
+            },
+        });
+
+        const ctCustomerService = new DefaultCtCustomerService(mockCtApiRoot);
+        const result = await ctCustomerService.getCustomersByIdRange(['123456']);
+
+        expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
+        expect(result.data.length).toEqual(1);
+    });
+
+    it('should throw an error if fails to get customers from CT APIs', async () => {
+        mockGetCustomObjectApiRequest.execute.mockImplementation(() => {
+            throw new CTErrorResponse(504, 'CT Error');
+        });
+
+        const ctCustomerService = new DefaultCtCustomerService(mockCtApiRoot);
+        await expect(ctCustomerService.getCustomersByIdRange(['123456'])).rejects.toThrow(Error);
+
+        expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
+    });
+});

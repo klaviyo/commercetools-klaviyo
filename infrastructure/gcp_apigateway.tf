@@ -40,6 +40,26 @@ resource "google_api_gateway_api_config" "api_cfg" {
             post:
               summary: Sync all commercetools orders to Klaviyo
               operationId: sync-orders
+              parameters:
+                - in: body
+                  name: Parameters
+                  description: Optional parameters for the bulk import job
+                  schema:
+                    type: object
+                    properties:
+                      ids:
+                          type: array
+                          items:
+                            type: string
+              responses:
+                '202':
+                  description: Request accepted
+                  schema:
+                    type: string
+          /sync/orders/stop:
+            post:
+              summary: Stop syncing all commercetools orders to Klaviyo
+              operationId: sync-orders-stop
               responses:
                 '202':
                   description: Request accepted
@@ -49,6 +69,15 @@ resource "google_api_gateway_api_config" "api_cfg" {
             post:
               summary: Sync all commercetools customers to Klaviyo
               operationId: sync-customers
+              responses:
+                '202':
+                  description: Request accepted
+                  schema:
+                    type: string
+          /sync/customers/stop:
+            post:
+              summary: Stop syncing all commercetools customers to Klaviyo
+              operationId: sync-customers-stop
               responses:
                 '202':
                   description: Request accepted

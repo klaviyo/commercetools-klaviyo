@@ -1,4 +1,4 @@
-import { parentPort } from 'node:worker_threads';
+import { parentPort, workerData } from 'node:worker_threads';
 import { CustomersSync } from '../../../../../domain/bulkSync/CustomersSync';
 import { CTCustomObjectLockService } from '../../../../../domain/bulkSync/services/CTCustomObjectLockService';
 import { DefaultCustomerMapper } from '../../../../../domain/shared/mappers/DefaultCustomerMapper';
@@ -30,9 +30,15 @@ const releaseLock = async () => {
 		new KlaviyoSdkService(),
 		new DefaultCtCustomerService(getApiRoot()),
 	);
+	if (workerData?.orderIds.length) {
+		await customersSync.syncCustomersByIdRange(workerData?.orderIds);
+	}
+	else {
+		await customersSync.syncAllCustomers();
+	}
 
-	await customersSync.syncAllCustomers();
-	process.exit(0);
+	if (parentPort) parentPort.postMessage('done');
+	else process.exit(0);
 })();
 
 if (parentPort)

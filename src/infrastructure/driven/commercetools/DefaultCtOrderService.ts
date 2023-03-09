@@ -29,4 +29,22 @@ export class DefaultCtOrderService implements CtOrderService{
             throw error;
         }
     };
+
+    getOrdersByIdRange = async (ids: string[], lastId?: string): Promise<PaginatedOrderResults> => {
+        logger.info(`Getting orders by id range in commercetools with id after ${lastId}`);
+        try {
+            const queryArgs = lastId
+                ? { limit: this.limit, withTotal: false, sort: 'id asc', where: `id in ("${ids.join('","')}") and id > "${lastId}"` }
+                : { limit: this.limit, withTotal: false, sort: 'id asc', where: `id in ("${ids.join('","')}")` };
+            const ctOrders = (await this.ctApiRoot.orders().get({ queryArgs }).execute()).body;
+            return {
+                data: ctOrders.results,
+                hasMore: Boolean(ctOrders.count === this.limit),
+                lastId: ctOrders.results.length > 0 ? ctOrders.results[ctOrders.results.length - 1].id : undefined,
+            };
+        } catch (error) {
+            logger.error(error);
+            throw error;
+        }
+    };
 }

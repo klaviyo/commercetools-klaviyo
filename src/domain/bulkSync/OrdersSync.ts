@@ -69,6 +69,55 @@ export class OrdersSync {
         }
     };
 
+    public syncOrdersByIdRange = async (orderIds: string[]) => {
+        logger.info('Started sync of historical orders by id range');
+        try {
+            //ensures that only one sync at the time is running
+            await this.lockService.acquireLock(this.lockKey);
+
+            let ctOrdersResult: PaginatedOrderResults | undefined;
+            let succeeded = 0,
+                errored = 0,
+                totalOrders = 0,
+                totalKlaviyoEvents = 0;
+            const _startTime = startTime();
+
+            do {
+                ctOrdersResult = await this.ctOrderService.getOrdersByIdRange(orderIds, ctOrdersResult?.lastId);
+
+                const promiseResults = await Promise.allSettled(
+                    ctOrdersResult.data.flatMap((order) => this.generateAndSendOrderEventsToKlaviyo(order)),
+                );
+
+                const rejectedPromises = promiseResults.filter(isRejected);
+                const fulfilledPromises = promiseResults.filter(isFulfilled);
+
+                this.klaviyoService.logRateLimitHeaders(fulfilledPromises, rejectedPromises);
+
+                totalOrders += ctOrdersResult.data.length;
+                totalKlaviyoEvents += promiseResults.length;
+                errored += rejectedPromises.length;
+                succeeded += fulfilledPromises.length;
+                if (rejectedPromises.length) {
+                    rejectedPromises.forEach((rejected) => logger.error('Error syncing event with klaviyo', rejected));
+                }
+            } while (ctOrdersResult.hasMore);
+            logger.info(
+                `Historical orders import by id range. Total orders to be imported ${totalOrders}, total klaviyo events: ${totalKlaviyoEvents}, successfully imported: ${succeeded}, errored: ${errored}, elapsed time: ${getElapsedSeconds(
+                    _startTime,
+                )} seconds`,
+            );
+            await this.lockService.releaseLock(this.lockKey);
+        } catch (e: any) {
+            if (e?.code !== ErrorCodes.LOCKED) {
+                logger.error('Error while syncing historical orders by id range', e);
+                await this.lockService.releaseLock(this.lockKey);
+            } else {
+                logger.warn('Already locked');
+            }
+        }
+    };
+
     private generateAndSendOrderEventsToKlaviyo = (order: Order): Promise<any>[] => {
         const events: EventRequest[] = [];
 

@@ -1,4 +1,4 @@
-import { parentPort } from 'node:worker_threads';
+import { parentPort, workerData } from 'node:worker_threads';
 import { OrdersSync } from '../../../../../domain/bulkSync/OrdersSync';
 import { CTCustomObjectLockService } from '../../../../../domain/bulkSync/services/CTCustomObjectLockService';
 import { KlaviyoSdkService } from '../../../../driven/klaviyo/KlaviyoSdkService';
@@ -31,8 +31,15 @@ const releaseLock = async () => {
 		new DefaultCtOrderService(getApiRoot()),
 	);
 
-	await ordersSync.syncAllOrders();
-	process.exit(0);
+	if (workerData?.orderIds.length) {
+		await ordersSync.syncOrdersByIdRange(workerData?.orderIds);
+	}
+	else {
+		await ordersSync.syncAllOrders();
+	}
+
+	if (parentPort) parentPort.postMessage('done');
+	else process.exit(0);
 })();
 
 if (parentPort)

@@ -65,6 +65,57 @@ export class CustomersSync {
         }
     };
 
+    public syncCustomersByIdRange = async (customerIds: string[]) => {
+        logger.info('Started sync of historical customers by id range');
+        try {
+            //ensures that only one sync at the time is running
+            await this.lockService.acquireLock(this.lockKey);
+
+            let ctCustomerResults: PaginatedCustomerResults | undefined;
+            let succeeded = 0,
+                errored = 0,
+                totalCustomers = 0,
+                totalKlaviyoProfiles = 0;
+
+            do {
+                ctCustomerResults = await this.ctCustomerService.getCustomersByIdRange(
+                    customerIds,
+                    ctCustomerResults?.lastId,
+                );
+
+                const promiseResults = await Promise.allSettled(
+                    ctCustomerResults.data.flatMap((customer) => this.generateCustomerProfiles(customer)),
+                );
+
+                const rejectedPromises = promiseResults.filter(isRejected);
+                const fulfilledPromises = promiseResults.filter(isFulfilled);
+
+                this.klaviyoService.logRateLimitHeaders(fulfilledPromises, rejectedPromises);
+
+                totalCustomers += ctCustomerResults.data.length;
+                totalKlaviyoProfiles += promiseResults.length;
+                errored += rejectedPromises.length;
+                succeeded += fulfilledPromises.length;
+                if (rejectedPromises.length) {
+                    rejectedPromises.forEach((rejected) =>
+                        logger.error('Error syncing profiles with klaviyo', rejected),
+                    );
+                }
+            } while (ctCustomerResults.hasMore);
+            logger.info(
+                `Historical customers import by id range. Total customers to be imported ${totalCustomers}, total klaviyo profiles: ${totalKlaviyoProfiles}, successfully imported: ${succeeded}, errored: ${errored}`,
+            );
+            await this.lockService.releaseLock(this.lockKey);
+        } catch (e: any) {
+            if (e?.code !== ErrorCodes.LOCKED) {
+                logger.error('Error while syncing historical customers by id range', e);
+                await this.lockService.releaseLock(this.lockKey);
+            } else {
+                logger.warn('Already locked');
+            }
+        }
+    };
+
     private generateCustomerProfiles = (customer: Customer): Promise<any>[] => {
         const events: ProfileRequest[] = [];
 
