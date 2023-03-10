@@ -9,9 +9,7 @@ import { ErrorCodes, StatusError } from "../../../types/errors/StatusError";
 export class InMemoryLockService implements LockService {
     private locks: string[] = [];
     acquireLock(key: string): void {
-        if (this.locks.includes(key)) {
-            throw new StatusError(409, 'Cannot acquire lock', ErrorCodes.LOCKED);
-        }
+        this.checkLock(key);
         this.locks.push(key);
     }
 
@@ -19,6 +17,12 @@ export class InMemoryLockService implements LockService {
         const index = this.locks.indexOf(key, 0);
         if (index > -1) {
             this.locks.splice(index, 1);
+        }
+    }
+
+    checkLock(key:string): void {
+        if (this.locks.includes(key)) {
+            throw new StatusError(409, 'Cannot acquire lock', ErrorCodes.LOCKED);
         }
     }
 }

@@ -8,8 +8,14 @@ const breeMock = {
     remove: jest.fn(),
     config: {} as any,
 };
+
+const ctCustomObjectLockMock = {
+    checkLock: jest.fn(),
+}
 import { bulkSyncApp } from '../../../infrastructure/driving/adapter/bulkSync/bulkSyncApiAdapter';
 import logger from '../../../utils/log';
+import { CTCustomObjectLockService } from '../../../domain/bulkSync/services/CTCustomObjectLockService';
+import { ErrorCodes, StatusError } from '../../../types/errors/StatusError'
 
 jest.mock('bree', () => {
     return {
@@ -20,6 +26,13 @@ jest.mock('bree', () => {
         },
     };
 });
+
+
+jest.mock('../../../domain/bulkSync/services/CTCustomObjectLockService', () => ({
+    CTCustomObjectLockService: function() {
+        return ctCustomObjectLockMock;
+    }
+}))
 
 chai.use(chaiHttp);
 
@@ -34,16 +47,19 @@ describe('bulkSyncApp order sync endpoint', () => {
     });
 
     it('should accept the start sync request and return 202', (done) => {
+        const checkLockSpy = jest.spyOn(ctCustomObjectLockMock, 'checkLock');
         chai.request(server)
             .post('/sync/orders')
             .end((err, res) => {
                 exp(err).to.be.null;
                 exp(res.status).to.eq(202);
+                expect(checkLockSpy).toHaveBeenCalledWith('orderFullSync');
                 done();
             });
     });
 
     it('should accept the start sync request by id range and return 202', (done) => {
+        const checkLockSpy = jest.spyOn(ctCustomObjectLockMock, 'checkLock');
         const breeAddSpy = jest.spyOn(breeMock, 'add');
         chai.request(server)
             .post('/sync/orders')
@@ -63,11 +79,44 @@ describe('bulkSyncApp order sync endpoint', () => {
                         },
                     },
                 ]);
+                expect(checkLockSpy).toHaveBeenCalledWith('orderFullSync');
+                done();
+            });
+    });
+
+    it('should fail to start sync and return 423 when a job is already running', (done) => {
+        jest.spyOn(ctCustomObjectLockMock, 'checkLock');
+        breeMock.run.mockImplementationOnce(() => {
+            throw Error('duplicate job name');
+        });
+        chai.request(server)
+            .post('/sync/orders')
+            .end((err, res) => {
+                exp(err).to.be.null;
+                exp(res.status).to.eq(423);
+                done();
+            });
+    });
+
+    it('should fail to start sync and return 423 when a lock already exists', (done) => {
+        jest.spyOn(ctCustomObjectLockMock, 'checkLock').mockImplementationOnce(() => {
+            throw new StatusError(
+                409,
+                `Lock already exists.`,
+                ErrorCodes.LOCKED,
+            );
+        });
+        chai.request(server)
+            .post('/sync/orders')
+            .end((err, res) => {
+                exp(err).to.be.null;
+                exp(res.status).to.eq(423);
                 done();
             });
     });
 
     it('should fail to start sync and return 500', (done) => {
+        jest.spyOn(ctCustomObjectLockMock, 'checkLock');
         breeMock.run.mockImplementationOnce(() => {
             throw Error();
         });
@@ -133,16 +182,19 @@ describe('bulkSyncApp customer sync endpoint', () => {
     });
 
     it('should accept the start sync request and return 202', (done) => {
+        const checkLockSpy = jest.spyOn(ctCustomObjectLockMock, 'checkLock');
         chai.request(server)
             .post('/sync/customers')
             .end((err, res) => {
                 exp(err).to.be.null;
                 exp(res.status).to.eq(202);
+                expect(checkLockSpy).toHaveBeenCalledWith('customerFullSync');
                 done();
             });
     });
 
     it('should accept the start sync request by id range and return 202', (done) => {
+        const checkLockSpy = jest.spyOn(ctCustomObjectLockMock, 'checkLock');
         const breeAddSpy = jest.spyOn(breeMock, 'add');
         chai.request(server)
             .post('/sync/customers')
@@ -162,11 +214,44 @@ describe('bulkSyncApp customer sync endpoint', () => {
                         },
                     },
                 ]);
+                expect(checkLockSpy).toHaveBeenCalledWith('customerFullSync');
+                done();
+            });
+    });
+
+    it('should fail to start sync and return 423 when a job is already running', (done) => {
+        jest.spyOn(ctCustomObjectLockMock, 'checkLock');
+        breeMock.run.mockImplementationOnce(() => {
+            throw Error('duplicate job name');
+        });
+        chai.request(server)
+            .post('/sync/customers')
+            .end((err, res) => {
+                exp(err).to.be.null;
+                exp(res.status).to.eq(423);
+                done();
+            });
+    });
+
+    it('should fail to start sync and return 423 when a lock already exists', (done) => {
+        jest.spyOn(ctCustomObjectLockMock, 'checkLock').mockImplementationOnce(() => {
+            throw new StatusError(
+                409,
+                `Lock already exists.`,
+                ErrorCodes.LOCKED,
+            );
+        });
+        chai.request(server)
+            .post('/sync/customers')
+            .end((err, res) => {
+                exp(err).to.be.null;
+                exp(res.status).to.eq(423);
                 done();
             });
     });
 
     it('should fail to start sync and return 500', (done) => {
+        jest.spyOn(ctCustomObjectLockMock, 'checkLock');
         breeMock.run.mockImplementationOnce(() => {
             throw Error();
         });

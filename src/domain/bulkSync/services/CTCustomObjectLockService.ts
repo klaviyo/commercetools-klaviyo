@@ -64,4 +64,30 @@ export class CTCustomObjectLockService implements LockService {
             }
         }
     }
+
+    async checkLock(key: string): Promise<void> {
+        logger.info(`Checking lock using CT custom object. Container: ${this.container}, key: ${key}`);
+        try {
+            await this.ctApiRoot
+                .customObjects()
+                .withContainerAndKey({
+                    container: this.container,
+                    key,
+                })
+                .get()
+                .execute();
+        } catch (e: any) {
+            if (e?.statusCode !== 404) {
+                logger.error(`Error getting lock status using CT custom object.`, e);
+                throw new StatusError(e.statusCode, e.message, e.code);
+            }
+            return;
+        }
+        logger.error(`Lock ${this.container} > ${key} already exists`);
+        throw new StatusError(
+            409,
+            `Lock already exists. Container: ${this.container}, key: ${key}`,
+            ErrorCodes.LOCKED,
+        );
+    }
 }

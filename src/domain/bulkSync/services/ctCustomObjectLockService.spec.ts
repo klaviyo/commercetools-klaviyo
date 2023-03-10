@@ -84,5 +84,33 @@ describe('ctCustomObjectLockService', () => {
     expect(mockDeleteCustomObjectApiRequest.execute).toBeCalledTimes(0);
   });
 
+  it('should throw error when it tries to delete the custom object and it throws error', async () => {
+    mockDeleteCustomObjectApiRequest.execute.mockImplementation(() => {
+      throw new CTErrorResponse(500, "unknown error")
+    });
+
+    await expect(ctCustomObjectLockService.releaseLock("someKey")).rejects.toThrow(Error);
+
+    expect(mockDeleteCustomObjectApiRequest.execute).toBeCalledTimes(1);
+  });
+
+  it('should check if the lock exists', async () => {
+    mockGetCustomObjectApiRequest.execute.mockResolvedValueOnce(mock<ClientResponse<CustomObject>>());
+
+    await expect(ctCustomObjectLockService.checkLock("someKey")).rejects.toThrow(Error);
+
+    expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
+  });
+
+  it('should throw error when it tries to delete the custom object and it throws error', async () => {
+    mockGetCustomObjectApiRequest.execute.mockImplementation(() => {
+      throw new CTErrorResponse(500, "unknown error")
+    });
+
+    await expect(ctCustomObjectLockService.checkLock("someKey")).rejects.toThrow(Error);
+
+    expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
+  });
+
 
 });

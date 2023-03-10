@@ -4,7 +4,7 @@ let customerWorkerThreadsMock = {
         once: jest.fn(),
     },
     workerData: {
-        orderIds: [] as string[],
+        customerIds: [] as string[],
     },
 } as any;
 
@@ -30,14 +30,14 @@ describe('syncCustomers', () => {
                 once: jest.fn(),
             },
             workerData: {
-                orderIds: [] as string[],
+                customerIds: [] as string[],
             },
         } as any;
         jest.resetModules();
     });
 
-    it('should call the right methods when orderIds are present (sync by id)', async () => {
-        customerWorkerThreadsMock.workerData.orderIds = ['123456'];
+    it('should call the right methods when customerIds are present (sync by id)', async () => {
+        customerWorkerThreadsMock.workerData.customerIds = ['123456'];
         const syncByIdRangeSpy = jest.spyOn(customersSyncMock, 'syncCustomersByIdRange');
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         const customersSyncJob = require('./customersSync');
@@ -51,8 +51,8 @@ describe('syncCustomers', () => {
         expect(syncByIdRangeSpy).toHaveBeenCalled();
     });
 
-    it('should call the right methods when orderIds are not present (sync all)', async () => {
-        customerWorkerThreadsMock.workerData.orderIds = [];
+    it('should call the right methods when customerIds are not present (sync all)', async () => {
+        customerWorkerThreadsMock.workerData.customerIds = [];
         const syncAllCustomersSpy = jest.spyOn(customersSyncMock, 'syncAllCustomers');
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         const customersSyncJob = require('./customersSync');

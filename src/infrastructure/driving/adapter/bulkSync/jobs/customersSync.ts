@@ -30,8 +30,8 @@ const releaseLock = async () => {
 		new KlaviyoSdkService(),
 		new DefaultCtCustomerService(getApiRoot()),
 	);
-	if (workerData?.orderIds.length) {
-		await customersSync.syncCustomersByIdRange(workerData?.orderIds);
+	if (workerData?.customerIds.length) {
+		await customersSync.syncCustomersByIdRange(workerData?.customerIds);
 	}
 	else {
 		await customersSync.syncAllCustomers();
