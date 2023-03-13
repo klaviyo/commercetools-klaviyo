@@ -89,6 +89,7 @@ resource "google_cloud_run_service" "klaviyo_ct_plugin_bulk_import" {
     //noinspection HILUnresolvedReference
     ignore_changes = [
       template.0.spec.0.containers,
+      template.0.metadata,
     ]
   }
 
