@@ -39,6 +39,17 @@
         "orderState",
         "version"
       ],
+      "exclude": [
+        "paymentInfo",
+        "shippingMode",
+        "syncInfo",
+        "origin",
+        "refusedGifts",
+        "directDiscounts",
+        "discountCodes",
+        "transactionFee",
+        "createdBy"
+      ],
       "map": {
         "id": "orderId",
         "lineItems": "items",
@@ -64,8 +75,12 @@
   },
   "payment": {
     "messages": {
-      "transactionAdded": ["PaymentTransactionAdded"],
-      "transactionChanged": ["PaymentTransactionStateChanged"]
+      "transactionAdded": [
+        "PaymentTransactionAdded"
+      ],
+      "transactionChanged": [
+        "PaymentTransactionStateChanged"
+      ]
     },
     "states": {
       "validTransactionStates": [

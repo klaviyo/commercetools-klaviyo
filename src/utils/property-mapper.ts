@@ -1,17 +1,23 @@
 import config from 'config';
 
 export const mapAllowedProperties = (objectType: string, object: any) => {
-    if (!config.has(`${objectType}.properties.include`)) {
-        return object;
-    }
-    const allowedProperties: string[] = config.get(`${objectType}.properties.include`) || [];
-    if (Object.keys(allowedProperties).length === 0) {
-        return object;
-    }
-    const mappableProperties: any = config.get(`${objectType}.properties.map`) || {};
+    const includeSetting = `${objectType}.properties.include`;
+    const excludeSetting = `${objectType}.properties.exclude`;
+    const mapSetting = `${objectType}.properties.map`;
+
+    const includeProperties: string[] =
+        config.has(includeSetting) && (config.get(includeSetting) as []).length > 0
+            ? config.get(includeSetting)
+            : Object.keys(object);
+
+    const excludeProperties: string[] = config.has(excludeSetting) ? config.get(excludeSetting) : [];
+
+    const mapProperties: Record<string, string> = config.has(mapSetting) ? config.get(mapSetting) : {};
+
     return Object.fromEntries(
-        allowedProperties
+        includeProperties
+            .filter((value) => !excludeProperties.includes(value))
             .filter((value) => !!object[value])
-            .map((value: string) => [mappableProperties[value] || value, object[value]]),
+            .map((value: string) => [mapProperties[value] || value, object[value]]),
     );
 };
