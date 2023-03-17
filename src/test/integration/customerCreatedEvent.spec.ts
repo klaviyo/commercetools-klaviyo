@@ -3,7 +3,8 @@ import chaiHttp from 'chai-http';
 import { app } from '../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
 import { getSampleCustomerCreatedMessage } from '../testData/ctCustomerMessages';
 import http from 'http';
-import { klaviyoCreateProfileNock, klaviyoPatchProfileNock } from './nocks/KlaviyoProfileNock';
+import { klaviyoCreateProfileNock } from './nocks/KlaviyoProfileNock';
+import nock from 'nock';
 
 chai.use(chaiHttp);
 
@@ -56,7 +57,7 @@ describe('pubSub adapter customer event', () => {
             });
     });
 
-    it('should update the profile in klaviyo and return status 204 when the request is valid and the profile already exists in klaviyo', (done) => {
+    it('should not process the message and return status 202 when the profile already exists in klaviyo (klaviyo identifies profiles by email and or phone and or externalId)', (done) => {
         // nock.recorder.rec();
         const createProfileNock = klaviyoCreateProfileNock(
             {
@@ -94,17 +95,15 @@ describe('pubSub adapter customer event', () => {
                 ],
             },
         );
-        const updateProfileNock = klaviyoPatchProfileNock();
-
         const inputMessage = getSampleCustomerCreatedMessage();
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(inputMessage)) } })
             .end((err, res) => {
                 expect(err).to.be.null;
-                expect(res.status).to.eq(204);
+                expect(res.status).to.eq(202);
                 expect(createProfileNock.isDone()).to.be.true;
-                expect(updateProfileNock.isDone()).to.be.true;
+                expect(nock.pendingMocks().length).to.eq(0);
                 done();
             });
     });

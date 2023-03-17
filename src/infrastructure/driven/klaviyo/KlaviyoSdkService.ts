@@ -1,8 +1,8 @@
 import { KlaviyoService } from './KlaviyoService';
 import logger from '../../../utils/log';
-import { Client, ConfigWrapper, Events, Profiles } from "klaviyo-api";
-import { StatusError } from "../../../types/errors/StatusError";
-import * as dotenv from "dotenv";
+import { Client, ConfigWrapper, Events, Profiles } from 'klaviyo-api';
+import * as dotenv from 'dotenv';
+
 dotenv.config();
 
 if(!process.env.KLAVIYO_AUTH_KEY){
@@ -48,23 +48,7 @@ export class KlaviyoSdkService extends KlaviyoService {
         try {
             return await Profiles.createProfile(body);
         } catch (e: any) {
-            if (e.status === 409) {
-                let duplicateProfileId;
-                try {
-                    duplicateProfileId = JSON.parse(e?.response?.error?.text)?.errors[0]?.meta?.duplicate_profile_id;
-                } catch (e) {
-                    logger.error('Error getting duplicated profile id from error response', e);
-                    throw new StatusError(
-                      400,
-                      `Duplicated profile, error getting duplicated profile id from error response. Request body: ${JSON.stringify(
-                        body,
-                      )}`,
-                    );
-                }
-                logger.info(`Duplicated profile with id ${duplicateProfileId}. Updating profile...`);
-                body.data.id = duplicateProfileId;
-                return Profiles.updateProfile(body, duplicateProfileId);
-            }
+            logger.error(`Error creating profile in Klaviyo. Response code ${e.status}, ${e.message}`, e)
             throw e;
         }
     }

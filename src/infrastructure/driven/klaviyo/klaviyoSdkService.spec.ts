@@ -32,7 +32,7 @@ describe('klaviyoService > sendEventToKlaviyo', () => {
         expect(Profiles.createProfile).toBeCalledWith(klaviyoEvent.body);
     });
 
-    test("should update a profile in klaviyo when the input event is of type 'profileCreated' but the profile already exists in klaviyo", async () => {
+    test("should throw an error when the input event is of type 'profileCreated' but the profile already exists in klaviyo", async () => {
         const klaviyoEvent: KlaviyoEvent = {
             type: 'profileCreated',
             body: {
@@ -50,12 +50,11 @@ describe('klaviyoService > sendEventToKlaviyo', () => {
         });
         Profiles.createProfile = jest.fn().mockRejectedValue(responseError);
 
-        await klaviyoService.sendEventToKlaviyo(klaviyoEvent);
+        await expect(klaviyoService.sendEventToKlaviyo(klaviyoEvent)).rejects.toThrow(KlaviyoError);
 
         expect(Profiles.createProfile).toBeCalledTimes(1);
-        expect(Profiles.updateProfile).toBeCalledTimes(1);
+        expect(Profiles.updateProfile).toBeCalledTimes(0);
         expect(Profiles.createProfile).toBeCalledWith(klaviyoEvent.body);
-        expect(Profiles.updateProfile).toBeCalledWith(klaviyoEvent.body, '01GRKR887TDV7JS4JGM003ANYJ');
     });
 
     test("should throw error when the input event is of type 'profileCreated' but the profile already exists in klaviyo and the error response doesn't contain the ID of the duplicated profile", async () => {
