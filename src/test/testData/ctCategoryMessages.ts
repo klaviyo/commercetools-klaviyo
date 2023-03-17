@@ -1,4 +1,4 @@
-import { CategoryCreatedMessage } from '@commercetools/platform-sdk';
+import { CategoryCreatedMessage, ResourceDeletedDeliveryPayload } from '@commercetools/platform-sdk';
 
 export const sampleCategoryCreatedMessage: CategoryCreatedMessage = {
 	id: '38898b94-0070-490d-9c31-22f517a42452',
@@ -21,4 +21,18 @@ export const sampleCategoryCreatedMessage: CategoryCreatedMessage = {
 	},
 	createdAt: '2023-03-16T15:01:26.922Z',
 	lastModifiedAt: '2023-03-16T15:01:26.922Z',
+};
+
+export const sampleCategoryResourceDeletedMessage: ResourceDeletedDeliveryPayload = {
+    version: 6,
+    projectKey: 'klaviyo-dev',
+    resource: {
+        typeId: 'category',
+        id: 'e54d8233-be41-4ce0-ae68-5d0674dd8517',
+    },
+    modifiedAt: '2023-02-06T16:13:23.528Z',
+    notificationType: 'ResourceDeleted',
+    resourceUserProvidedIdentifiers: {
+        key: 'testcustomer',
+    },
 };

@@ -7,3 +7,9 @@ export const klaviyoCreateCategoryNock = (data: any, responseCode = 201, respons
         })
         .reply(responseCode, responseBody);
 };
+
+export const klaviyoDeleteCategoryNock = (id: string, responseCode = 204) => {
+    return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
+        .delete(`/api/catalog-categories/${id}/`, undefined)
+        .reply(responseCode);
+};

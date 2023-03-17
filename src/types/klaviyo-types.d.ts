@@ -90,3 +90,9 @@ type KlaviyoCategory = {
     catalog_type: string | '$default';
     updated?: string;
 };
+
+type CategoryDeletedRequest = {
+    data: {
+        id: string;
+    };
+};

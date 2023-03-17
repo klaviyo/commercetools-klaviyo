@@ -17,6 +17,7 @@ import { DefaultOrderMapper } from '../shared/mappers/DefaultOrderMapper';
 import { DefaultCustomerMapper } from '../shared/mappers/DefaultCustomerMapper';
 import { DefaultCategoryMapper } from '../shared/mappers/DefaultCategoryMapper';
 import { CategoryCreatedEventProcessor } from './eventProcessors/category/categoryCreatedEventProcessor';
+import { CategoryResourceDeletedEventProcessor } from './eventProcessors/category/categoryResourceDeletedEventProcessor';
 
 const context: Context = {
     klaviyoService: new KlaviyoSdkService(),
@@ -34,6 +35,7 @@ const defaultProcessors: (typeof AbstractEventProcessor)[] = [
     OrderRefundedEvent,
     CustomerResourceUpdatedEventProcessor,
     CategoryCreatedEventProcessor,
+    CategoryResourceDeletedEventProcessor,
 ];
 
 // class CTEventsProcessor {

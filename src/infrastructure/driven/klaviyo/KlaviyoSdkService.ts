@@ -24,6 +24,8 @@ export class KlaviyoSdkService extends KlaviyoService {
                 return Client.createClientProfile(event.body, process.env.KLAVIYO_COMPANY_ID);
             case 'categoryCreated':
                 return Catalogs.createCatalogCategory(event.body);
+            case 'categoryDeleted':
+                return Catalogs.deleteCatalogCategory(event.body.data.id);
             default:
                 throw new Error(`Unsupported event type ${event.type}`);
         }
