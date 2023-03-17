@@ -1,6 +1,6 @@
 import { KlaviyoService } from './KlaviyoService';
 import logger from '../../../utils/log';
-import { Client, ConfigWrapper, Events, Profiles } from 'klaviyo-api';
+import { Client, ConfigWrapper, Events, Profiles, Catalogs } from 'klaviyo-api';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -22,6 +22,8 @@ export class KlaviyoSdkService extends KlaviyoService {
                 return Profiles.updateProfile(event.body, event.body.data?.id);
             case 'profileUpdated':
                 return Client.createClientProfile(event.body, process.env.KLAVIYO_COMPANY_ID);
+            case 'categoryCreated':
+                return Catalogs.createCatalogCategory(event.body);
             default:
                 throw new Error(`Unsupported event type ${event.type}`);
         }

@@ -71,3 +71,22 @@ type KlaviyoEventProfile = {
     $phone_number?: string;
     [key: string]: unknown;
 };
+
+type CategoryRequest = {
+    data: CategoryType;
+};
+
+type CategoryType = {
+    type: 'catalog-category';
+    id?: string;
+    attributes: KlaviyoCategory;
+    relationships?: any;
+};
+
+type KlaviyoCategory = {
+    external_id: string;
+    name: string;
+    integration_type: string | '$custom';
+    catalog_type: string | '$default';
+    updated?: string;
+};

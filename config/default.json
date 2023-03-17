@@ -89,5 +89,12 @@
         "Success"
       ]
     }
+  },
+  "category": {
+    "messages": {
+      "created": [
+        "CategoryCreated"
+      ]
+    }
   }
 }

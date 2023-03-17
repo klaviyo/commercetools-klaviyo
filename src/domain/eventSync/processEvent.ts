@@ -15,11 +15,14 @@ import { KlaviyoSdkService } from '../../infrastructure/driven/klaviyo/KlaviyoSd
 import { Context } from '../../types/klaviyo-context';
 import { DefaultOrderMapper } from '../shared/mappers/DefaultOrderMapper';
 import { DefaultCustomerMapper } from '../shared/mappers/DefaultCustomerMapper';
+import { DefaultCategoryMapper } from '../shared/mappers/DefaultCategoryMapper';
+import { CategoryCreatedEventProcessor } from './eventProcessors/category/categoryCreatedEventProcessor';
 
 const context: Context = {
     klaviyoService: new KlaviyoSdkService(),
     orderMapper: new DefaultOrderMapper(new DummyCurrencyService()),
     customerMapper: new DefaultCustomerMapper(),
+    categoryMapper: new DefaultCategoryMapper(),
 };
 
 // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {
@@ -30,6 +33,7 @@ const defaultProcessors: (typeof AbstractEventProcessor)[] = [
     OrderStateChangedEvent,
     OrderRefundedEvent,
     CustomerResourceUpdatedEventProcessor,
+    CategoryCreatedEventProcessor,
 ];
 
 // class CTEventsProcessor {

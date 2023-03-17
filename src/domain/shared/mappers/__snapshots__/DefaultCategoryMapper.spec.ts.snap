@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`map CT category to Klaviyo category should map a commercetools category to a klaviyo category 1`] = `
+{
+  "data": {
+    "attributes": {
+      "catalog_type": "$default",
+      "external_id": "cd2cd62b-7f08-44e4-96a8-d3e34c40cac9",
+      "integration_type": "$custom",
+      "name": "MessageTriggerTest1",
+    },
+    "type": "catalog-category",
+  },
+}
+`;
