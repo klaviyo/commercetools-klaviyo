@@ -5,6 +5,7 @@ on:
     paths:
       - 'infrastructure/**'
       - '.github/workflows/terraform.yml'
+      - '.github/actions/terraform/**'
 jobs:
   terraform:
     name: 'Terraform'
