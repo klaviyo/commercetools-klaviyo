@@ -87,8 +87,8 @@
 								"exec": [
 									"var data = pm.response.json();",
 									"console.log(\"Get customer response status: \", pm.response.code)",
-									"pm.test(\"Status code is not 403\", function () {",
-									"    pm.response.to.not.have.status(403);",
+									"pm.test(\"Status code is 200 or 404\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 404])",
 									"});",
 									"if (pm.response.code === 404){",
 									"    console.log(\"Creating customer\");",
@@ -149,14 +149,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{ct_host}}/{{project-key}}/customers/key={{customer-key}}",
+							"raw": "{{ct_host}}/{{project-key}}/customers/key=testcustomer",
 							"host": [
 								"{{ct_host}}"
 							],
 							"path": [
 								"{{project-key}}",
 								"customers",
-								"key={{customer-key}}"
+								"key=testcustomer"
 							],
 							"query": [
 								{
@@ -275,13 +275,12 @@
 									"pm.variables.replaceIn('{{$randomFirstName}}')",
 									"pm.variables.replaceIn('{{$randomLastName}}')",
 									"pm.variables.replaceIn('{{$randomCity}}')",
-									"// const coll = pm.collectionVariables.replaceIn('{{$randomPhoneNumberExt}}')",
-									"// console.log(pm.request.body.raw)",
-									"JSON.parse(pm.request.body.raw).addresses?.forEach(address => {",
-									"    const phoneNumber = \"+\"+pm.variables.replaceIn('{{$randomPhoneNumberExt}}')",
-									"    address.mobile = phoneNumber",
-									"    console.log(address.mobile)",
-									"    })"
+									"const phoneNumber = \"+39 323 456 \"+_.random(1000, 9999)",
+									"pm.variables.set (\"phoneNumber\", phoneNumber);",
+									"",
+									"const mobileNumber = \"+39 323 456 \"+_.random(1000, 9999)",
+									"pm.variables.set (\"mobileNumber\", mobileNumber);",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -317,7 +316,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Miss\",\n    \"email\": \"{{$randomEmail}}\",\n    \"key\": \"{{customer-key}}\",\n    \"firstName\": \"{{$randomFirstName}}\",\n    \"lastName\": \"{{$randomLastName}}\",\n    \"password\": \"secret123\",\n    \"addresses\": [\n        {\n            \"id\": \"lgDP675C\",\n            \"title\": \"Mrs.\",\n            \"firstName\": \"{{$randomFirstName}}\",\n            \"lastName\": \"{{$randomLastName}}\",\n            \"streetName\": \"First Street\",\n            \"streetNumber\": \"12\",\n            \"postalCode\": \"12345\",\n            \"city\": \"{{$randomCity}}\",\n            \"country\": \"NL\",\n            \"phone\": \"+39 3234567892\",\n            \"mobile\": \"{{$randomPhoneNumberExt}}\",\n            \"email\": \"jane.doe@example.com\"\n        },\n        {\n            \"id\": \"hKSGcsgu\",\n            \"title\": \"Head of factory\",\n            \"firstName\": \"Jane\",\n            \"lastName\": \"Doe\",\n            \"streetName\": \"Third Street\",\n            \"streetNumber\": \"34\",\n            \"postalCode\": \"12345\",\n            \"city\": \"Example City\",\n            \"country\": \"NL\",\n            \"phone\": \"+31102455400\",\n            \"mobile\": \"+31102455400\",\n            \"email\": \"jane.doe@example.com\"\n        }\n    ]\n}"
+							"raw": "{\n    \"title\": \"Miss\",\n    \"email\": \"{{$randomEmail}}\",\n    \"key\": \"testcustomer\",\n    \"firstName\": \"{{$randomFirstName}}\",\n    \"lastName\": \"{{$randomLastName}}\",\n    \"password\": \"secret123\",\n    \"addresses\": [\n        {\n            \"id\": \"lgDP675C\",\n            \"title\": \"Mrs.\",\n            \"firstName\": \"{{$randomFirstName}}\",\n            \"lastName\": \"{{$randomLastName}}\",\n            \"streetName\": \"First Street\",\n            \"streetNumber\": \"12\",\n            \"postalCode\": \"12345\",\n            \"city\": \"{{$randomCity}}\",\n            \"country\": \"NL\",\n            \"phone\": \"{{phoneNumber}}\",\n            \"mobile\": \"{{mobileNumber}}\",\n            \"email\": \"jane.doe@example.com\"\n        },\n        {\n            \"id\": \"hKSGcsgu\",\n            \"title\": \"Head of factory\",\n            \"firstName\": \"Jane\",\n            \"lastName\": \"Doe\",\n            \"streetName\": \"Third Street\",\n            \"streetNumber\": \"34\",\n            \"postalCode\": \"12345\",\n            \"city\": \"Example City\",\n            \"country\": \"NL\",\n            \"phone\": \"{{phoneNumber}}\",\n            \"mobile\": \"{{mobileNumber}}\",\n            \"email\": \"jane.doe@example.com\"\n        }\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{ct_host}}/{{project-key}}/customers",
@@ -348,7 +347,7 @@
 							"script": {
 								"exec": [
 									"var expectedHttpStatus = 200;",
-									"var maxNumberOfTries = 5;",
+									"var maxNumberOfTries = 10;",
 									"var sleepBetweenTries = 2000;",
 									"",
 									"if (!pm.environment.get(\"collection_tries\")) {",
@@ -600,19 +599,15 @@
 									"    pm.response.to.have.status(201);",
 									"});",
 									"var data = pm.response.json();",
-									"if(data.version){",
-									"    pm.environment.set(\"cart-version\", data.version);",
-									"}",
-									"if(data.id){",
-									"    pm.environment.set(\"cart-id\", data.id); ",
-									"}",
-									"if(data.key){",
-									"    pm.environment.set(\"cart-key\", data.key);",
-									"}",
-									"if(data.customerEmail){",
-									"    pm.environment.set(\"customer-email\", data.customerEmail);",
-									"}",
-									""
+									"pm.test(\"Mandatory cart data is available\", function () {",
+									"    pm.expect(data.version).to.not.be.undefined;",
+									"    pm.expect(data.id).to.not.be.undefined;",
+									"    pm.expect(data.customerEmail).to.not.be.undefined;",
+									"});",
+									"",
+									"pm.environment.set(\"cart-version\", data.version);",
+									"pm.environment.set(\"cart-id\", data.id);",
+									"pm.environment.set(\"customer-email\", data.customerEmail);"
 								],
 								"type": "text/javascript"
 							}
@@ -754,7 +749,7 @@
 							"script": {
 								"exec": [
 									"var expectedHttpStatus = 200;",
-									"var maxNumberOfTries = 5;",
+									"var maxNumberOfTries = 10;",
 									"var sleepBetweenTries = 2000;",
 									"",
 									"if (!pm.environment.get(\"collection_tries\")) {",
@@ -1139,7 +1134,12 @@
 									"pm.variables.replaceIn('{{$randomFirstName}}')",
 									"pm.variables.replaceIn('{{$randomLastName}}')",
 									"pm.variables.replaceIn('{{$randomCity}}')",
-									"pm.variables.replaceIn('{{$randomPhoneNumber}}')"
+									"const phoneNumber = \"+39 323 456 \"+_.random(1000, 9999)",
+									"pm.variables.set (\"phoneNumber\", phoneNumber);",
+									"",
+									"const mobileNumber = \"+39 323 456 \"+_.random(1000, 9999)",
+									"pm.variables.set (\"mobileNumber\", mobileNumber);",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1175,7 +1175,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Miss\",\n    \"email\": \"{{$randomEmail}}\",\n    \"firstName\": \"{{$randomFirstName}}\",\n    \"lastName\": \"{{$randomLastName}}\",\n    \"password\": \"secret123\",\n    \"addresses\": [\n        {\n            \"id\": \"lgDP675C\",\n            \"title\": \"Mrs.\",\n            \"firstName\": \"{{$randomFirstName}}\",\n            \"lastName\": \"{{$randomLastName}}\",\n            \"streetName\": \"First Street\",\n            \"streetNumber\": \"12\",\n            \"postalCode\": \"12345\",\n            \"city\": \"{{$randomCity}}\",\n            \"country\": \"NL\",\n            \"phone\": \"+39 3234567892\",\n            \"mobile\": \"+39 3234567892\",\n            \"email\": \"jane.doe@example.com\"\n        },\n        {\n            \"id\": \"hKSGcsgu\",\n            \"title\": \"Head of factory\",\n            \"firstName\": \"Jane\",\n            \"lastName\": \"Doe\",\n            \"streetName\": \"Third Street\",\n            \"streetNumber\": \"34\",\n            \"postalCode\": \"12345\",\n            \"city\": \"Example City\",\n            \"country\": \"NL\",\n            \"phone\": \"+3112345678\",\n            \"mobile\": \"+3112345679\",\n            \"email\": \"jane.doe@example.com\"\n        }\n    ]\n}"
+							"raw": "{\n    \"title\": \"Miss\",\n    \"email\": \"{{$randomEmail}}\",\n    \"firstName\": \"{{$randomFirstName}}\",\n    \"lastName\": \"{{$randomLastName}}\",\n    \"password\": \"secret123\",\n    \"addresses\": [\n        {\n            \"id\": \"lgDP675C\",\n            \"title\": \"Mrs.\",\n            \"firstName\": \"{{$randomFirstName}}\",\n            \"lastName\": \"{{$randomLastName}}\",\n            \"streetName\": \"First Street\",\n            \"streetNumber\": \"12\",\n            \"postalCode\": \"12345\",\n            \"city\": \"{{$randomCity}}\",\n            \"country\": \"NL\",\n            \"phone\": \"{{phoneNumber}}\",\n            \"mobile\": \"{{mobileNumber}}\",\n            \"email\": \"jane.doe@example.com\"\n        },\n        {\n            \"id\": \"hKSGcsgu\",\n            \"title\": \"Head of factory\",\n            \"firstName\": \"Jane\",\n            \"lastName\": \"Doe\",\n            \"streetName\": \"Third Street\",\n            \"streetNumber\": \"34\",\n            \"postalCode\": \"12345\",\n            \"city\": \"Example City\",\n            \"country\": \"NL\",\n            \"phone\": \"{{phoneNumber}}\",\n            \"mobile\": \"{{mobileNumber}}\",\n            \"email\": \"jane.doe@example.com\"\n        }\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{ct_host}}/{{project-key}}/customers",
@@ -1206,7 +1206,7 @@
 							"script": {
 								"exec": [
 									"var expectedHttpStatus = 200;",
-									"var maxNumberOfTries = 5;",
+									"var maxNumberOfTries = 10;",
 									"var sleepBetweenTries = 2000;",
 									"",
 									"if (!pm.environment.get(\"collection_tries\")) {",
