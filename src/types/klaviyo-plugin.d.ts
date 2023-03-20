@@ -5,6 +5,7 @@ type KlaviyoEvent = {
         | 'profileResourceUpdated'
         | 'categoryCreated'
         | 'categoryDeleted'
+        | 'categoryUpdated'
         | 'event';
     body: KlaviyoRequestType;
 };

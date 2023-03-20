@@ -26,6 +26,8 @@ export class KlaviyoSdkService extends KlaviyoService {
                 return Catalogs.createCatalogCategory(event.body);
             case 'categoryDeleted':
                 return Catalogs.deleteCatalogCategory(event.body.data.id);
+            case 'categoryUpdated':
+                return Catalogs.updateCatalogCategory(event.body, event.body.data?.id);
             default:
                 throw new Error(`Unsupported event type ${event.type}`);
         }
@@ -53,6 +55,23 @@ export class KlaviyoSdkService extends KlaviyoService {
             return await Profiles.createProfile(body);
         } catch (e: any) {
             logger.error(`Error creating profile in Klaviyo. Response code ${e.status}, ${e.message}`, e)
+            throw e;
+        }
+    }
+
+    public async getKlaviyoCategoryByExternalId (externalId: string): Promise<CategoryType | undefined> {
+        logger.info(`Getting categories in Klaviyo with externalId ${externalId}`);
+        try {
+            const filter = `any(ids,["$custom:::$default:::${externalId}"])`;
+            const categories = await Catalogs.getCatalogCategories({ filter });
+            logger.debug('Categories response', categories);
+            const category = categories?.body.data?.find(
+              (category: CategoryType) => category.attributes.external_id === externalId,
+            );
+            logger.debug('Category', category);
+            return category;
+        } catch (e) {
+            logger.error(`Error getting category in Klaviyo with externalId ${externalId}`);
             throw e;
         }
     }

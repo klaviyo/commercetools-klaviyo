@@ -1,7 +1,7 @@
 import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
 import { CategoryCreatedMessage, Category } from '@commercetools/platform-sdk'
-import { DefaultCtCategoryService } from '../../../../infrastructure/driven/commercetools/DefaultCategoryService';
+import { DefaultCtCategoryService } from '../../../../infrastructure/driven/commercetools/DefaultCtCategoryService';
 import config from 'config';
 import { getApiRoot } from '../../../../infrastructure/driven/commercetools/ctService';
 

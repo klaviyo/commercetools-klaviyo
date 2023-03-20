@@ -9,6 +9,22 @@ exports[`map CT category to Klaviyo category should map a commercetools category
       "integration_type": "$custom",
       "name": "MessageTriggerTest1",
     },
+    "id": undefined,
+    "type": "catalog-category",
+  },
+}
+`;
+
+exports[`map CT category to Klaviyo category should map a commercetools category to a klaviyo category with an existing profile id 1`] = `
+{
+  "data": {
+    "attributes": {
+      "catalog_type": undefined,
+      "external_id": undefined,
+      "integration_type": undefined,
+      "name": "MessageTriggerTest1",
+    },
+    "id": "123456",
     "type": "catalog-category",
   },
 }

@@ -20,6 +20,10 @@ describe('Klaviyo abstract service', () => {
         sendEventToKlaviyo(event: KlaviyoEvent): Promise<any> {
             return Promise.resolve(undefined);
         }
+
+        getKlaviyoCategoryByExternalId(externalId: string): Promise<CategoryType | undefined> {
+            return Promise.resolve(undefined);
+        }
     }
 
     test('should log all the rateLimit headers when they are available', async () => {

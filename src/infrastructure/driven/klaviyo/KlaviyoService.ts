@@ -36,4 +36,6 @@ export abstract class KlaviyoService {
             );
         });
     }
+
+    abstract getKlaviyoCategoryByExternalId(externalId: string): Promise<CategoryType | undefined>;
 }

@@ -84,10 +84,10 @@ type CategoryType = {
 };
 
 type KlaviyoCategory = {
-    external_id: string;
+    external_id?: string;
     name: string;
-    integration_type: string | '$custom';
-    catalog_type: string | '$default';
+    integration_type?: string | '$custom';
+    catalog_type?: string | '$default';
     updated?: string;
 };
 

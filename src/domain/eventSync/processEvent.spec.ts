@@ -36,6 +36,7 @@ describe('processEvent', () => {
         sendEventToKlaviyo: jest.fn(),
         logRateLimitHeaders: jest.fn(),
         getKlaviyoProfileByExternalId: jest.fn(),
+        getKlaviyoCategoryByExternalId: jest.fn(),
     };
 
     const responseHandlerMock = mocked(responseHandler);

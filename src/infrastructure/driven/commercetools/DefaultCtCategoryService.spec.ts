@@ -7,7 +7,7 @@ import { ByProjectKeyCategoriesByIDRequestBuilder } from '@commercetools/platfor
 import { ApiRequest } from '@commercetools/platform-sdk/dist/declarations/src/generated/shared/utils/requests-utils';
 import { CustomerPagedQueryResponse } from '@commercetools/platform-sdk';
 import { CTErrorResponse } from '../../../test/utils/CTErrorResponse';
-import { DefaultCtCategoryService } from './DefaultCategoryService';
+import { DefaultCtCategoryService } from './DefaultCtCategoryService';
 
 jest.mock('./ctService', () => {
     return {
