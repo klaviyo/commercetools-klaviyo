@@ -61,7 +61,7 @@ resource "google_api_gateway_api_config" "api_cfg" {
               summary: Stop syncing all commercetools orders to Klaviyo
               operationId: sync-orders-stop
               responses:
-                '202':
+                '200':
                   description: Request accepted
                   schema:
                     type: string
@@ -69,6 +69,17 @@ resource "google_api_gateway_api_config" "api_cfg" {
             post:
               summary: Sync all commercetools customers to Klaviyo
               operationId: sync-customers
+              parameters:
+                - in: body
+                  name: Parameters
+                  description: Optional parameters for the bulk import job
+                  schema:
+                    type: object
+                    properties:
+                      ids:
+                          type: array
+                          items:
+                            type: string
               responses:
                 '202':
                   description: Request accepted
@@ -79,7 +90,25 @@ resource "google_api_gateway_api_config" "api_cfg" {
               summary: Stop syncing all commercetools customers to Klaviyo
               operationId: sync-customers-stop
               responses:
+                '200':
+                  description: Request accepted
+                  schema:
+                    type: string
+          /sync/categories:
+            post:
+              summary: Sync all commercetools categories to Klaviyo
+              operationId: sync-categories
+              responses:
                 '202':
+                  description: Request accepted
+                  schema:
+                    type: string
+          /sync/categories/stop:
+            post:
+              summary: Stop syncing all commercetools categories to Klaviyo
+              operationId: sync-categories-stop
+              responses:
+                '200':
                   description: Request accepted
                   schema:
                     type: string

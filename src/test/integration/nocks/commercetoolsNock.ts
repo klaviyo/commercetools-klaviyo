@@ -219,6 +219,13 @@ export const getAllCustomers = (responseBody = {}) => {
         .reply(200, responseBody, []);
 };
 
+export const getAllCategories = (responseBody = {}) => {
+    return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
+        .get('/klaviyo-dev/categories')
+        .query({ limit: '20', withTotal: 'false', sort: 'id%20asc' })
+        .reply(200, responseBody, []);
+};
+
 export const ctGetCategoryByIdNock = (categoryId: string, status = 200) => {
     return nock(/https:\/\/api\..*\.gcp.commercetools\.com:443/, { encodedQueryParams: true })
         .persist()

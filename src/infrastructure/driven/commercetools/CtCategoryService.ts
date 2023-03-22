@@ -1,5 +1,7 @@
-import { Category } from '@commercetools/platform-sdk'
+import { Category } from '@commercetools/platform-sdk';
+import { PaginatedCategoryResults } from './DefaultCtCategoryService';
 
 export interface CtCategoryService {
-  getCategoryById (lastId?: string): Promise<Category>;
+    getAllCategories(lastId?: string): Promise<PaginatedCategoryResults>;
+    getCategoryById(lastId?: string): Promise<Category>;
 }

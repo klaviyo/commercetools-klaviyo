@@ -77,7 +77,7 @@ bulkSyncApp.post('/sync/orders/stop', async (req, res) => {
     logger.info('Received request to stop syncing orders');
     try {
         await bree.remove('ordersSync');
-        res.status(202).send();
+        res.status(200).send();
     } catch (e: any) {
         if (e?.message?.includes('does not exist')) {
             logger.warn("Tried to stop orders sync, but it isn't currently in progress.");
@@ -130,12 +130,56 @@ bulkSyncApp.post('/sync/customers/stop', async (req, res) => {
     logger.info('Received request to stop syncing customers');
     try {
         await bree.remove('customersSync');
-        res.status(202).send();
+        res.status(200).send();
     } catch (e: any) {
         if (e?.message?.includes('does not exist')) {
             logger.warn("Tried to stop customers sync, but it isn't currently in progress.");
             res.status(400).send({
                 message: 'Customers sync is not currently running.',
+            });
+        }
+        res.status(500).send();
+    }
+});
+
+bulkSyncApp.post('/sync/categories', async (req, res) => {
+    logger.info('Received request to sync categories');
+    try {
+        await ctLockService.checkLock('categoryFullSync');
+        await bree.add([
+            {
+                name: 'categoriesSync',
+            },
+        ]);
+        await bree.run('categoriesSync');
+        res.status(202).send();
+    } catch (e: any) {
+        if (e?.message?.includes('is already running') || e?.message?.includes('duplicate job name')) {
+            logger.warn("Tried to start categories sync, but it's already running.");
+            res.status(423).send({
+                message: 'Categories sync is already running.',
+            });
+        }
+        if (e?.code === ErrorCodes.LOCKED) {
+            logger.warn("Tried to start categories sync, but it's locked.");
+            res.status(423).send({
+                message: 'Categories sync is already running or a lock already exists.',
+            });
+        }
+        res.status(500).send();
+    }
+});
+
+bulkSyncApp.post('/sync/categories/stop', async (req, res) => {
+    logger.info('Received request to stop syncing categories');
+    try {
+        await bree.remove('categoriesSync');
+        res.status(200).send();
+    } catch (e: any) {
+        if (e?.message?.includes('does not exist')) {
+            logger.warn("Tried to stop categories sync, but it isn't currently in progress.");
+            res.status(400).send({
+                message: 'Categories sync is not currently running.',
             });
         }
         res.status(500).send();

@@ -129,12 +129,12 @@ describe('bulkSyncApp order sync endpoint', () => {
             });
     });
 
-    it('should accept the stop sync request and return 202', (done) => {
+    it('should accept the stop sync request and return 200', (done) => {
         chai.request(server)
             .post('/sync/orders/stop')
             .end((err, res) => {
                 exp(err).to.be.null;
-                exp(res.status).to.eq(202);
+                exp(res.status).to.eq(200);
                 done();
             });
     });
@@ -264,12 +264,12 @@ describe('bulkSyncApp customer sync endpoint', () => {
             });
     });
 
-    it('should accept the stop sync request and return 202', (done) => {
+    it('should accept the stop sync request and return 200', (done) => {
         chai.request(server)
             .post('/sync/customers/stop')
             .end((err, res) => {
                 exp(err).to.be.null;
-                exp(res.status).to.eq(202);
+                exp(res.status).to.eq(200);
                 done();
             });
     });
@@ -298,6 +298,115 @@ describe('bulkSyncApp customer sync endpoint', () => {
         });
         chai.request(server)
             .post('/sync/customers/stop')
+            .end((err, res) => {
+                exp(err).to.be.null;
+                exp(res.status).to.eq(500);
+                done();
+            });
+    });
+});
+
+describe('bulkSyncApp category sync endpoint', () => {
+    let server: http.Server;
+    beforeEach(() => {
+        server = bulkSyncApp.listen(0);
+    });
+
+    afterEach(async () => {
+        await server.close();
+    });
+
+    it('should accept the start sync request and return 202', (done) => {
+        const checkLockSpy = jest.spyOn(ctCustomObjectLockMock, 'checkLock');
+        chai.request(server)
+            .post('/sync/categories')
+            .end((err, res) => {
+                exp(err).to.be.null;
+                exp(res.status).to.eq(202);
+                expect(checkLockSpy).toHaveBeenCalledWith('categoryFullSync');
+                done();
+            });
+    });
+
+    it('should fail to start sync and return 423 when a job is already running', (done) => {
+        jest.spyOn(ctCustomObjectLockMock, 'checkLock');
+        breeMock.run.mockImplementationOnce(() => {
+            throw Error('duplicate job name');
+        });
+        chai.request(server)
+            .post('/sync/categories')
+            .end((err, res) => {
+                exp(err).to.be.null;
+                exp(res.status).to.eq(423);
+                done();
+            });
+    });
+
+    it('should fail to start sync and return 423 when a lock already exists', (done) => {
+        jest.spyOn(ctCustomObjectLockMock, 'checkLock').mockImplementationOnce(() => {
+            throw new StatusError(
+                409,
+                `Lock already exists.`,
+                ErrorCodes.LOCKED,
+            );
+        });
+        chai.request(server)
+            .post('/sync/categories')
+            .end((err, res) => {
+                exp(err).to.be.null;
+                exp(res.status).to.eq(423);
+                done();
+            });
+    });
+
+    it('should fail to start sync and return 500', (done) => {
+        jest.spyOn(ctCustomObjectLockMock, 'checkLock');
+        breeMock.run.mockImplementationOnce(() => {
+            throw Error();
+        });
+        chai.request(server)
+            .post('/sync/categories')
+            .end((err, res) => {
+                exp(err).to.be.null;
+                exp(res.status).to.eq(500);
+                done();
+            });
+    });
+
+    it('should accept the stop sync request and return 200', (done) => {
+        chai.request(server)
+            .post('/sync/categories/stop')
+            .end((err, res) => {
+                exp(err).to.be.null;
+                exp(res.status).to.eq(200);
+                done();
+            });
+    });
+
+    it("should fail to stop sync if it's not running and return 400", (done) => {
+        breeMock.remove.mockImplementationOnce(() => {
+            throw Error('Job "test" does not exist');
+        });
+        const loggerSpy = jest.spyOn(logger, 'warn');
+        chai.request(server)
+            .post('/sync/categories/stop')
+            .end((err, res) => {
+                exp(err).to.be.null;
+                exp(res.status).to.eq(400);
+                exp(res.body?.message).to.eq('Categories sync is not currently running.');
+                expect(loggerSpy).toHaveBeenCalledWith(
+                    "Tried to stop categories sync, but it isn't currently in progress.",
+                );
+                done();
+            });
+    });
+
+    it('should fail to stop sync and return 500', (done) => {
+        breeMock.remove.mockImplementationOnce(() => {
+            throw Error();
+        });
+        chai.request(server)
+            .post('/sync/categories/stop')
             .end((err, res) => {
                 exp(err).to.be.null;
                 exp(res.status).to.eq(500);

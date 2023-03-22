@@ -4,8 +4,32 @@ import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/dec
 import logger from '../../../utils/log';
 import { StatusError } from '../../../types/errors/StatusError';
 
+export type PaginatedCategoryResults = {
+    data: Category[];
+    hasMore: boolean;
+    lastId?: string;
+};
+
 export class DefaultCtCategoryService implements CtCategoryService {
     constructor(private readonly ctApiRoot: ByProjectKeyRequestBuilder, private readonly limit = 20) {}
+
+    getAllCategories = async (lastId?: string): Promise<PaginatedCategoryResults> => {
+        logger.info(`Getting all categories in commercetools with id after ${lastId}`);
+        try {
+            const queryArgs = lastId
+                ? { limit: this.limit, withTotal: false, sort: 'id asc', where: `id > "${lastId}"` }
+                : { limit: this.limit, withTotal: false, sort: 'id asc' };
+            const ctCategories = (await this.ctApiRoot.categories().get({ queryArgs }).execute()).body;
+            return {
+                data: ctCategories.results,
+                hasMore: Boolean(ctCategories.count === this.limit),
+                lastId: ctCategories.results.length > 0 ? ctCategories.results[ctCategories.results.length - 1].id : undefined,
+            };
+        } catch (error) {
+            logger.error(error);
+            throw error;
+        }
+    };
 
     getCategoryById = async (categoryId: string): Promise<Category> => {
         logger.info(`Getting category in commercetools with id ${categoryId}`);

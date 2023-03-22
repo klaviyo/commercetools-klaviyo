@@ -23,7 +23,7 @@ export class KlaviyoSdkService extends KlaviyoService {
             case 'profileUpdated':
                 return Client.createClientProfile(event.body, process.env.KLAVIYO_COMPANY_ID);
             case 'categoryCreated':
-                return Catalogs.createCatalogCategory(event.body);
+                return this.createCategory(event.body);
             case 'categoryDeleted':
                 return Catalogs.deleteCatalogCategory(event.body.data.id);
             case 'categoryUpdated':
@@ -55,6 +55,15 @@ export class KlaviyoSdkService extends KlaviyoService {
             return await Profiles.createProfile(body);
         } catch (e: any) {
             logger.error(`Error creating profile in Klaviyo. Response code ${e.status}, ${e.message}`, e)
+            throw e;
+        }
+    }
+
+    private async createCategory (body: KlaviyoRequestType) {
+        try {
+            return await Catalogs.createCatalogCategory(body);
+        } catch (e: any) {
+            logger.error(`Error creating category in Klaviyo. Response code ${e.status}, ${e.message}`, e)
             throw e;
         }
     }

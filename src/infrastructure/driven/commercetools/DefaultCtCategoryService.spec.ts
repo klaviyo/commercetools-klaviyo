@@ -1,11 +1,9 @@
-import { DefaultCtCustomerService } from './DefaultCtCustomerService';
 import { DeepMockProxy, mock, mockDeep } from 'jest-mock-extended';
-import { Category, Customer } from '@commercetools/platform-sdk';
+import { Category, CategoryPagedQueryResponse } from '@commercetools/platform-sdk';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 import { ByProjectKeyCategoriesRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/categories/by-project-key-categories-request-builder';
 import { ByProjectKeyCategoriesByIDRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/categories/by-project-key-categories-by-id-request-builder';
 import { ApiRequest } from '@commercetools/platform-sdk/dist/declarations/src/generated/shared/utils/requests-utils';
-import { CustomerPagedQueryResponse } from '@commercetools/platform-sdk';
 import { CTErrorResponse } from '../../../test/utils/CTErrorResponse';
 import { DefaultCtCategoryService } from './DefaultCtCategoryService';
 
@@ -24,21 +22,53 @@ const mockGetCustomObjectApiRequest = mockDeep<ApiRequest<Category>>();
 const categoriesWithIdMock = mockDeep<ByProjectKeyCategoriesByIDRequestBuilder>();
 categoriesMock.withId.mockImplementation(() => categoriesWithIdMock);
 categoriesWithIdMock.get.mockImplementation(() => mockGetCustomObjectApiRequest);
+const mockGetCustomObjectApiPagedRequest = mockDeep<ApiRequest<CategoryPagedQueryResponse>>();
+categoriesMock.get.mockImplementation(() => mockGetCustomObjectApiPagedRequest);
+
+describe('getAllCategories', () => {
+    it('should return a page of categories from CT', async () => {
+        mockGetCustomObjectApiPagedRequest.execute.mockResolvedValueOnce({
+            body: {
+                limit: 0,
+                count: 1,
+                results: [mock<Category>()],
+                offset: 0,
+                total: 0,
+            },
+        });
+
+        const ctCategoryService = new DefaultCtCategoryService(mockCtApiRoot);
+        const result = await ctCategoryService.getAllCategories();
+
+        expect(mockGetCustomObjectApiPagedRequest.execute).toBeCalledTimes(1);
+        expect(result.data.length).toEqual(1);
+    });
+
+    it('should throw an error if fails to get categories from CT APIs', async () => {
+        mockGetCustomObjectApiPagedRequest.execute.mockImplementation(() => {
+            throw new CTErrorResponse(504, 'CT Error');
+        });
+
+        const ctCategoryService = new DefaultCtCategoryService(mockCtApiRoot);
+        await expect(ctCategoryService.getAllCategories()).rejects.toThrow(Error);
+
+        expect(mockGetCustomObjectApiPagedRequest.execute).toBeCalledTimes(1);
+    });
+});
 
 describe('getCategoryById', () => {
-    it('should return a page of customers from CT', async () => {
+    it('should return a category from CT', async () => {
         mockGetCustomObjectApiRequest.execute.mockResolvedValueOnce({
             body: mock<Category>()
         });
 
         const ctCategoryService = new DefaultCtCategoryService(mockCtApiRoot);
-        const result = await ctCategoryService.getCategoryById('123456');
+        await ctCategoryService.getCategoryById('123456');
 
         expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
-        // expect(result.data.length).toEqual(1);
     });
 
-    it('should throw an error if fails to get customers from CT APIs', async () => {
+    it('should throw an error if fails to get categories from CT APIs', async () => {
         mockGetCustomObjectApiRequest.execute.mockImplementation(() => {
             throw new CTErrorResponse(504, 'CT Error');
         });
