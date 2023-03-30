@@ -16,6 +16,7 @@ import { Context } from '../../types/klaviyo-context';
 import { DefaultOrderMapper } from '../shared/mappers/DefaultOrderMapper';
 import { DefaultCustomerMapper } from '../shared/mappers/DefaultCustomerMapper';
 import { DefaultCategoryMapper } from '../shared/mappers/DefaultCategoryMapper';
+import { DefaultProductMapper } from '../shared/mappers/DefaultProductMapper';
 import { CategoryCreatedEventProcessor } from './eventProcessors/category/categoryCreatedEventProcessor';
 import { CategoryResourceDeletedEventProcessor } from './eventProcessors/category/categoryResourceDeletedEventProcessor';
 import { CategoryResourceUpdatedEventProcessor } from './eventProcessors/category/categoryResourceUpdatedEventProcessor';
@@ -25,6 +26,7 @@ const context: Context = {
     orderMapper: new DefaultOrderMapper(new DummyCurrencyService()),
     customerMapper: new DefaultCustomerMapper(),
     categoryMapper: new DefaultCategoryMapper(),
+    productMapper: new DefaultProductMapper(new DummyCurrencyService()),
 };
 
 // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {

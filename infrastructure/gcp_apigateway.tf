@@ -112,6 +112,24 @@ resource "google_api_gateway_api_config" "api_cfg" {
                   description: Request accepted
                   schema:
                     type: string
+          /sync/products:
+            post:
+              summary: Sync all commercetools products to Klaviyo
+              operationId: sync-products
+              responses:
+                '202':
+                  description: Request accepted
+                  schema:
+                    type: string
+          /sync/products/stop:
+            post:
+              summary: Stop syncing all commercetools products to Klaviyo
+              operationId: sync-products-stop
+              responses:
+                '200':
+                  description: Request accepted
+                  schema:
+                    type: string
     EOF
       )
     }

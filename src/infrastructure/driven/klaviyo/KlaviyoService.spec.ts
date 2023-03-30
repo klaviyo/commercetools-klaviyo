@@ -4,6 +4,7 @@ import logger from '../../../utils/log';
 jest.mock('../../../utils/log', () => {
     return {
         debug: jest.fn(),
+        info: jest.fn(),
     };
 });
 
@@ -22,6 +23,10 @@ describe('Klaviyo abstract service', () => {
         }
 
         getKlaviyoCategoryByExternalId(externalId: string): Promise<CategoryType | undefined> {
+            return Promise.resolve(undefined);
+        }
+
+        sendJobRequestToKlaviyo(event: KlaviyoEvent): Promise<any> {
             return Promise.resolve(undefined);
         }
     }
@@ -115,6 +120,38 @@ describe('Klaviyo abstract service', () => {
                 reset: '12',
             },
         );
+    });
+
+    test('should delay execution if "retry-after" header is set', async () => {
+        const klaviyoService = new DummyKlaviyoService();
+        await klaviyoService.checkRateLimitsAndDelay([
+            {
+                reason: {
+                    response: {
+                        headers: {
+                            'retry-after': '1',
+                        },
+                    },
+                },
+                status: 'rejected',
+            },
+        ], 1);
+        expect(logger.info).toBeCalledTimes(1);
+    });
+
+    test('should continue execution normally if "retry-after" header is not set', async () => {
+        const klaviyoService = new DummyKlaviyoService();
+        await klaviyoService.checkRateLimitsAndDelay([
+            {
+                reason: {
+                    response: {
+                        headers: {},
+                    },
+                },
+                status: 'rejected',
+            },
+        ], 1);
+        expect(logger.info).toBeCalledTimes(0);
     });
 
     test('should do nothing if no parameters are passed in', async () => {

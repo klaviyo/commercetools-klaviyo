@@ -6,11 +6,21 @@ type KlaviyoEvent = {
         | 'categoryCreated'
         | 'categoryDeleted'
         | 'categoryUpdated'
+        | 'itemCreated'
+        | 'variantCreated'
         | 'event';
     body: KlaviyoRequestType;
 };
 
-type KlaviyoRequestType = ProfileRequest | EventRequest | CategoryRequest | CategoryDeletedRequest;
+type KlaviyoRequestType =
+    | ProfileRequest
+    | EventRequest
+    | CategoryRequest
+    | CategoryDeletedRequest
+    | ItemRequest
+    | ItemVariantRequest
+    | ItemJobRequest
+    | ItemVariantJobRequest;
 
 type ProcessingResult = {
     status: 'OK' | '4xx';

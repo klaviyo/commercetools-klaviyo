@@ -80,7 +80,7 @@ type CategoryType = {
     type: 'catalog-category';
     id?: string;
     attributes: KlaviyoCategory;
-    relationships?: any;
+    relationships?: KlaviyoRelationships;
 };
 
 type KlaviyoCategory = {
@@ -94,5 +94,87 @@ type KlaviyoCategory = {
 type CategoryDeletedRequest = {
     data: {
         id: string;
+    };
+};
+
+type ItemRequest = {
+    data: ItemType;
+};
+
+type ItemType = {
+    type: 'catalog-item';
+    id?: string;
+    attributes: KlaviyoCatalogItem;
+    relationships?: KlaviyoRelationships;
+};
+
+type KlaviyoCatalogItem = {
+    external_id?: string;
+    integration_type?: string | '$custom';
+    catalog_type?: string | '$default';
+    title?: string;
+    description?: string;
+    url?: string;
+    image_full_url?: string;
+    published: boolean;
+};
+
+type ItemVariantRequest = {
+    data: ItemVariantType;
+};
+
+type ItemVariantType = {
+    type: 'catalog-variant';
+    id?: string;
+    attributes: KlaviyoCatalogVariant;
+    relationships?: KlaviyoRelationships;
+};
+
+type KlaviyoCatalogVariant = {
+    external_id?: string;
+    integration_type?: string | '$custom';
+    catalog_type?: string | '$default';
+    title?: string;
+    description?: string;
+    sku?: string;
+    inventory_quantity?: number;
+    price?: number;
+    url?: string;
+    image_full_url?: string;
+    published: boolean;
+};
+
+type KlaviyoRelationships = {
+    [key: string]: {
+        data: KlaviyoRelationshipData[]
+    }
+}
+
+type KlaviyoRelationshipData = {
+    type: 'catalog-item' | 'catalog-variant' | 'catalog-category';
+    id: string;
+}
+
+type ItemJobRequest = {
+    data: ItemJobType;
+};
+
+type ItemJobType = {
+    type: 'catalog-item-bulk-create-job';
+    id?: string,
+    attributes: {
+        items: ItemType[];
+    };
+};
+
+type ItemVariantJobRequest = {
+    data: ItemVariantJobType;
+};
+
+type ItemVariantJobType = {
+    type: 'catalog-variant-bulk-create-job';
+    id?: string,
+    attributes: {
+        variants: ItemVariantType[];
     };
 };

@@ -186,6 +186,50 @@ bulkSyncApp.post('/sync/categories/stop', async (req, res) => {
     }
 });
 
+bulkSyncApp.post('/sync/products', async (req, res) => {
+    logger.info('Received request to sync products');
+    try {
+        await ctLockService.checkLock('productFullSync');
+        await bree.add([
+            {
+                name: 'productsSync',
+            },
+        ]);
+        await bree.run('productsSync');
+        res.status(202).send();
+    } catch (e: any) {
+        if (e?.message?.includes('is already running') || e?.message?.includes('duplicate job name')) {
+            logger.warn("Tried to start products sync, but it's already running.");
+            res.status(423).send({
+                message: 'Products sync is already running.',
+            });
+        }
+        if (e?.code === ErrorCodes.LOCKED) {
+            logger.warn("Tried to start products sync, but it's locked.");
+            res.status(423).send({
+                message: 'Products sync is already running or a lock already exists.',
+            });
+        }
+        res.status(500).send();
+    }
+});
+
+bulkSyncApp.post('/sync/products/stop', async (req, res) => {
+    logger.info('Received request to stop syncing products');
+    try {
+        await bree.remove('productsSync');
+        res.status(200).send();
+    } catch (e: any) {
+        if (e?.message?.includes('does not exist')) {
+            logger.warn("Tried to stop products sync, but it isn't currently in progress.");
+            res.status(400).send({
+                message: 'Products sync is not currently running.',
+            });
+        }
+        res.status(500).send();
+    }
+});
+
 bulkSyncApp.get('/sync/status', async (req, res) => {
     logger.info('Received request to log global job status');
     bree.run('status');

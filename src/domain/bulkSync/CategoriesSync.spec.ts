@@ -21,7 +21,7 @@ const historicalCategories = new CategoriesSync(
 );
 
 describe('syncAllCategories', () => {
-    it('should create a single profile in klaviyo when CT returns a single customer', async () => {
+    it('should create a single category in klaviyo when CT returns a single category', async () => {
         mockCtCustomObjectLockService.acquireLock.mockResolvedValueOnce();
 
         const mockCategory = mock<Category>();
@@ -38,7 +38,7 @@ describe('syncAllCategories', () => {
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(1);
     });
 
-    it('should send 10 profiles to klaviyo when CT returns 10 customers with pagination', async () => {
+    it('should send 10 categories to klaviyo when CT returns 10 categories with pagination', async () => {
         mockCtCustomObjectLockService.acquireLock.mockResolvedValueOnce();
 
         const mockCategory = mock<Category>();
@@ -60,7 +60,7 @@ describe('syncAllCategories', () => {
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(10);
     });
 
-    it('should not allow to run the customer sync if there is another sync in progress', async () => {
+    it('should not allow to run the category sync if there is another sync in progress', async () => {
         mockCtCustomObjectLockService.acquireLock.mockImplementation(() => {
             throw new StatusError(409, 'is locked', ErrorCodes.LOCKED);
         });

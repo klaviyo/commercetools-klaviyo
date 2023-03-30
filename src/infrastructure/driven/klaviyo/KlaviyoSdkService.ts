@@ -2,6 +2,7 @@ import { KlaviyoService } from './KlaviyoService';
 import logger from '../../../utils/log';
 import { Client, ConfigWrapper, Events, Profiles, Catalogs } from 'klaviyo-api';
 import * as dotenv from 'dotenv';
+import { delaySeconds } from '../../../utils/delay-seconds';
 
 dotenv.config();
 
@@ -28,6 +29,18 @@ export class KlaviyoSdkService extends KlaviyoService {
                 return Catalogs.deleteCatalogCategory(event.body.data.id);
             case 'categoryUpdated':
                 return Catalogs.updateCatalogCategory(event.body, event.body.data?.id);
+            default:
+                throw new Error(`Unsupported event type ${event.type}`);
+        }
+    }
+
+    public async sendJobRequestToKlaviyo(event: KlaviyoEvent): Promise<any> {
+        logger.info('Sending job request in Klaviyo', { zdata: event.body });
+        switch (event.type) {
+            case 'itemCreated':
+                return this.createItemsJob(event.body);
+            case 'variantCreated':
+                return this.createVariantsJob(event.body);
             default:
                 throw new Error(`Unsupported event type ${event.type}`);
         }
@@ -66,6 +79,59 @@ export class KlaviyoSdkService extends KlaviyoService {
             logger.error(`Error creating category in Klaviyo. Response code ${e.status}, ${e.message}`, e)
             throw e;
         }
+    }
+
+    private async createItemsJob (body: KlaviyoRequestType) {
+        let jobId;
+        try {
+            jobId = (await Catalogs.spawnCreateItemsJob(body)).body.data.id;
+        } catch (e: any) {
+            logger.error(`Error creating items job in Klaviyo. Response code ${e.status}, ${e.message}`, e)
+            throw e;
+        }
+        let job;
+        do {
+            if (job) {
+                logger.info(`Pausing for 10 seconds before checking status for create items job: ${jobId}`);
+                await delaySeconds(10);
+            }
+            try {
+                job = await Catalogs.getCreateItemsJob(jobId, {});
+                if (job?.body.data.attributes.status !== 'processing') {
+                    logger.info('hey', job?.body.data.attributes)
+                }
+            } catch (e: any) {
+                logger.error(`Error getting items job in Klaviyo. Response code ${e.status}, ${e.message}`, e)
+                throw e;
+            }
+        } while (job?.body.data.attributes.status === 'processing');
+        logger.info(`Create items job finished with status: ${job?.body.data.attributes.status}`, job);
+        return job;
+    }
+
+    private async createVariantsJob (body: KlaviyoRequestType) {
+        let jobId;
+        try {
+            jobId = (await Catalogs.spawnCreateVariantsJob(body)).body.data.id;
+        } catch (e: any) {
+            logger.error(`Error creating items job in Klaviyo. Response code ${e.status}, ${e.message}`, e)
+            throw e;
+        }
+        let job;
+        do {
+            if (job) {
+                logger.info(`Pausing for 10 seconds before checking status for create variants job: ${jobId}`);
+                await delaySeconds(10);
+            }
+            try {
+                job = await Catalogs.getCreateVariantsJob(jobId, {});
+            } catch (e: any) {
+                logger.error(`Error getting items job in Klaviyo. Response code ${e.status}, ${e.message}`, e)
+                throw e;
+            }
+        } while (job?.body.data.attributes.status === 'processing');
+        logger.info(`Create variants job finished with status: ${job?.body.data.attributes.status}`, job);
+        return job;
     }
 
     public async getKlaviyoCategoryByExternalId (externalId: string): Promise<CategoryType | undefined> {
