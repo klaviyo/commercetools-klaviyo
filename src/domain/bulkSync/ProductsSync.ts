@@ -8,7 +8,6 @@ import { ErrorCodes } from '../../types/errors/StatusError';
 import { Product } from '@commercetools/platform-sdk';
 import { CtProductService } from '../../infrastructure/driven/commercetools/CtProductService';
 import { getElapsedSeconds, startTime } from '../../utils/time-utils';
-import e from 'express';
 
 export class ProductsSync {
     lockKey = 'productFullSync';
@@ -37,14 +36,19 @@ export class ProductsSync {
                 let importedElements = 0, failedElements = 0;
                 ctProductsResult = await this.ctProductService.getAllProducts(ctProductsResult?.lastId);
 
-                const productPromiseResults = await this.generateProductsJobRequestForKlaviyo(ctProductsResult.data);
-                importedElements += parseInt(productPromiseResults.body?.data.attributes.completed_count || 0);
-                failedElements += parseInt(productPromiseResults.body?.data.attributes.failed_count || 0);
+                const productPromiseResults = (await Promise.allSettled(
+                    await this.generateProductsJobRequestForKlaviyo(ctProductsResult.data)
+                )).flat();
 
-                await this.klaviyoService.checkRateLimitsAndDelay([productPromiseResults].filter(isRateLimited));
+                productPromiseResults.forEach((p: any) => {
+                    importedElements += parseInt(p.value?.body?.data.attributes.completed_count || 0);
+                    failedElements += parseInt(p.value?.body?.data.attributes.failed_count || 0);
+                })
+
+                await this.klaviyoService.checkRateLimitsAndDelay(productPromiseResults.filter(isRateLimited));
                 
                 const variantPromiseResults = await Promise.allSettled(
-                    ctProductsResult.data.flatMap((product: Product) =>
+                    ctProductsResult.data.filter(p => p.masterData.current).flatMap((product: Product) =>
                         this.generateProductVariantsJobRequestForKlaviyo(product),
                     ),
                 );
@@ -55,12 +59,12 @@ export class ProductsSync {
 
                 await this.klaviyoService.checkRateLimitsAndDelay(variantPromiseResults.filter(isRateLimited));
 
-                const promiseResults = [productPromiseResults].concat(variantPromiseResults);
+                const promiseResults = productPromiseResults.concat(variantPromiseResults);
 
                 const rejectedPromises = promiseResults.filter(p => isRejected(p) && !isRateLimited(p));
                 const fulfilledPromises = promiseResults.filter(isFulfilled);
 
-                this.klaviyoService.logRateLimitHeaders(fulfilledPromises, rejectedPromises);
+                this.klaviyoService.logRateLimitHeaders(fulfilledPromises, rejectedPromises as any);
 
                 totalProducts += ctProductsResult.data.length;
                 totalVariants += ctProductsResult.data.flatMap(p => p.masterData.current?.variants || []).length;
@@ -89,20 +93,46 @@ export class ProductsSync {
         }
     };
 
-    private generateProductsJobRequestForKlaviyo = (products: Product[]): Promise<any> => {
-        return this.klaviyoService.sendJobRequestToKlaviyo({
-            type: 'itemCreated',
-            body: this.productMapper.mapCtProductsToKlaviyoItemJob(products),
-        });
+    private generateProductsJobRequestForKlaviyo = async (products: Product[]): Promise<any[]> => {
+        const ctPublishedProducts = products.filter(p => p.masterData.current);
+        const klaviyoItems = (await this.klaviyoService.getKlaviyoItemsByIds(ctPublishedProducts.map(p => p.id))).map(i => i.id);
+        const productsForCreation = ctPublishedProducts.filter(p => !klaviyoItems.includes(`$custom:::$default:::${p.id}`));
+        const productsForUpdate = ctPublishedProducts.filter(p => klaviyoItems.includes(`$custom:::$default:::${p.id}`));
+        const promises = [];
+        if (productsForCreation.length) {
+            promises.push(this.klaviyoService.sendJobRequestToKlaviyo({
+                type: 'itemCreated',
+                body: this.productMapper.mapCtProductsToKlaviyoItemJob(productsForCreation, 'itemCreated'),
+            }));
+        }
+        if (productsForUpdate.length) {
+            promises.push(this.klaviyoService.sendJobRequestToKlaviyo({
+                type: 'itemUpdated',
+                body: this.productMapper.mapCtProductsToKlaviyoItemJob(productsForUpdate, 'itemUpdated'),
+            }));
+        }
+        return promises;
     };
 
-    private generateProductVariantsJobRequestForKlaviyo = (product: Product): Promise<any> | undefined => {
-        if (product.masterData.current) {
-            return this.klaviyoService.sendJobRequestToKlaviyo({
+    private generateProductVariantsJobRequestForKlaviyo = async (product: Product): Promise<any[]> => {
+        const ctProductVariants = product.masterData.current.variants.map(v => v.sku || '').filter(v => v);
+        const klaviyoVariants = (await this.klaviyoService.getKlaviyoVariantsByCtSkus(ctProductVariants)).map(i => i.id);
+        const variantsForCreation = product.masterData.current.variants.filter(v => !klaviyoVariants.includes(`$custom:::$default:::${v.sku}`));
+        const variantsForUpdate = product.masterData.current.variants.filter(v => klaviyoVariants.includes(`$custom:::$default:::${v.sku}`));
+        const promises = [];
+        if (variantsForCreation.length) {
+            promises.push(this.klaviyoService.sendJobRequestToKlaviyo({
                 type: 'variantCreated',
-                body: this.productMapper.mapCtProductVariantsToKlaviyoVariantsJob(product),
-            });
+                body: this.productMapper.mapCtProductVariantsToKlaviyoVariantsJob(product, variantsForCreation, 'variantCreated'),
+            }));
         }
+        if (variantsForUpdate.length) {
+            promises.push(this.klaviyoService.sendJobRequestToKlaviyo({
+                type: 'variantUpdated',
+                body: this.productMapper.mapCtProductVariantsToKlaviyoVariantsJob(product, variantsForUpdate, 'variantUpdated'),
+            }));
+        }
+        return promises;
     };
 
     public async releaseLockExternally(): Promise<void> {

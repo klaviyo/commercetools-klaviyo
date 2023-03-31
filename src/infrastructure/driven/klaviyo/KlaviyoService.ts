@@ -12,9 +12,9 @@ export abstract class KlaviyoService {
         rejectedPromises?: PromiseRejectedResult[],
     ): void {
         fulfilledPromises?.forEach((response) => {
-            const limit = response?.value?.headers['ratelimit-limit'];
-            const remaining = response?.value?.headers['ratelimit-remaining'];
-            const reset = response?.value?.headers['ratelimit-reset'];
+            const limit = response?.value?.headers ? response?.value?.headers['ratelimit-limit'] : undefined;
+            const remaining = response?.value?.headers ? response?.value?.headers['ratelimit-remaining'] : undefined;
+            const reset = response?.value?.headers ? response?.value?.headers['ratelimit-reset'] : undefined;
             logger.debug(
                 `Fulfilled promise rate limit values. Limit ${limit} - Remaining ${remaining} - Reset: ${reset}`,
                 {
@@ -25,9 +25,9 @@ export abstract class KlaviyoService {
             );
         });
         rejectedPromises?.forEach((error) => {
-            const limit = error?.reason?.response?.headers['ratelimit-limit'];
-            const remaining = error?.reason?.response?.headers['ratelimit-remaining'];
-            const reset = error?.reason?.response?.headers['ratelimit-reset'];
+            const limit = error?.reason?.response?.headers ? error?.reason?.response?.headers['ratelimit-limit'] : undefined;
+            const remaining = error?.reason?.response?.headers ? error?.reason?.response?.headers['ratelimit-remaining'] : undefined;
+            const reset = error?.reason?.response?.headers ? error?.reason?.response?.headers['ratelimit-reset'] : undefined;
             logger.debug(
                 `Rejected promise rate limit values. Limit ${limit} - Remaining ${remaining} - Reset: ${reset}`,
                 {
@@ -54,4 +54,8 @@ export abstract class KlaviyoService {
     }
 
     abstract getKlaviyoCategoryByExternalId(externalId: string): Promise<CategoryType | undefined>;
+
+    abstract getKlaviyoItemsByIds (ids: string[], fieldsCatalogItem?: string[]): Promise<ItemType[]>;
+
+    abstract getKlaviyoVariantsByCtSkus (skus: string[], fieldsCatalogVariant?: string[]): Promise<ItemVariantType[]>;
 }

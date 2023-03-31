@@ -160,7 +160,7 @@ type ItemJobRequest = {
 };
 
 type ItemJobType = {
-    type: 'catalog-item-bulk-create-job';
+    type: 'catalog-item-bulk-create-job' | 'catalog-item-bulk-update-job';
     id?: string,
     attributes: {
         items: ItemType[];
@@ -172,7 +172,7 @@ type ItemVariantJobRequest = {
 };
 
 type ItemVariantJobType = {
-    type: 'catalog-variant-bulk-create-job';
+    type: 'catalog-variant-bulk-create-job' | 'catalog-variant-bulk-update-job';
     id?: string,
     attributes: {
         variants: ItemVariantType[];

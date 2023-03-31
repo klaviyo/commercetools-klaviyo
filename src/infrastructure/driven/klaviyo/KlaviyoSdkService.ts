@@ -38,9 +38,13 @@ export class KlaviyoSdkService extends KlaviyoService {
         logger.info('Sending job request in Klaviyo', { zdata: event.body });
         switch (event.type) {
             case 'itemCreated':
-                return this.createItemsJob(event.body);
+                return this.spawnCreateJob(event.body, event.type);
+            case 'itemUpdated':
+                return this.spawnCreateJob(event.body, event.type);
             case 'variantCreated':
-                return this.createVariantsJob(event.body);
+                return this.spawnCreateJob(event.body, event.type);
+            case 'variantUpdated':
+                return this.spawnCreateJob(event.body, event.type);
             default:
                 throw new Error(`Unsupported event type ${event.type}`);
         }
@@ -81,56 +85,47 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
-    private async createItemsJob (body: KlaviyoRequestType) {
+    private async spawnCreateJob (body: KlaviyoRequestType, type: string) {
         let jobId;
-        try {
-            jobId = (await Catalogs.spawnCreateItemsJob(body)).body.data.id;
-        } catch (e: any) {
-            logger.error(`Error creating items job in Klaviyo. Response code ${e.status}, ${e.message}`, e)
-            throw e;
-        }
-        let job;
-        do {
-            if (job) {
-                logger.info(`Pausing for 10 seconds before checking status for create items job: ${jobId}`);
-                await delaySeconds(10);
-            }
-            try {
-                job = await Catalogs.getCreateItemsJob(jobId, {});
-                if (job?.body.data.attributes.status !== 'processing') {
-                    logger.info('hey', job?.body.data.attributes)
-                }
-            } catch (e: any) {
-                logger.error(`Error getting items job in Klaviyo. Response code ${e.status}, ${e.message}`, e)
-                throw e;
-            }
-        } while (job?.body.data.attributes.status === 'processing');
-        logger.info(`Create items job finished with status: ${job?.body.data.attributes.status}`, job);
-        return job;
-    }
+        const jobMethods: any = {
+            'itemCreated': {
+                spawnJob: () => Catalogs.spawnCreateItemsJob(body),
+                getJob: (id: string) => Catalogs.getCreateItemsJob(id, {}),
+            },
+            'itemUpdated': {
+                spawnJob: () => Catalogs.spawnUpdateItemsJob(body),
+                getJob: (id: string) => Catalogs.getUpdateItemsJob(id, {}),
+            },
+            'variantCreated': {
+                spawnJob: () => Catalogs.spawnCreateVariantsJob(body),
+                getJob: (id: string) => Catalogs.getCreateVariantsJob(id, {}),
+            },
+            'variantUpdated': {
+                spawnJob: () => Catalogs.spawnUpdateVariantsJob(body),
+                getJob: (id: string) => Catalogs.getUpdateVariantsJob(id, {}),
+            },
+        };
 
-    private async createVariantsJob (body: KlaviyoRequestType) {
-        let jobId;
         try {
-            jobId = (await Catalogs.spawnCreateVariantsJob(body)).body.data.id;
+            jobId = (await jobMethods[type].spawnJob()).body.data.id;
         } catch (e: any) {
-            logger.error(`Error creating items job in Klaviyo. Response code ${e.status}, ${e.message}`, e)
+            logger.error(`Error spawning ${type} job in Klaviyo. Response code ${e.status}, ${e.message}`, e)
             throw e;
         }
         let job;
         do {
             if (job) {
-                logger.info(`Pausing for 10 seconds before checking status for create variants job: ${jobId}`);
+                logger.info(`Pausing for 10 seconds before checking status for ${type} job: ${jobId}`);
                 await delaySeconds(10);
             }
             try {
-                job = await Catalogs.getCreateVariantsJob(jobId, {});
+                job = await jobMethods[type].getJob(jobId);
             } catch (e: any) {
                 logger.error(`Error getting items job in Klaviyo. Response code ${e.status}, ${e.message}`, e)
                 throw e;
             }
         } while (job?.body.data.attributes.status === 'processing');
-        logger.info(`Create variants job finished with status: ${job?.body.data.attributes.status}`, job);
+        logger.info(`Job with type ${type} finished with status: ${job?.body.data.attributes.status}`, job);
         return job;
     }
 
@@ -148,6 +143,44 @@ export class KlaviyoSdkService extends KlaviyoService {
         } catch (e) {
             logger.error(`Error getting category in Klaviyo with externalId ${externalId}`);
             throw e;
+        }
+    }
+
+    public async getKlaviyoItemsByIds (ids: string[], fieldsCatalogItem?: string[]): Promise<ItemType[]> {
+        if (!ids.length) {
+            return [];
+        }
+        else {
+            logger.info(`Getting items in Klaviyo with ids: ${ids.join(',')}`);
+            try {
+                const formattedIds = ids.map(id => `$custom:::$default:::${id}`);
+                const filter = `any(ids,["${formattedIds.join('","')}"])`;
+                const items = await Catalogs.getCatalogItems({ filter, fieldsCatalogItem });
+                logger.debug('Items response', items);
+                return items.body.data;
+            } catch (e) {
+                logger.error(`Error getting items in Klaviyo with ids: ${ids.join(',')}`);
+                throw e;
+            }
+        }
+    }
+
+    public async getKlaviyoVariantsByCtSkus (skus: string[], fieldsCatalogVariant?: string[]): Promise<ItemVariantType[]> {
+        if (!skus.length) {
+            return [];
+        }
+        else {
+            logger.info(`Getting variants in Klaviyo with SKUs: ${skus.join(',')}`);
+            try {
+                const formattedIds = skus.map(sku => `$custom:::$default:::${sku}`);
+                const filter = `any(ids,["${formattedIds.join('","')}"])`;
+                const variants = await Catalogs.getCatalogVariants({ filter, fieldsCatalogVariant });
+                logger.debug('Variants response', variants);
+                return variants.body.data;
+            } catch (e) {
+                logger.error(`Error getting variants in Klaviyo with SKUs: ${skus.join(',')}`);
+                throw e;
+            }
         }
     }
 }

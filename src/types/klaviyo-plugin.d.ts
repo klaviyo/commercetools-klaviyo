@@ -7,7 +7,9 @@ type KlaviyoEvent = {
         | 'categoryDeleted'
         | 'categoryUpdated'
         | 'itemCreated'
+        | 'itemUpdated'
         | 'variantCreated'
+        | 'variantUpdated'
         | 'event';
     body: KlaviyoRequestType;
 };

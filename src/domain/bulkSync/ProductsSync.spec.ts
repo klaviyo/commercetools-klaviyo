@@ -6,7 +6,7 @@ import { Product, ProductVariant } from '@commercetools/platform-sdk';
 import { ErrorCodes, StatusError } from '../../types/errors/StatusError';
 import { DefaultCtProductService } from '../../infrastructure/driven/commercetools/DefaultCtProductService';
 import { DefaultProductMapper } from '../shared/mappers/DefaultProductMapper';
-import logger from '../../utils/log'
+import logger from '../../utils/log';
 
 const mockCtCustomObjectLockService: DeepMockProxy<CTCustomObjectLockService> = mockDeep<CTCustomObjectLockService>();
 const mockDefaultProductMapper: DeepMockProxy<DefaultProductMapper> = mockDeep<DefaultProductMapper>();
@@ -33,9 +33,17 @@ describe('syncAllProducts', () => {
                 },
             },
         });
+        mockKlaviyoSdkService.getKlaviyoItemsByIds.mockResolvedValueOnce([]);
 
         const mockProduct = mock<Product>();
-        Object.defineProperty(mockProduct, 'createdAt', { value: '2023-01-27T15:00:00.000Z' });
+        Object.defineProperty(mockProduct, 'masterData', {
+            value: {
+                current: {
+                    variants: [],
+                },
+            },
+        });
+        Object.defineProperty(mockProduct, 'id', { value: 'test-id' });
         mockDefaultCtProductService.getAllProducts.mockResolvedValueOnce({ data: [mockProduct], hasMore: false });
 
         await historicalProducts.syncAllProducts();
@@ -44,7 +52,7 @@ describe('syncAllProducts', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtProductService.getAllProducts).toBeCalledTimes(1);
         expect(mockDefaultProductMapper.mapCtProductsToKlaviyoItemJob).toBeCalledTimes(1);
-        expect(mockDefaultProductMapper.mapCtProductsToKlaviyoItemJob).toBeCalledWith([mockProduct]);
+        expect(mockDefaultProductMapper.mapCtProductsToKlaviyoItemJob).toBeCalledWith([mockProduct], "itemCreated");
         expect(mockKlaviyoSdkService.sendJobRequestToKlaviyo).toBeCalledTimes(1);
     });
 
@@ -60,10 +68,13 @@ describe('syncAllProducts', () => {
                 },
             },
         });
+        mockKlaviyoSdkService.getKlaviyoItemsByIds.mockResolvedValueOnce([]);
+        mockKlaviyoSdkService.getKlaviyoVariantsByCtSkus.mockResolvedValueOnce([]);
 
         const mockProduct = mock<Product>();
         const mockVariant = mock<ProductVariant>();
-        Object.defineProperty(mockProduct, 'createdAt', { value: '2023-01-27T15:00:00.000Z' });
+        Object.defineProperty(mockProduct, 'id', { value: 'test-id' });
+        Object.defineProperty(mockVariant, 'sku', { value: 'test-id' });
         Object.defineProperty(mockProduct, 'masterData', {
             value: {
                 current: {
@@ -80,16 +91,26 @@ describe('syncAllProducts', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtProductService.getAllProducts).toBeCalledTimes(1);
         expect(mockDefaultProductMapper.mapCtProductsToKlaviyoItemJob).toBeCalledTimes(1);
-        expect(mockDefaultProductMapper.mapCtProductsToKlaviyoItemJob).toBeCalledWith([mockProduct]);
+        expect(mockDefaultProductMapper.mapCtProductsToKlaviyoItemJob).toBeCalledWith([mockProduct], 'itemCreated');
         expect(mockDefaultProductMapper.mapCtProductVariantsToKlaviyoVariantsJob).toBeCalledTimes(1);
-        expect(mockDefaultProductMapper.mapCtProductVariantsToKlaviyoVariantsJob).toBeCalledWith(mockProduct);
+        expect(mockDefaultProductMapper.mapCtProductVariantsToKlaviyoVariantsJob).toBeCalledWith(mockProduct, [mockVariant], 'variantCreated');
         expect(mockKlaviyoSdkService.sendJobRequestToKlaviyo).toBeCalledTimes(2);
     });
 
     it('should send 1 item creation request to klaviyo when CT returns 10 products with pagination', async () => {
         mockCtCustomObjectLockService.acquireLock.mockResolvedValueOnce();
+        mockKlaviyoSdkService.getKlaviyoItemsByIds.mockResolvedValueOnce([]);
+        mockKlaviyoSdkService.getKlaviyoVariantsByCtSkus.mockResolvedValueOnce([]);
 
         const mockProduct = mock<Product>();
+        Object.defineProperty(mockProduct, 'masterData', {
+            value: {
+                current: {
+                    variants: [],
+                },
+            },
+        });
+        Object.defineProperty(mockProduct, 'id', { value: 'test-id' });
         mockDefaultCtProductService.getAllProducts.mockResolvedValueOnce({
             data: Array(6).fill(mockProduct),
             hasMore: true,
@@ -103,9 +124,58 @@ describe('syncAllProducts', () => {
 
         expect(mockCtCustomObjectLockService.acquireLock).toBeCalledTimes(1);
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
-        expect(mockDefaultCtProductService.getAllProducts).toBeCalledTimes(1);
+        expect(mockDefaultCtProductService.getAllProducts).toBeCalledTimes(2);
         expect(mockDefaultProductMapper.mapCtProductsToKlaviyoItemJob).toBeCalledTimes(1);
         expect(mockKlaviyoSdkService.sendJobRequestToKlaviyo).toBeCalledTimes(1);
+    });
+
+    it('should send 1 item update and 1 variant update request to klaviyo when CT returns 10 products with pagination', async () => {
+        mockCtCustomObjectLockService.acquireLock.mockResolvedValueOnce();
+        mockKlaviyoSdkService.sendJobRequestToKlaviyo.mockResolvedValueOnce({
+            body: {
+                data: {
+                    attributes: {
+                        completed_count: 1,
+                        failed_count: 0,
+                    },
+                },
+            },
+        });
+        mockKlaviyoSdkService.getKlaviyoItemsByIds.mockResolvedValueOnce([
+            {
+                id: '$custom:::$default:::test-id',
+            } as any,
+        ]);
+        mockKlaviyoSdkService.getKlaviyoVariantsByCtSkus.mockResolvedValueOnce([
+            {
+                id: '$custom:::$default:::test-id',
+            } as any,
+        ]);
+
+        const mockProduct = mock<Product>();
+        const mockVariant = mock<ProductVariant>();
+        Object.defineProperty(mockProduct, 'id', { value: 'test-id' });
+        Object.defineProperty(mockVariant, 'sku', { value: 'test-id' });
+        Object.defineProperty(mockProduct, 'masterData', {
+            value: {
+                current: {
+                    masterVariant: mockVariant,
+                    variants: [mockVariant],
+                },
+            },
+        });
+        mockDefaultCtProductService.getAllProducts.mockResolvedValueOnce({ data: [mockProduct], hasMore: false });
+
+        await historicalProducts.syncAllProducts();
+
+        expect(mockCtCustomObjectLockService.acquireLock).toBeCalledTimes(1);
+        expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
+        expect(mockDefaultCtProductService.getAllProducts).toBeCalledTimes(1);
+        expect(mockDefaultProductMapper.mapCtProductsToKlaviyoItemJob).toBeCalledTimes(1);
+        expect(mockDefaultProductMapper.mapCtProductsToKlaviyoItemJob).toBeCalledWith([mockProduct], 'itemUpdated');
+        expect(mockDefaultProductMapper.mapCtProductVariantsToKlaviyoVariantsJob).toBeCalledTimes(1);
+        expect(mockDefaultProductMapper.mapCtProductVariantsToKlaviyoVariantsJob).toBeCalledWith(mockProduct, [mockVariant], 'variantUpdated');
+        expect(mockKlaviyoSdkService.sendJobRequestToKlaviyo).toBeCalledTimes(2);
     });
 
     it('should not allow to run the product sync if there is another sync in progress', async () => {

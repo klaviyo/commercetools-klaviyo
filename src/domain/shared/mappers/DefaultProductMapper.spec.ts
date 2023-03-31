@@ -22,13 +22,37 @@ describe('map CT product to Klaviyo product', () => {
         expect(klaviyoEvent).toMatchSnapshot();
     });
 
-    it('should map a commercetools product array to a klaviyo item job request', () => {
-        const klaviyoEvent = productMapper.mapCtProductsToKlaviyoItemJob(ctGet1Product.results as Product[]);
+    it('should map a commercetools product array to a klaviyo create items job request', () => {
+        const klaviyoEvent = productMapper.mapCtProductsToKlaviyoItemJob(
+            ctGet1Product.results as Product[],
+            'itemCreated',
+        );
         expect(klaviyoEvent).toMatchSnapshot();
     });
 
-    it('should map a commercetools product with variants to a klaviyo variant job request', () => {
-        const klaviyoEvent = productMapper.mapCtProductVariantsToKlaviyoVariantsJob(ctGet1Product.results[0] as Product);
+    it('should map a commercetools product array to a klaviyo update items job request', () => {
+        const klaviyoEvent = productMapper.mapCtProductsToKlaviyoItemJob(
+            ctGet1Product.results as Product[],
+            'itemUpdated',
+        );
+        expect(klaviyoEvent).toMatchSnapshot();
+    });
+
+    it('should map a commercetools product with variants to a klaviyo create variants job request', () => {
+        const klaviyoEvent = productMapper.mapCtProductVariantsToKlaviyoVariantsJob(
+            ctGet1Product.results[0] as Product,
+            [ctGet1Product.results[0].masterData.current.masterVariant as ProductVariant],
+            'variantCreated',
+        );
+        expect(klaviyoEvent).toMatchSnapshot();
+    });
+
+    it('should map a commercetools product with variants to a klaviyo update variants job request', () => {
+        const klaviyoEvent = productMapper.mapCtProductVariantsToKlaviyoVariantsJob(
+            ctGet1Product.results[0] as Product,
+            [ctGet1Product.results[0].masterData.current.masterVariant as ProductVariant],
+            'variantUpdated',
+        );
         expect(klaviyoEvent).toMatchSnapshot();
     });
 });

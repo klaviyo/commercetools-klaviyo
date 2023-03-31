@@ -1,5 +1,6 @@
 import { KlaviyoService } from './KlaviyoService';
 import logger from '../../../utils/log';
+import { mock } from 'jest-mock-extended';
 
 jest.mock('../../../utils/log', () => {
     return {
@@ -28,6 +29,14 @@ describe('Klaviyo abstract service', () => {
 
         sendJobRequestToKlaviyo(event: KlaviyoEvent): Promise<any> {
             return Promise.resolve(undefined);
+        }
+
+        getKlaviyoItemsByIds (ids: string[], fieldsCatalogItem?: string[]): Promise<ItemType[]> {
+            return Promise.resolve(mock<ItemType[]>());
+        }
+
+        getKlaviyoVariantsByCtSkus (skus: string[], fieldsCatalogVariant?: string[]): Promise<ItemVariantType[]> {
+            return Promise.resolve(mock<ItemVariantType[]>());
         }
     }
 

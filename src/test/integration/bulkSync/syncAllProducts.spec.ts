@@ -19,6 +19,8 @@ import {
     klaviyoGetItemJobNock,
     klaviyoCreateVariantJobNock,
     klaviyoGetVariantJobNock,
+    klaviyoGetCatalogueItemsNock,
+    klaviyoGetCatalogueVariantsNock,
 } from '../nocks/KlaviyoCatalogueNock';
 import { DummyCurrencyService } from '../../../domain/shared/services/dummyCurrencyService';
 
@@ -183,6 +185,14 @@ describe('syncAllProducts', () => {
             },
         });
 
+        const nockKlaviyoEvent5 = klaviyoGetCatalogueItemsNock(200, {
+            data: [],
+        });
+
+        const nockKlaviyoEvent6 = klaviyoGetCatalogueVariantsNock(200, {
+            data: [],
+        });
+
         const productsSync = new ProductsSync(
             new CTCustomObjectLockService(getApiRoot()),
             new DefaultProductMapper(new DummyCurrencyService()),
@@ -199,6 +209,8 @@ describe('syncAllProducts', () => {
         expect(nockKlaviyoEvent2.isDone()).to.be.true;
         expect(nockKlaviyoEvent3.isDone()).to.be.true;
         expect(nockKlaviyoEvent4.isDone()).to.be.true;
+        expect(nockKlaviyoEvent5.isDone()).to.be.true;
+        expect(nockKlaviyoEvent6.isDone()).to.be.true;
         expect(nock.activeMocks().length).to.eq(0);
     });
 });

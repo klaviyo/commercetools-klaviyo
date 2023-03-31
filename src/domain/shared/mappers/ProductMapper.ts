@@ -1,8 +1,17 @@
 import { Product, ProductVariant } from '@commercetools/platform-sdk';
 
 export interface ProductMapper {
-    mapCtProductToKlaviyoItem(product: Product): ItemRequest;
-    mapCtProductVariantToKlaviyoVariant(product: Product, variant: ProductVariant): ItemVariantRequest;
-    mapCtProductsToKlaviyoItemJob(products: Product[]): ItemJobRequest;
-    mapCtProductVariantsToKlaviyoVariantsJob(product: Product): ItemVariantJobRequest;
+    mapCtProductToKlaviyoItem(product: Product, update?: boolean): ItemRequest;
+    mapCtProductVariantToKlaviyoVariant(
+        product: Product,
+        variant: ProductVariant,
+        update?: boolean,
+    ): ItemVariantRequest;
+    mapCtProductsToKlaviyoItemJob(products: Product[], type: string): ItemJobRequest;
+    mapCtProductVariantsToKlaviyoVariantsJob(
+        product: Product,
+        productVariants: ProductVariant[],
+        type: string,
+        update?: boolean,
+    ): ItemVariantJobRequest;
 }
