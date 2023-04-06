@@ -43,7 +43,7 @@ runs:
   steps:
     - name: Google Auth
       id: auth
-      uses: 'google-github-actions/auth@v0'
+      uses: 'google-github-actions/auth@v1'
       with:
         credentials_json: '${{ inputs.gcp_credentials }}'
     - name: Deploy to Cloud Run
