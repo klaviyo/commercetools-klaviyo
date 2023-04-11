@@ -36,6 +36,6 @@ export const klaviyoGetCatalogueItemsNock = (responseCode = 200, responseBody = 
 
 export const klaviyoGetCatalogueVariantsNock = (responseCode = 200, responseBody = {}) => {
     return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
-        .get(`/api/catalog-variants/?filter=any%28ids%2C%5B%22%24custom%3A%3A%3A%24default%3A%3A%3AA0E2000000027DV%22%5D%29`)
+        .get(`/api/catalog-items/%24custom%3A%3A%3A%24default%3A%3A%3Acb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b/variants/?fields%5Bcatalog-variant%5D=id`)
         .reply(responseCode, responseBody);
 };

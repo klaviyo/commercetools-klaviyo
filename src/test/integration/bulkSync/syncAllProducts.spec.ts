@@ -115,35 +115,33 @@ describe('syncAllProducts', () => {
         const nockKlaviyoEvent3 = klaviyoCreateVariantJobNock(
             {
                 attributes: {
-                    variants: [
-                        {
-                            attributes: {
-                                catalog_type: '$default',
-                                description: 'None',
-                                external_id: 'A0E2000000027DV',
-                                image_full_url:
-                                    'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg',
-                                integration_type: '$custom',
-                                inventory_quantity: 0,
-                                price: 118.75,
-                                published: true,
-                                sku: 'A0E2000000027DV',
-                                title: 'Bag medium GUM black | Variant: A0E2000000027DV',
-                                url: 'https://example-store.com/products/gum-bag-medium-BS1900-black',
-                            },
-                            relationships: {
-                                items: {
-                                    data: [
-                                        {
-                                            id: '$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b',
-                                            type: 'catalog-item',
-                                        },
-                                    ],
-                                },
-                            },
-                            type: 'catalog-variant',
+                    variants: Array(2).fill({
+                        attributes: {
+                            catalog_type: '$default',
+                            description: 'None',
+                            external_id: 'A0E2000000027DV',
+                            image_full_url:
+                                'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg',
+                            integration_type: '$custom',
+                            inventory_quantity: 0,
+                            price: 118.75,
+                            published: true,
+                            sku: 'A0E2000000027DV',
+                            title: 'Bag medium GUM black | Variant: A0E2000000027DV',
+                            url: 'https://example-store.com/products/gum-bag-medium-BS1900-black',
                         },
-                    ],
+                        relationships: {
+                            items: {
+                                data: [
+                                    {
+                                        id: '$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b',
+                                        type: 'catalog-item',
+                                    },
+                                ],
+                            },
+                        },
+                        type: 'catalog-variant',
+                    }),
                 },
                 type: 'catalog-variant-bulk-create-job',
             },

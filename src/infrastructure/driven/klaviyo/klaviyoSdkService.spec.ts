@@ -2,7 +2,7 @@ import { Events, Profiles, Catalogs } from 'klaviyo-api';
 import { mockDeep } from 'jest-mock-extended';
 import { KlaviyoError } from '../../../test/utils/KlaviyoError';
 import { StatusError } from '../../../types/errors/StatusError';
-import { KlaviyoSdkService } from "./KlaviyoSdkService";
+import { KlaviyoSdkService } from './KlaviyoSdkService';
 
 jest.mock('klaviyo-api', () => {
     const module = jest.createMockFromModule<any>('klaviyo-api');
@@ -19,12 +19,12 @@ jest.mock('klaviyo-api', () => {
         getUpdateVariantsJob: jest.fn(),
         getCatalogItems: jest.fn(),
         getCatalogVariants: jest.fn(),
+        getCatalogItemVariants: jest.fn(),
     };
     return module;
 });
 
 const klaviyoService = new KlaviyoSdkService();
-
 
 describe('klaviyoService > sendEventToKlaviyo', () => {
     test("should create a profile in klaviyo when the input event is of type 'profileCreated'", async () => {
@@ -131,8 +131,8 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
             body: {
                 data: {
                     id: 'test-id',
-                }
-            }
+                },
+            },
         });
         Catalogs.getCreateItemsJob = jest.fn().mockResolvedValueOnce({
             body: {
@@ -140,9 +140,9 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
                     id: 'test-id',
                     attributes: {
                         status: 'complete',
-                    }
-                }
-            }
+                    },
+                },
+            },
         });
 
         await klaviyoService.sendJobRequestToKlaviyo(klaviyoEvent);
@@ -165,7 +165,9 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
                 },
             },
         };
-        Catalogs.spawnCreateItemsJob = jest.fn().mockImplementationOnce(() => {throw new StatusError(500, 'Unknown error')});
+        Catalogs.spawnCreateItemsJob = jest.fn().mockImplementationOnce(() => {
+            throw new StatusError(500, 'Unknown error');
+        });
 
         let error;
         try {
@@ -178,7 +180,6 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
         expect(Catalogs.spawnCreateItemsJob).toBeCalledTimes(1);
         expect(Catalogs.getCreateItemsJob).toBeCalledTimes(0);
     });
-
 
     test("should log error when the input event is of type 'itemCreated' and getting the job throws error", async () => {
         const klaviyoEvent: KlaviyoEvent = {
@@ -196,10 +197,12 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
             body: {
                 data: {
                     id: 'test-id',
-                }
-            }
+                },
+            },
         });
-        Catalogs.getCreateItemsJob = jest.fn().mockImplementationOnce(() => {throw new StatusError(500, 'Unknown error')});
+        Catalogs.getCreateItemsJob = jest.fn().mockImplementationOnce(() => {
+            throw new StatusError(500, 'Unknown error');
+        });
 
         let error;
         try {
@@ -229,8 +232,8 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
             body: {
                 data: {
                     id: 'test-id',
-                }
-            }
+                },
+            },
         });
         Catalogs.getUpdateItemsJob = jest.fn().mockResolvedValueOnce({
             body: {
@@ -238,9 +241,9 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
                     id: 'test-id',
                     attributes: {
                         status: 'complete',
-                    }
-                }
-            }
+                    },
+                },
+            },
         });
 
         await klaviyoService.sendJobRequestToKlaviyo(klaviyoEvent);
@@ -263,7 +266,9 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
                 },
             },
         };
-        Catalogs.spawnUpdateItemsJob = jest.fn().mockImplementationOnce(() => {throw new StatusError(500, 'Unknown error')});
+        Catalogs.spawnUpdateItemsJob = jest.fn().mockImplementationOnce(() => {
+            throw new StatusError(500, 'Unknown error');
+        });
 
         let error;
         try {
@@ -293,10 +298,12 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
             body: {
                 data: {
                     id: 'test-id',
-                }
-            }
+                },
+            },
         });
-        Catalogs.getUpdateItemsJob = jest.fn().mockImplementationOnce(() => {throw new StatusError(500, 'Unknown error')});
+        Catalogs.getUpdateItemsJob = jest.fn().mockImplementationOnce(() => {
+            throw new StatusError(500, 'Unknown error');
+        });
 
         let error;
         try {
@@ -326,8 +333,8 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
             body: {
                 data: {
                     id: 'test-id',
-                }
-            }
+                },
+            },
         });
         Catalogs.getCreateVariantsJob = jest.fn().mockResolvedValueOnce({
             body: {
@@ -335,9 +342,9 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
                     id: 'test-id',
                     attributes: {
                         status: 'complete',
-                    }
-                }
-            }
+                    },
+                },
+            },
         });
 
         await klaviyoService.sendJobRequestToKlaviyo(klaviyoEvent);
@@ -360,7 +367,9 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
                 },
             },
         };
-        Catalogs.spawnCreateVariantsJob = jest.fn().mockImplementationOnce(() => {throw new StatusError(500, 'Unknown error')});
+        Catalogs.spawnCreateVariantsJob = jest.fn().mockImplementationOnce(() => {
+            throw new StatusError(500, 'Unknown error');
+        });
 
         let error;
         try {
@@ -390,10 +399,12 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
             body: {
                 data: {
                     id: 'test-id',
-                }
-            }
+                },
+            },
         });
-        Catalogs.getCreateVariantsJob = jest.fn().mockImplementationOnce(() => {throw new StatusError(500, 'Unknown error')});
+        Catalogs.getCreateVariantsJob = jest.fn().mockImplementationOnce(() => {
+            throw new StatusError(500, 'Unknown error');
+        });
 
         let error;
         try {
@@ -423,8 +434,8 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
             body: {
                 data: {
                     id: 'test-id',
-                }
-            }
+                },
+            },
         });
         Catalogs.getUpdateVariantsJob = jest.fn().mockResolvedValueOnce({
             body: {
@@ -432,9 +443,9 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
                     id: 'test-id',
                     attributes: {
                         status: 'complete',
-                    }
-                }
-            }
+                    },
+                },
+            },
         });
 
         await klaviyoService.sendJobRequestToKlaviyo(klaviyoEvent);
@@ -457,7 +468,9 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
                 },
             },
         };
-        Catalogs.spawnUpdateVariantsJob = jest.fn().mockImplementationOnce(() => {throw new StatusError(500, 'Unknown error')});
+        Catalogs.spawnUpdateVariantsJob = jest.fn().mockImplementationOnce(() => {
+            throw new StatusError(500, 'Unknown error');
+        });
 
         let error;
         try {
@@ -487,10 +500,12 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
             body: {
                 data: {
                     id: 'test-id',
-                }
-            }
+                },
+            },
         });
-        Catalogs.getUpdateVariantsJob = jest.fn().mockImplementationOnce(() => {throw new StatusError(500, 'Unknown error')});
+        Catalogs.getUpdateVariantsJob = jest.fn().mockImplementationOnce(() => {
+            throw new StatusError(500, 'Unknown error');
+        });
 
         let error;
         try {
@@ -512,12 +527,14 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
 });
 
 describe('klaviyoService > getKlaviyoItemsByIds', () => {
-    test("should return catalogue items from klaviyo when ids are provided", async () => {
+    test('should return catalogue items from klaviyo when ids are provided', async () => {
         Catalogs.getCatalogItems = jest.fn().mockResolvedValueOnce({
             body: {
-                data: [{
-                    id: 'test-id',
-                }],
+                data: [
+                    {
+                        id: 'test-id',
+                    },
+                ],
             },
         });
 
@@ -526,18 +543,23 @@ describe('klaviyoService > getKlaviyoItemsByIds', () => {
         expect(result[0]).toBeDefined();
         expect(result[0].id).toEqual('test-id');
         expect(Catalogs.getCatalogItems).toBeCalledTimes(1);
-        expect(Catalogs.getCatalogItems).toBeCalledWith({fieldsCatalogItem: undefined, filter: 'any(ids,["$custom:::$default:::test-id"])'});
+        expect(Catalogs.getCatalogItems).toBeCalledWith({
+            fieldsCatalogItem: undefined,
+            filter: 'any(ids,["$custom:::$default:::test-id"])',
+        });
     });
 
-    test("should return empty array when no ids are provided", async () => {
+    test('should return empty array when no ids are provided', async () => {
         const result = await klaviyoService.getKlaviyoItemsByIds([]);
 
         expect(result.length).toEqual(0);
         expect(Catalogs.getCatalogItems).toBeCalledTimes(0);
     });
 
-    test("should log error when klaviyo sdk throws error", async () => {
-        Catalogs.getCatalogItems = jest.fn().mockImplementationOnce(() => {throw new StatusError(500, 'Unknown error')});
+    test('should log error when klaviyo sdk throws error', async () => {
+        Catalogs.getCatalogItems = jest.fn().mockImplementationOnce(() => {
+            throw new StatusError(500, 'Unknown error');
+        });
 
         let error;
         try {
@@ -548,45 +570,50 @@ describe('klaviyoService > getKlaviyoItemsByIds', () => {
 
         expect(error).toBeInstanceOf(StatusError);
     });
-
 });
 
-describe('klaviyoService > getKlaviyoVariantsByCtSkus', () => {
-    test("should return catalogue variants from klaviyo when skus are provided", async () => {
-        Catalogs.getCatalogVariants = jest.fn().mockResolvedValueOnce({
+describe('klaviyoService > getKlaviyoItemVariantsByCtSkus', () => {
+    test('should return catalogue variants from klaviyo when skus are provided', async () => {
+        Catalogs.getCatalogItemVariants = jest.fn().mockResolvedValueOnce({
             body: {
-                data: [{
-                    id: 'test-id',
-                }],
+                data: [
+                    {
+                        id: 'test-id',
+                    },
+                ],
             },
         });
 
-        const result = await klaviyoService.getKlaviyoVariantsByCtSkus(['test-id']);
+        const result = await klaviyoService.getKlaviyoItemVariantsByCtSkus('test-id', ['test-id'], undefined);
 
         expect(result[0]).toBeDefined();
         expect(result[0].id).toEqual('test-id');
-        expect(Catalogs.getCatalogVariants).toBeCalledTimes(1);
-        expect(Catalogs.getCatalogVariants).toBeCalledWith({fieldsCatalogVariant: undefined, filter: 'any(ids,["$custom:::$default:::test-id"])'});
+        expect(Catalogs.getCatalogItemVariants).toBeCalledTimes(1);
+        expect(Catalogs.getCatalogItemVariants).toBeCalledWith('$custom:::$default:::test-id', {
+            fieldsCatalogVariant: undefined,
+            filter: 'any(ids,["$custom:::$default:::test-id"])',
+        });
     });
 
-    test("should return empty array when no skus are provided", async () => {
-        const result = await klaviyoService.getKlaviyoVariantsByCtSkus([]);
+    test('should return empty array when no skus are provided', async () => {
+        const result = await klaviyoService.getKlaviyoItemVariantsByCtSkus('test-id', [], undefined);
 
         expect(result.length).toEqual(0);
-        expect(Catalogs.getCatalogVariants).toBeCalledTimes(0);
+        expect(Catalogs.getCatalogItemVariants).toBeCalledTimes(0);
     });
 
-    test("should log error when klaviyo sdk throws error", async () => {
-        Catalogs.getCatalogVariants = jest.fn().mockImplementationOnce(() => {throw new StatusError(500, 'Unknown error')});
+    test('should log error when klaviyo sdk throws error', async () => {
+        Catalogs.getCatalogItemVariants = jest.fn().mockImplementationOnce(() => {
+            throw new StatusError(500, 'Unknown error');
+        });
 
         let error;
         try {
-            await klaviyoService.getKlaviyoVariantsByCtSkus(['test-id']);
+            await klaviyoService.getKlaviyoItemVariantsByCtSkus('test-id', undefined, undefined);
         } catch (e) {
             error = e;
         }
 
         expect(error).toBeInstanceOf(StatusError);
     });
-
 });

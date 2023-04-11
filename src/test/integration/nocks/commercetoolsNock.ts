@@ -248,6 +248,6 @@ export const ctGetCategoryByIdNock = (categoryId: string, status = 200) => {
 export const getAllProducts = (responseBody = {}) => {
     return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
         .get('/klaviyo-dev/products')
-        .query({ limit: '20', withTotal: 'false', sort: 'id%20asc' })
+        .query({ limit: '20', withTotal: 'false', sort: 'id%20asc', where: 'masterData(published = true)' })
         .reply(200, responseBody, []);
 };

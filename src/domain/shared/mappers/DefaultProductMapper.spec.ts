@@ -55,4 +55,13 @@ describe('map CT product to Klaviyo product', () => {
         );
         expect(klaviyoEvent).toMatchSnapshot();
     });
+
+    it('should map a commercetools product with variants to a klaviyo delete variants job request', () => {
+        const klaviyoEvent = productMapper.mapCtProductVariantsToKlaviyoVariantsJob(
+            ctGet1Product.results[0] as Product,
+            [`$custom:::$default:::${ctGet1Product.results[0].masterData.current.masterVariant.sku}`],
+            'variantDeleted',
+        );
+        expect(klaviyoEvent).toMatchSnapshot();
+    });
 });

@@ -10,6 +10,7 @@ type KlaviyoEvent = {
         | 'itemUpdated'
         | 'variantCreated'
         | 'variantUpdated'
+        | 'variantDeleted'
         | 'event';
     body: KlaviyoRequestType;
 };
@@ -26,4 +27,8 @@ type KlaviyoRequestType =
 
 type ProcessingResult = {
     status: 'OK' | '4xx';
+};
+
+type maxSizeJobArrayContainer = {
+    [key: string]: KlaviyoEvent[];
 };

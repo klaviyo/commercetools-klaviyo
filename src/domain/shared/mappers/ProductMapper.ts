@@ -10,8 +10,7 @@ export interface ProductMapper {
     mapCtProductsToKlaviyoItemJob(products: Product[], type: string): ItemJobRequest;
     mapCtProductVariantsToKlaviyoVariantsJob(
         product: Product,
-        productVariants: ProductVariant[],
+        productVariants: ProductVariant[] | string[],
         type: string,
-        update?: boolean,
     ): ItemVariantJobRequest;
 }

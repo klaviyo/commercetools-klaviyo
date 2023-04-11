@@ -164,6 +164,22 @@ exports[`map CT product to Klaviyo product should map a commercetools product wi
 }
 `;
 
+exports[`map CT product to Klaviyo product should map a commercetools product with variants to a klaviyo delete variants job request 1`] = `
+{
+  "data": {
+    "attributes": {
+      "variants": [
+        {
+          "id": "$custom:::$default:::A0E2000000027DV",
+          "type": "catalog-variant",
+        },
+      ],
+    },
+    "type": "catalog-variant-bulk-delete-job",
+  },
+}
+`;
+
 exports[`map CT product to Klaviyo product should map a commercetools product with variants to a klaviyo update variants job request 1`] = `
 {
   "data": {

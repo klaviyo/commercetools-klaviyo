@@ -35,7 +35,7 @@ describe('Klaviyo abstract service', () => {
             return Promise.resolve(mock<ItemType[]>());
         }
 
-        getKlaviyoVariantsByCtSkus (skus: string[], fieldsCatalogVariant?: string[]): Promise<ItemVariantType[]> {
+        getKlaviyoItemVariantsByCtSkus (productId?: string, skus?: string[], fieldsCatalogVariant?: string[]): Promise<ItemVariantType[]> {
             return Promise.resolve(mock<ItemVariantType[]>());
         }
     }

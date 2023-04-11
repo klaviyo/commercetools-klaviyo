@@ -103,7 +103,7 @@ export class DefaultProductMapper implements ProductMapper {
         };
     }
 
-    public mapCtProductVariantsToKlaviyoVariantsJob(product: Product, productVariants: ProductVariant[], type: string): ItemVariantJobRequest {
+    public mapCtProductVariantsToKlaviyoVariantsJob(product: Product, productVariants: ProductVariant[] | string[], type: string): ItemVariantJobRequest {
         let jobType: any;
         switch (type) {
             case 'variantCreated':
@@ -112,13 +112,19 @@ export class DefaultProductMapper implements ProductMapper {
             case 'variantUpdated':
                 jobType = 'catalog-variant-bulk-update-job';
                 break;
+            case 'variantDeleted':
+                jobType = 'catalog-variant-bulk-delete-job';
+                break;
         }
         return {
             data: {
                 type: jobType,
                 attributes: {
-                    variants: productVariants
-                        .map((v) => this.mapCtProductVariantToKlaviyoVariant(product, v, type === 'variantUpdated').data),
+                    variants: type === 'variantDeleted' ? productVariants.map(v => ({
+                        type: 'catalog-variant',
+                        id: v as string,
+                    } as ItemVariantType)) : productVariants
+                        .map((v) => this.mapCtProductVariantToKlaviyoVariant(product, v as ProductVariant, type === 'variantUpdated').data),
                 },
             },
         };

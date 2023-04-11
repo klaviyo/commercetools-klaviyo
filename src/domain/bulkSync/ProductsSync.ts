@@ -8,6 +8,7 @@ import { ErrorCodes } from '../../types/errors/StatusError';
 import { Product } from '@commercetools/platform-sdk';
 import { CtProductService } from '../../infrastructure/driven/commercetools/CtProductService';
 import { getElapsedSeconds, startTime } from '../../utils/time-utils';
+import { groupIntoMaxSizeJobs } from '../../utils/job-grouper';
 
 export class ProductsSync {
     lockKey = 'productFullSync';
@@ -31,52 +32,103 @@ export class ProductsSync {
                 totalVariants = 0,
                 totalKlaviyoEvents = 0;
             const _startTime = startTime();
+            let importedElements = 0,
+                failedElements = 0;
+            let itemJobRequests: KlaviyoEvent[] = [];
+            let variantJobRequests: KlaviyoEvent[] = [];
+            let promiseResults;
 
             do {
-                let importedElements = 0, failedElements = 0;
                 ctProductsResult = await this.ctProductService.getAllProducts(ctProductsResult?.lastId);
 
-                const productPromiseResults = (await Promise.allSettled(
-                    await this.generateProductsJobRequestForKlaviyo(ctProductsResult.data)
-                )).flat();
-
-                productPromiseResults.forEach((p: any) => {
-                    importedElements += parseInt(p.value?.body?.data.attributes.completed_count || 0);
-                    failedElements += parseInt(p.value?.body?.data.attributes.failed_count || 0);
-                })
-
-                await this.klaviyoService.checkRateLimitsAndDelay(productPromiseResults.filter(isRateLimited));
-                
-                const variantPromiseResults = await Promise.allSettled(
-                    ctProductsResult.data.filter(p => p.masterData.current).flatMap((product: Product) =>
-                        this.generateProductVariantsJobRequestForKlaviyo(product),
-                    ),
+                itemJobRequests = itemJobRequests.concat(
+                    await this.generateProductsJobRequestForKlaviyo(ctProductsResult.data),
                 );
-                variantPromiseResults.forEach((p: any) => {
-                    importedElements += parseInt(p.value?.body?.data.attributes.completed_count || 0);
-                    failedElements += parseInt(p.value?.body?.data.attributes.failed_count || 0);
-                })
 
-                await this.klaviyoService.checkRateLimitsAndDelay(variantPromiseResults.filter(isRateLimited));
-
-                const promiseResults = productPromiseResults.concat(variantPromiseResults);
-
-                const rejectedPromises = promiseResults.filter(p => isRejected(p) && !isRateLimited(p));
-                const fulfilledPromises = promiseResults.filter(isFulfilled);
-
-                this.klaviyoService.logRateLimitHeaders(fulfilledPromises, rejectedPromises as any);
+                variantJobRequests = variantJobRequests.concat(
+                    (
+                        await Promise.all(
+                            ctProductsResult.data
+                                .filter((product) => product.masterData.current)
+                                .flatMap(
+                                    async (product: Product) =>
+                                        await this.generateProductVariantsJobRequestForKlaviyo(product),
+                                ),
+                        )
+                    ).flat(),
+                );
 
                 totalProducts += ctProductsResult.data.length;
-                totalVariants += ctProductsResult.data.flatMap(p => p.masterData.current?.variants || []).length;
-                totalKlaviyoEvents += promiseResults.length;
-                errored += (rejectedPromises.length + failedElements);
-                succeeded += (importedElements);
-                if (rejectedPromises.length) {
-                    rejectedPromises.forEach((rejected: any) =>
-                        logger.error('Error syncing event with klaviyo', rejected),
-                    );
-                }
+                totalVariants += ctProductsResult.data.flatMap((p) =>
+                    (p.masterData.current?.variants || []).concat(
+                        p.masterData.current?.masterVariant ? [p.masterData.current?.masterVariant] : [],
+                    ),
+                ).length;
             } while (ctProductsResult.hasMore);
+
+            const itemEvents = groupIntoMaxSizeJobs(itemJobRequests, ['itemCreated', 'itemUpdated'], 'items');
+
+            const variantEvents = groupIntoMaxSizeJobs(
+                variantJobRequests,
+                ['variantDeleted', 'variantCreated', 'variantUpdated'],
+                'variants',
+            );
+
+            const productPromiseResults = (
+                await Promise.allSettled(
+                    itemEvents.itemUpdated
+                        .concat(itemEvents.itemCreated)
+                        .map(async (r) => await this.klaviyoService.sendJobRequestToKlaviyo(r)),
+                )
+            ).flat();
+
+            productPromiseResults.forEach((p: any) => {
+                importedElements += parseInt(p.value?.body?.data.attributes.completed_count || 0);
+                failedElements += parseInt(p.value?.body?.data.attributes.failed_count || 0);
+            });
+
+            await this.klaviyoService.checkRateLimitsAndDelay(productPromiseResults.filter(isRateLimited));
+
+            const deleteVariantPromiseResults = (
+                await Promise.allSettled(
+                    variantEvents.variantDeleted.map(
+                        async (r: KlaviyoEvent) => await this.klaviyoService.sendJobRequestToKlaviyo(r),
+                    ),
+                )
+            ).flat();
+
+            await this.klaviyoService.checkRateLimitsAndDelay(deleteVariantPromiseResults.filter(isRateLimited));
+
+            promiseResults = productPromiseResults.concat(deleteVariantPromiseResults);
+
+            const variantPromiseResults = (
+                await Promise.allSettled(
+                    variantEvents.variantUpdated
+                        .concat(variantEvents.variantCreated)
+                        .map(async (r: KlaviyoEvent) => await this.klaviyoService.sendJobRequestToKlaviyo(r)),
+                )
+            ).flat();
+
+            variantPromiseResults.forEach((p: any) => {
+                importedElements += parseInt(p.value?.body?.data.attributes.completed_count || 0);
+                failedElements += parseInt(p.value?.body?.data.attributes.failed_count || 0);
+            });
+
+            await this.klaviyoService.checkRateLimitsAndDelay(variantPromiseResults.filter(isRateLimited));
+
+            promiseResults = promiseResults.concat(variantPromiseResults);
+
+            const rejectedPromises = promiseResults.filter((p) => isRejected(p) && !isRateLimited(p));
+            const fulfilledPromises = promiseResults.filter(isFulfilled);
+
+            this.klaviyoService.logRateLimitHeaders(fulfilledPromises, rejectedPromises as any);
+
+            totalKlaviyoEvents += promiseResults.length;
+            errored += rejectedPromises.length + failedElements;
+            succeeded += importedElements;
+            if (rejectedPromises.length) {
+                rejectedPromises.forEach((rejected: any) => logger.error('Error syncing event with klaviyo', rejected));
+            }
             logger.info(
                 `Historical products import. Total products to be imported ${totalProducts}, total variants ${totalVariants}, total klaviyo events: ${totalKlaviyoEvents}, successfully imported: ${succeeded}, errored: ${errored}, elapsed time: ${getElapsedSeconds(
                     _startTime,
@@ -93,44 +145,80 @@ export class ProductsSync {
         }
     };
 
-    private generateProductsJobRequestForKlaviyo = async (products: Product[]): Promise<any[]> => {
-        const ctPublishedProducts = products.filter(p => p.masterData.current);
-        const klaviyoItems = (await this.klaviyoService.getKlaviyoItemsByIds(ctPublishedProducts.map(p => p.id))).map(i => i.id);
-        const productsForCreation = ctPublishedProducts.filter(p => !klaviyoItems.includes(`$custom:::$default:::${p.id}`));
-        const productsForUpdate = ctPublishedProducts.filter(p => klaviyoItems.includes(`$custom:::$default:::${p.id}`));
-        const promises = [];
+    private generateProductsJobRequestForKlaviyo = async (products: Product[]): Promise<KlaviyoEvent[]> => {
+        const ctPublishedProducts = products.filter((p) => p.masterData.current);
+        const klaviyoItems = (await this.klaviyoService.getKlaviyoItemsByIds(ctPublishedProducts.map((p) => p.id))).map(
+            (i) => i.id,
+        );
+        const productsForCreation = ctPublishedProducts.filter(
+            (p) => !klaviyoItems.includes(`$custom:::$default:::${p.id}`),
+        );
+        const productsForUpdate = ctPublishedProducts.filter((p) =>
+            klaviyoItems.includes(`$custom:::$default:::${p.id}`),
+        );
+        const promises: KlaviyoEvent[] = [];
         if (productsForCreation.length) {
-            promises.push(this.klaviyoService.sendJobRequestToKlaviyo({
+            promises.push({
                 type: 'itemCreated',
                 body: this.productMapper.mapCtProductsToKlaviyoItemJob(productsForCreation, 'itemCreated'),
-            }));
+            });
         }
         if (productsForUpdate.length) {
-            promises.push(this.klaviyoService.sendJobRequestToKlaviyo({
+            promises.push({
                 type: 'itemUpdated',
                 body: this.productMapper.mapCtProductsToKlaviyoItemJob(productsForUpdate, 'itemUpdated'),
-            }));
+            });
         }
         return promises;
     };
 
-    private generateProductVariantsJobRequestForKlaviyo = async (product: Product): Promise<any[]> => {
-        const ctProductVariants = product.masterData.current.variants.map(v => v.sku || '').filter(v => v);
-        const klaviyoVariants = (await this.klaviyoService.getKlaviyoVariantsByCtSkus(ctProductVariants)).map(i => i.id);
-        const variantsForCreation = product.masterData.current.variants.filter(v => !klaviyoVariants.includes(`$custom:::$default:::${v.sku}`));
-        const variantsForUpdate = product.masterData.current.variants.filter(v => klaviyoVariants.includes(`$custom:::$default:::${v.sku}`));
-        const promises = [];
+    private generateProductVariantsJobRequestForKlaviyo = async (product: Product): Promise<KlaviyoEvent[]> => {
+        const combinedVariants = [product.masterData.current.masterVariant]
+            .concat(product.masterData.current.variants);
+        const ctProductVariants = combinedVariants
+            .map((v) => v.sku || '')
+            .filter((v) => v)
+            .map((v) => `$custom:::$default:::${v}`);
+        const klaviyoVariants = (
+            await this.klaviyoService.getKlaviyoItemVariantsByCtSkus(product.id, undefined, ['id'])
+        ).map((i) => i.id);
+        const variantsForCreation = combinedVariants.filter(
+            (v) => !klaviyoVariants.includes(`$custom:::$default:::${v.sku}`),
+        );
+        const variantsForUpdate = combinedVariants.filter((v) =>
+            klaviyoVariants.includes(`$custom:::$default:::${v.sku}`),
+        );
+        const variantsForDeletion = klaviyoVariants.filter((v) => v && !ctProductVariants.includes(v));
+        const promises: KlaviyoEvent[] = [];
+        if (variantsForDeletion.length) {
+            promises.push({
+                type: 'variantDeleted',
+                body: this.productMapper.mapCtProductVariantsToKlaviyoVariantsJob(
+                    product,
+                    variantsForDeletion as string[],
+                    'variantDeleted',
+                ),
+            });
+        }
         if (variantsForCreation.length) {
-            promises.push(this.klaviyoService.sendJobRequestToKlaviyo({
+            promises.push({
                 type: 'variantCreated',
-                body: this.productMapper.mapCtProductVariantsToKlaviyoVariantsJob(product, variantsForCreation, 'variantCreated'),
-            }));
+                body: this.productMapper.mapCtProductVariantsToKlaviyoVariantsJob(
+                    product,
+                    variantsForCreation,
+                    'variantCreated',
+                ),
+            });
         }
         if (variantsForUpdate.length) {
-            promises.push(this.klaviyoService.sendJobRequestToKlaviyo({
+            promises.push({
                 type: 'variantUpdated',
-                body: this.productMapper.mapCtProductVariantsToKlaviyoVariantsJob(product, variantsForUpdate, 'variantUpdated'),
-            }));
+                body: this.productMapper.mapCtProductVariantsToKlaviyoVariantsJob(
+                    product,
+                    variantsForUpdate,
+                    'variantUpdated',
+                ),
+            });
         }
         return promises;
     };

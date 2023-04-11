@@ -57,5 +57,5 @@ export abstract class KlaviyoService {
 
     abstract getKlaviyoItemsByIds (ids: string[], fieldsCatalogItem?: string[]): Promise<ItemType[]>;
 
-    abstract getKlaviyoVariantsByCtSkus (skus: string[], fieldsCatalogVariant?: string[]): Promise<ItemVariantType[]>;
+    abstract getKlaviyoItemVariantsByCtSkus (productId?: string, skus?: string[], fieldsCatalogVariant?: string[]): Promise<ItemVariantType[]>;
 }

@@ -16,8 +16,8 @@ export class DefaultCtProductService implements CtProductService {
         logger.info(`Getting all products in commercetools with id after ${lastId}`);
         try {
             const queryArgs = lastId
-                ? { limit: this.limit, withTotal: false, sort: 'id asc', where: `id > "${lastId}"` }
-                : { limit: this.limit, withTotal: false, sort: 'id asc' };
+                ? { limit: this.limit, withTotal: false, sort: 'id asc', where: `masterData(published = true) and id > "${lastId}"` }
+                : { limit: this.limit, withTotal: false, sort: 'id asc', where: 'masterData(published = true)' };
             const ctProducts = (await this.ctApiRoot.products().get({ queryArgs }).execute()).body;
             return {
                 data: ctProducts.results,

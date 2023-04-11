@@ -40,7 +40,7 @@ describe('processEvent', () => {
         sendJobRequestToKlaviyo: jest.fn(),
         checkRateLimitsAndDelay: jest.fn(),
         getKlaviyoItemsByIds: jest.fn(),
-        getKlaviyoVariantsByCtSkus: jest.fn(),
+        getKlaviyoItemVariantsByCtSkus: jest.fn(),
     };
 
     const responseHandlerMock = mocked(responseHandler);
