@@ -130,6 +130,13 @@ type ItemVariantType = {
     relationships?: KlaviyoRelationships;
 };
 
+type ItemDeletedRequest = {
+    data: {
+        id: string;
+        deleteVariantsJob?: KlaviyoEvent;
+    };
+};
+
 type KlaviyoCatalogVariant = {
     external_id?: string;
     integration_type?: string | '$custom';
@@ -172,7 +179,7 @@ type ItemVariantJobRequest = {
 };
 
 type ItemVariantJobType = {
-    type: 'catalog-variant-bulk-create-job' | 'catalog-variant-bulk-update-job';
+    type: 'catalog-variant-bulk-create-job' | 'catalog-variant-bulk-update-job' | 'catalog-variant-bulk-delete-job';
     id?: string,
     attributes: {
         variants: ItemVariantType[];

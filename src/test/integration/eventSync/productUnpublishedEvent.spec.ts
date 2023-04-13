@@ -1,13 +1,13 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { app } from '../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
-import { klaviyoDeleteCategoryNock } from './nocks/KlaviyoCategoryNock';
-import { sampleCategoryResourceDeletedMessage } from '../testData/ctCategoryMessages';
+import { app } from '../../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
+import { klaviyoDeleteItemNock } from '../nocks/KlaviyoCatalogueNock';
+import { sampleProductUnpublishedMessage } from '../../testData/ctProductMessages';
 import nock from 'nock';
 
 chai.use(chaiHttp);
 
-describe('pubSub adapter category resource deleted message', () => {
+describe('pubSub adapter product unpublished message', () => {
     let server: any;
     beforeAll(() => {
         server = app.listen(0);
@@ -36,13 +36,13 @@ describe('pubSub adapter category resource deleted message', () => {
     it('should return status 204 when the request is valid and processed', (done) => {
         // recorder.rec();
 
-        const deleteEventNock = klaviyoDeleteCategoryNock(
-            encodeURIComponent(`$custom:::$default:::${sampleCategoryResourceDeletedMessage.resource.id}`),
+        const deleteEventNock = klaviyoDeleteItemNock(
+            encodeURIComponent(`$custom:::$default:::${sampleProductUnpublishedMessage.resource.id}`),
         );
 
         chai.request(server)
             .post('/')
-            .send({ message: { data: Buffer.from(JSON.stringify(sampleCategoryResourceDeletedMessage)) } })
+            .send({ message: { data: Buffer.from(JSON.stringify(sampleProductUnpublishedMessage)) } })
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res.status).to.eq(204);
@@ -98,14 +98,14 @@ describe('pubSub event that produces 5xx error', () => {
     it('should not acknowledge the message to pub/sub and return status 500 when the request is invalid', (done) => {
         // recorder.rec();
 
-        const deleteEventNock = klaviyoDeleteCategoryNock(
-            encodeURIComponent(`$custom:::$default:::${sampleCategoryResourceDeletedMessage.resource.id}`),
+        const deleteEventNock = klaviyoDeleteItemNock(
+            encodeURIComponent(`$custom:::$default:::${sampleProductUnpublishedMessage.resource.id}`),
             500,
         );
 
         chai.request(server)
             .post('/')
-            .send({ message: { data: Buffer.from(JSON.stringify(sampleCategoryResourceDeletedMessage)) } })
+            .send({ message: { data: Buffer.from(JSON.stringify(sampleProductUnpublishedMessage)) } })
             .end((res, err) => {
                 expect(err.status).to.eq(500);
                 expect(deleteEventNock.isDone()).to.be.true;

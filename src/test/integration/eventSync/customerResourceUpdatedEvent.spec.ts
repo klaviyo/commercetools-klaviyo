@@ -1,10 +1,10 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { app } from '../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
-import { getSampleCustomerResourceUpdatedMessage } from '../testData/ctCustomerMessages';
+import { app } from '../../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
+import { getSampleCustomerResourceUpdatedMessage } from '../../testData/ctCustomerMessages';
 import http from 'http';
-import { ctAuthNock, ctGetCustomerNock } from './nocks/commercetoolsNock';
-import { klaviyoCreateProfileNock, klaviyoGetProfilesNock, klaviyoPatchProfileNock } from './nocks/KlaviyoProfileNock';
+import { ctAuthNock, ctGetCustomerNock } from '../nocks/commercetoolsNock';
+import { klaviyoCreateProfileNock, klaviyoGetProfilesNock, klaviyoPatchProfileNock } from '../nocks/KlaviyoProfileNock';
 import nock from 'nock';
 
 chai.use(chaiHttp);

@@ -8,6 +8,7 @@ type KlaviyoEvent = {
         | 'categoryUpdated'
         | 'itemCreated'
         | 'itemUpdated'
+        | 'itemDeleted'
         | 'variantCreated'
         | 'variantUpdated'
         | 'variantDeleted'
@@ -23,7 +24,8 @@ type KlaviyoRequestType =
     | ItemRequest
     | ItemVariantRequest
     | ItemJobRequest
-    | ItemVariantJobRequest;
+    | ItemVariantJobRequest
+    | ItemDeletedRequest;
 
 type ProcessingResult = {
     status: 'OK' | '4xx';

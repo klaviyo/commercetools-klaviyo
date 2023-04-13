@@ -1,6 +1,5 @@
 import {
-	ProductCreatedMessage,
-	ResourceDeletedDeliveryPayload,
+	ProductCreatedMessage, ProductUnpublishedMessage, ResourceDeletedDeliveryPayload,
 	ResourceUpdatedDeliveryPayload,
 } from '@commercetools/platform-sdk';
 
@@ -108,7 +107,7 @@ export const sampleProductResourceDeletedMessage: ResourceDeletedDeliveryPayload
 	projectKey: 'klaviyo-dev',
 	resource: {
 		typeId: 'product',
-		id: 'e54d8233-be41-4ce0-ae68-5d0674dd8517',
+		id: 'cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b',
 	},
 	modifiedAt: '2023-02-06T16:13:23.528Z',
 	notificationType: 'ResourceDeleted',
@@ -126,4 +125,19 @@ export const sampleProductResourceUpdatedMessage: ResourceUpdatedDeliveryPayload
 	notificationType: 'ResourceUpdated',
 	resourceUserProvidedIdentifiers: {},
 	oldVersion: 5,
+};
+
+export const sampleProductUnpublishedMessage: ProductUnpublishedMessage = {
+	id: '38898b94-0070-490d-9c31-22f517a42452',
+	version: 1,
+	sequenceNumber: 1,
+	resource: {
+		typeId: 'product',
+		id: 'e54d8233-be41-4ce0-ae68-5d0674dd8517',
+	},
+	resourceVersion: 1,
+	type: 'ProductUnpublished',
+	resourceUserProvidedIdentifiers: {},
+	createdAt: '2023-03-16T15:01:26.922Z',
+	lastModifiedAt: '2023-03-16T15:01:26.922Z',
 };

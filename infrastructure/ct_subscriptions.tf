@@ -7,7 +7,7 @@ locals {
       topic             = "${var.gcp_environment_namespace}-commercetools-topic"
       resource_type_ids = ["product"]
       resource_type_id  = "product"
-      types             = ["ProductPublished"]
+      types             = ["ProductPublished", "ProductUnpublished"]
       queue_ref         = google_pubsub_topic.commercetools
     },
     {

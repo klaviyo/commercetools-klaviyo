@@ -1,9 +1,9 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { app } from '../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
-import { klaviyoCreateCategoryNock } from './nocks/KlaviyoCategoryNock';
-import { sampleCategoryCreatedMessage } from '../testData/ctCategoryMessages';
-import { ctAuthNock, ctGetCategoryByIdNock } from './nocks/commercetoolsNock';
+import { app } from '../../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
+import { klaviyoCreateCategoryNock } from '../nocks/KlaviyoCategoryNock';
+import { sampleCategoryCreatedMessage } from '../../testData/ctCategoryMessages';
+import { ctAuthNock, ctGetCategoryByIdNock } from '../nocks/commercetoolsNock';
 import nock from 'nock';
 
 chai.use(chaiHttp);

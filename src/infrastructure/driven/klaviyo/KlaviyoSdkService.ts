@@ -31,6 +31,8 @@ export class KlaviyoSdkService extends KlaviyoService {
                 return Catalogs.deleteCatalogCategory(event.body.data.id);
             case 'categoryUpdated':
                 return Catalogs.updateCatalogCategory(event.body, event.body.data?.id);
+            case 'itemDeleted':
+                return this.deleteCatalogItemWithVariants(event.body.data.id, (event.body.data as any).deleteVariantsJob);
             default:
                 throw new Error(`Unsupported event type ${event.type}`);
         }
@@ -85,6 +87,18 @@ export class KlaviyoSdkService extends KlaviyoService {
             return await Catalogs.createCatalogCategory(body);
         } catch (e: any) {
             logger.error(`Error creating category in Klaviyo. Response code ${e.status}, ${e.message}`, e);
+            throw e;
+        }
+    }
+
+    private async deleteCatalogItemWithVariants(itemId?: string, deleteVariantsJob?: KlaviyoEvent) {
+        try {
+            if (deleteVariantsJob) {
+                await this.spawnCreateJob(deleteVariantsJob.body, deleteVariantsJob.type);
+            }
+            return await Catalogs.deleteCatalogItem(itemId);
+        } catch (e: any) {
+            logger.error(`Error deleting item in Klaviyo. Response code ${e.status}, ${e.message}`, e);
             throw e;
         }
     }
@@ -201,11 +215,14 @@ export class KlaviyoSdkService extends KlaviyoService {
                 : await Catalogs.getCatalogVariants({ filter, fieldsCatalogVariant });
             logger.debug('Variants response', variants);
             return variants.body.data;
-        } catch (e) {
+        } catch (e: any) {
             logger.error(
                 `Error getting variants in Klaviyo for productId: ${productId}` +
                     (skus?.length ? ` with SKUs: ${skus?.join(',')}` : ''),
             );
+            if (e.status === 404) {
+                return [];
+            }
             throw e;
         }
     }

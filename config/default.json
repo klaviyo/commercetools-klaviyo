@@ -96,5 +96,12 @@
         "CategoryCreated"
       ]
     }
+  },
+  "product": {
+    "messages": {
+      "deleted": [
+        "ProductUnpublished"
+      ]
+    }
   }
 }

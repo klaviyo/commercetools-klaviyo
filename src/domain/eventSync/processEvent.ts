@@ -20,6 +20,8 @@ import { DefaultProductMapper } from '../shared/mappers/DefaultProductMapper';
 import { CategoryCreatedEventProcessor } from './eventProcessors/category/categoryCreatedEventProcessor';
 import { CategoryResourceDeletedEventProcessor } from './eventProcessors/category/categoryResourceDeletedEventProcessor';
 import { CategoryResourceUpdatedEventProcessor } from './eventProcessors/category/categoryResourceUpdatedEventProcessor';
+import { ProductResourceDeletedEventProcessor } from './eventProcessors/product/productResourceDeletedEventProcessor';
+import { ProductUnpublishedEventProcessor } from './eventProcessors/product/productUnpublishedEventProcessor';
 
 const context: Context = {
     klaviyoService: new KlaviyoSdkService(),
@@ -40,6 +42,8 @@ const defaultProcessors: (typeof AbstractEventProcessor)[] = [
     CategoryCreatedEventProcessor,
     CategoryResourceDeletedEventProcessor,
     CategoryResourceUpdatedEventProcessor,
+    ProductResourceDeletedEventProcessor,
+    ProductUnpublishedEventProcessor,
 ];
 
 // class CTEventsProcessor {

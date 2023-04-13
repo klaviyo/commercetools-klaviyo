@@ -602,7 +602,25 @@ describe('klaviyoService > getKlaviyoItemVariantsByCtSkus', () => {
         expect(Catalogs.getCatalogItemVariants).toBeCalledTimes(0);
     });
 
-    test('should log error when klaviyo sdk throws error', async () => {
+    test('should log error and return empty array when klaviyo sdk throws 404 error', async () => {
+        Catalogs.getCatalogItemVariants = jest.fn().mockImplementationOnce(() => {
+            throw new StatusError(404, 'Not found');
+        });
+
+        let error;
+        let result: any;
+        try {
+            result = await klaviyoService.getKlaviyoItemVariantsByCtSkus('test-id', undefined, undefined);
+        } catch (e) {
+            error = e;
+        }
+
+        expect(result).toBeDefined();
+        expect(result?.length).toEqual(0);
+        expect(error).toBeUndefined();
+    });
+
+    test('should log error when klaviyo sdk throws other errors', async () => {
         Catalogs.getCatalogItemVariants = jest.fn().mockImplementationOnce(() => {
             throw new StatusError(500, 'Unknown error');
         });

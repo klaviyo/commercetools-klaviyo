@@ -1,9 +1,9 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { app } from '../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
-import { getSampleCustomerCreatedMessage } from '../testData/ctCustomerMessages';
+import { app } from '../../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
+import { getSampleCustomerCreatedMessage } from '../../testData/ctCustomerMessages';
 import http from 'http';
-import { klaviyoCreateProfileNock } from './nocks/KlaviyoProfileNock';
+import { klaviyoCreateProfileNock } from '../nocks/KlaviyoProfileNock';
 import nock from 'nock';
 
 chai.use(chaiHttp);

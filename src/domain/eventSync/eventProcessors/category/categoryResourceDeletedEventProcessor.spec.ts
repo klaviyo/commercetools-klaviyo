@@ -10,7 +10,7 @@ jest.mock('../../../../infrastructure/driven/klaviyo/KlaviyoService');
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 
 describe('CategoryResourceDeletedEventProcessor > isEventValid', () => {
-    it('should return valid when the cattegory event has all the required fields', async () => {
+    it('should return valid when the category event has all the required fields', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'category' } }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'notificationType', { value: 'ResourceDeleted' });

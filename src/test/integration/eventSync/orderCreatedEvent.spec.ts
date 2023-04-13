@@ -1,28 +1,27 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { app } from "../../infrastructure/driving/adapter/eventSync/pubsubAdapter";
-import { klaviyoEventNock } from './nocks/KlaviyoEventNock';
-import { sampleOrderCreatedMessage, sampleOrderStateChangedMessage } from '../testData/orderData';
-import { ctAuthNock, ctGetOrderByIdNock } from './nocks/commercetoolsNock';
-import { mapAllowedProperties } from '../../utils/property-mapper';
-import nock from "nock";
+import { app } from '../../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
+import { klaviyoEventNock } from '../nocks/KlaviyoEventNock';
+import { sampleOrderCreatedMessage, sampleOrderCustomerSetMessage } from '../../testData/orderData';
+import { ctAuthNock, ctGetOrderByIdNock } from '../nocks/commercetoolsNock';
+import nock from 'nock';
+import { mapAllowedProperties } from '../../../utils/property-mapper';
 
 chai.use(chaiHttp);
 
-describe('pubSub adapter order state changed message', () => {
+describe('pubSub adapter order created message', () => {
     let server: any;
     beforeAll(() => {
         server = app.listen(0);
     });
 
-  afterAll((done) => {
-    server.close(() => {
-      done();
+    afterAll(() => {
+        server.close();
     });
-    nock.cleanAll();
-  });
 
     beforeEach(() => {
+        nock.cleanAll();
+        jest.clearAllMocks();
         ctAuthNock();
         ctGetOrderByIdNock('3456789');
     });
@@ -32,21 +31,20 @@ describe('pubSub adapter order state changed message', () => {
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(data)) } })
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res.status).to.eq(204);
+            .end((res, err) => {
+                expect(err.status).to.eq(204);
                 done();
             });
     });
 
-    it('should return status 204 when the request is valid and processed', (done) => {
+    it('should return status 204 when the request is valid and processed (OrderCreated)', (done) => {
         // recorder.rec();
 
         const createEventNock = klaviyoEventNock({
             type: 'event',
             attributes: {
                 profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                metric: { name: 'Cancelled Order' },
+                metric: { name: 'Placed Order' },
                 value: 13,
                 properties: {
                     ...mapAllowedProperties('order', { ...sampleOrderCreatedMessage.order }),
@@ -58,10 +56,37 @@ describe('pubSub adapter order state changed message', () => {
 
         chai.request(server)
             .post('/')
-            .send({ message: { data: Buffer.from(JSON.stringify(sampleOrderStateChangedMessage)) } })
+            .send({ message: { data: Buffer.from(JSON.stringify(sampleOrderCreatedMessage)) } })
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res.status).to.eq(204);
+                expect(createEventNock.isDone()).to.be.true;
+                done();
+            });
+    });
+
+    it('should return status 204 when the request is valid and processed (OrderCustomerSet)', (done) => {
+        // recorder.rec();
+
+        const createEventNock = klaviyoEventNock({
+            type: 'event',
+            attributes: {
+                profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
+                metric: { name: 'Placed Order' },
+                value: 13,
+                properties: {
+                    ...mapAllowedProperties('order', { ...sampleOrderCreatedMessage.order }),
+                },
+                unique_id: '3456789',
+                time: '2023-01-27T15:00:00.000Z',
+            },
+        });
+
+        chai.request(server)
+            .post('/')
+            .send({ message: { data: Buffer.from(JSON.stringify(sampleOrderCustomerSetMessage)) } })
+            .end((res, err) => {
+                expect(err.status).to.eq(204);
                 expect(createEventNock.isDone()).to.be.true;
                 done();
             });
@@ -82,9 +107,8 @@ describe('pubSub event that produces 4xx error', () => {
         chai.request(server)
             .post('/')
             .send({ invalidData: '123' })
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res.status).to.eq(400);
+            .end((res, err) => {
+                expect(err.status).to.eq(400);
                 done();
             });
     });
@@ -93,9 +117,8 @@ describe('pubSub event that produces 4xx error', () => {
         chai.request(server)
             .post('/')
             // .send(undefined)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res.status).to.eq(400);
+            .end((res, err) => {
+                expect(err.status).to.eq(400);
                 done();
             });
     });
@@ -107,13 +130,10 @@ describe('pubSub event that produces 5xx error', () => {
         server = app.listen(0);
     });
 
-    afterAll(() => {
-        server.close();
-    });
-
-    beforeEach(() => {
-        ctAuthNock();
-        ctGetOrderByIdNock('3456789');
+    afterAll((done) => {
+        server.close(() => {
+            done();
+        });
     });
 
     it('should not acknowledge the message to pub/sub and return status 500 when the request is invalid', (done) => {
@@ -124,7 +144,7 @@ describe('pubSub event that produces 5xx error', () => {
                 type: 'event',
                 attributes: {
                     profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                    metric: { name: 'Cancelled Order' },
+                    metric: { name: 'Placed Order' },
                     value: 13,
                     properties: {
                         ...mapAllowedProperties('order', { ...sampleOrderCreatedMessage.order }),
@@ -138,10 +158,9 @@ describe('pubSub event that produces 5xx error', () => {
 
         chai.request(server)
             .post('/')
-            .send({ message: { data: Buffer.from(JSON.stringify(sampleOrderStateChangedMessage)) } })
-            .end((err, res) => {
-                expect(err).to.be.null;
-                expect(res.status).to.eq(500);
+            .send({ message: { data: Buffer.from(JSON.stringify(sampleOrderCreatedMessage)) } })
+            .end((res, err) => {
+                expect(err.status).to.eq(500);
                 expect(createEventNock.isDone()).to.be.true;
                 done();
             });
