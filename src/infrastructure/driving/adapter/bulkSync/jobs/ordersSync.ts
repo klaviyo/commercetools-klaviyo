@@ -34,6 +34,9 @@ const releaseLock = async () => {
 	if (workerData?.orderIds.length) {
 		await ordersSync.syncOrdersByIdRange(workerData?.orderIds);
 	}
+	else if (workerData?.startId) {
+		await ordersSync.syncOrdersByStartId(workerData?.startId);
+	}
 	else {
 		await ordersSync.syncAllOrders();
 	}

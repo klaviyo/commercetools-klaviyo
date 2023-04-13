@@ -14,7 +14,6 @@ const ctCustomObjectLockMock = {
 }
 import { bulkSyncApp } from '../../../infrastructure/driving/adapter/bulkSync/bulkSyncApiAdapter';
 import logger from '../../../utils/log';
-import { CTCustomObjectLockService } from '../../../domain/bulkSync/services/CTCustomObjectLockService';
 import { ErrorCodes, StatusError } from '../../../types/errors/StatusError'
 
 jest.mock('bree', () => {
@@ -75,6 +74,7 @@ describe('bulkSyncApp order sync endpoint', () => {
                         worker: {
                             workerData: {
                                 orderIds: ['123456', '456789'],
+                                startId: '',
                             },
                         },
                     },
@@ -83,6 +83,34 @@ describe('bulkSyncApp order sync endpoint', () => {
                 done();
             });
     });
+
+    it('should accept the start sync request by start id and return 202', (done) => {
+        const checkLockSpy = jest.spyOn(ctCustomObjectLockMock, 'checkLock');
+        const breeAddSpy = jest.spyOn(breeMock, 'add');
+        chai.request(server)
+            .post('/sync/orders')
+            .send({
+                startId: '123456',
+            })
+            .end((err, res) => {
+                exp(err).to.be.null;
+                exp(res.status).to.eq(202);
+                expect(breeAddSpy).toHaveBeenCalledWith([
+                    {
+                        name: 'ordersSync',
+                        worker: {
+                            workerData: {
+                                orderIds: [],
+                                startId: '123456',
+                            },
+                        },
+                    },
+                ]);
+                expect(checkLockSpy).toHaveBeenCalledWith('orderFullSync');
+                done();
+            });
+    });
+
 
     it('should fail to start sync and return 423 when a job is already running', (done) => {
         jest.spyOn(ctCustomObjectLockMock, 'checkLock');

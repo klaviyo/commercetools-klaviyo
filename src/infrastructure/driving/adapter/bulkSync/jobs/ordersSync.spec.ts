@@ -5,12 +5,14 @@ let orderWorkerThreadsMock = {
     },
     workerData: {
         orderIds: [] as string[],
+        startId: '',
     },
 } as any;
 
 const ordersSyncMock = {
     syncAllOrders: jest.fn(),
     syncOrdersByIdRange: jest.fn(),
+    syncOrdersByStartId: jest.fn(),
     releaseLockExternally: jest.fn(),
 };
 
@@ -36,7 +38,7 @@ describe('syncOrders', () => {
         jest.resetModules();
     });
 
-    it('should call the right methods when orderIds are present (sync by id)', async () => {
+    it('should call the right methods when orderIds are present (sync by id range)', async () => {
         orderWorkerThreadsMock.workerData.orderIds = ['123456'];
         const syncByIdRangeSpy = jest.spyOn(ordersSyncMock, 'syncOrdersByIdRange');
         // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -49,6 +51,22 @@ describe('syncOrders', () => {
         }
         expect(error).toBeUndefined();
         expect(syncByIdRangeSpy).toHaveBeenCalled();
+    });
+
+    it('should call the right methods when orderIds are present (sync by start id)', async () => {
+        orderWorkerThreadsMock.workerData.orderIds = [];
+        orderWorkerThreadsMock.workerData.startId = '123456';
+        const syncByStartIdSpy = jest.spyOn(ordersSyncMock, 'syncOrdersByStartId');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const ordersSyncJob = require('./ordersSync');
+        let error;
+        try {
+            await ordersSyncJob;
+        } catch (e) {
+            error = e;
+        }
+        expect(error).toBeUndefined();
+        expect(syncByStartIdSpy).toHaveBeenCalled();
     });
 
     it('should call the right methods when orderIds are not present (sync all)', async () => {

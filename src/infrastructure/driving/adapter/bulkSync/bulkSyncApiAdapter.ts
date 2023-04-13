@@ -41,8 +41,12 @@ bulkSyncApp.post('/sync/orders', async (req, res) => {
     try {
         await ctLockService.checkLock('orderFullSync');
         let orderIds: string[] = [];
+        let startId = '';
         if (req.body?.ids?.length) {
             orderIds = req.body?.ids;
+        }
+        else if (req.body?.startId?.length) {
+            startId = req.body?.startId;
         }
         await bree.add([
             {
@@ -50,6 +54,7 @@ bulkSyncApp.post('/sync/orders', async (req, res) => {
                 worker: {
                     workerData: {
                         orderIds,
+                        startId,
                     },
                 },
             },

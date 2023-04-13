@@ -22,55 +22,20 @@ export class OrdersSync {
 
     public syncAllOrders = async () => {
         logger.info('Started sync of all historical orders');
-        try {
-            //ensures that only one sync at the time is running
-            await this.lockService.acquireLock(this.lockKey);
-
-            let ctOrdersResult: PaginatedOrderResults | undefined;
-            let succeeded = 0,
-                errored = 0,
-                totalOrders = 0,
-                totalKlaviyoEvents = 0;
-            const _startTime = startTime();
-
-            do {
-                ctOrdersResult = await this.ctOrderService.getAllOrders(ctOrdersResult?.lastId);
-
-                const promiseResults = await Promise.allSettled(
-                    ctOrdersResult.data.flatMap((order) => this.generateAndSendOrderEventsToKlaviyo(order)),
-                );
-
-                const rejectedPromises = promiseResults.filter(isRejected);
-                const fulfilledPromises = promiseResults.filter(isFulfilled);
-
-                this.klaviyoService.logRateLimitHeaders(fulfilledPromises, rejectedPromises);
-
-                totalOrders += ctOrdersResult.data.length;
-                totalKlaviyoEvents += promiseResults.length;
-                errored += rejectedPromises.length;
-                succeeded += fulfilledPromises.length;
-                if (rejectedPromises.length) {
-                    rejectedPromises.forEach((rejected) => logger.error('Error syncing event with klaviyo', rejected));
-                }
-            } while (ctOrdersResult.hasMore);
-            logger.info(
-                `Historical orders import. Total orders to be imported ${totalOrders}, total klaviyo events: ${totalKlaviyoEvents}, successfully imported: ${succeeded}, errored: ${errored}, elapsed time: ${getElapsedSeconds(
-                    _startTime,
-                )} seconds`,
-            );
-            await this.lockService.releaseLock(this.lockKey);
-        } catch (e: any) {
-            if (e?.code !== ErrorCodes.LOCKED) {
-                logger.error('Error while syncing all historical orders', e);
-                await this.lockService.releaseLock(this.lockKey);
-            } else {
-                logger.warn('Already locked');
-            }
-        }
+        await this.syncOrders(this.ctOrderService.getAllOrders, '', []);
     };
 
     public syncOrdersByIdRange = async (orderIds: string[]) => {
         logger.info('Started sync of historical orders by id range');
+        await this.syncOrders(this.ctOrderService.getOrdersByIdRange, ' by id range', [orderIds]);
+    };
+
+    public syncOrdersByStartId = async (startId: string) => {
+        logger.info('Started sync of historical orders using id as starting point');
+        await this.syncOrders(this.ctOrderService.getOrdersByStartId, ' by start id', [startId]);
+    };
+
+    private syncOrders = async (ordersMethod: any, importTypeText: string, args: unknown[]) => {
         try {
             //ensures that only one sync at the time is running
             await this.lockService.acquireLock(this.lockKey);
@@ -83,10 +48,10 @@ export class OrdersSync {
             const _startTime = startTime();
 
             do {
-                ctOrdersResult = await this.ctOrderService.getOrdersByIdRange(orderIds, ctOrdersResult?.lastId);
+                ctOrdersResult = await ordersMethod(...args, ctOrdersResult?.lastId);
 
                 const promiseResults = await Promise.allSettled(
-                    ctOrdersResult.data.flatMap((order) => this.generateAndSendOrderEventsToKlaviyo(order)),
+                    (ctOrdersResult as PaginatedOrderResults).data.flatMap((order) => this.generateAndSendOrderEventsToKlaviyo(order)),
                 );
 
                 const rejectedPromises = promiseResults.filter(isRejected);
@@ -94,29 +59,29 @@ export class OrdersSync {
 
                 this.klaviyoService.logRateLimitHeaders(fulfilledPromises, rejectedPromises);
 
-                totalOrders += ctOrdersResult.data.length;
+                totalOrders += (ctOrdersResult as PaginatedOrderResults).data.length;
                 totalKlaviyoEvents += promiseResults.length;
                 errored += rejectedPromises.length;
                 succeeded += fulfilledPromises.length;
                 if (rejectedPromises.length) {
                     rejectedPromises.forEach((rejected) => logger.error('Error syncing event with klaviyo', rejected));
                 }
-            } while (ctOrdersResult.hasMore);
+            } while ((ctOrdersResult as PaginatedOrderResults).hasMore);
             logger.info(
-                `Historical orders import by id range. Total orders to be imported ${totalOrders}, total klaviyo events: ${totalKlaviyoEvents}, successfully imported: ${succeeded}, errored: ${errored}, elapsed time: ${getElapsedSeconds(
+                `Historical orders import${importTypeText}. Total orders to be imported ${totalOrders}, total klaviyo events: ${totalKlaviyoEvents}, successfully imported: ${succeeded}, errored: ${errored}, elapsed time: ${getElapsedSeconds(
                     _startTime,
                 )} seconds`,
             );
             await this.lockService.releaseLock(this.lockKey);
         } catch (e: any) {
             if (e?.code !== ErrorCodes.LOCKED) {
-                logger.error('Error while syncing historical orders by id range', e);
+                logger.error('Error while syncing historical orders${importTypeText}', e);
                 await this.lockService.releaseLock(this.lockKey);
             } else {
                 logger.warn('Already locked');
             }
         }
-    };
+    }
 
     private generateAndSendOrderEventsToKlaviyo = (order: Order): Promise<any>[] => {
         const events: EventRequest[] = [];

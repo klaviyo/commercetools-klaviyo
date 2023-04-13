@@ -81,3 +81,33 @@ describe('getOrdersByIdRange', () => {
 
     });
 });
+
+describe('getOrdersByStartId', () => {
+
+    it('should return a page orders from CT', async () => {
+        mockGetCustomObjectApiRequest.execute.mockResolvedValueOnce({ body: {
+            limit: 0,
+                count: 1,
+                results: [mock<Order>()],
+                offset: 0,
+                total: 0
+            }
+        })
+
+        const ctOrderService = new DefaultCtOrderService(mockCtApiRoot)
+        const result = await ctOrderService.getOrdersByStartId('123456');
+
+        expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
+        expect(result.data.length).toEqual(1);
+    });
+
+    it('should throw an error if fails to get orders from CT APIs', async () => {
+        mockGetCustomObjectApiRequest.execute.mockImplementation(() => {throw new CTErrorResponse(504, "CT Error")})
+
+        const ctOrderService = new DefaultCtOrderService(mockCtApiRoot)
+        await expect(ctOrderService.getOrdersByIdRange(['123456'])).rejects.toThrow(Error)
+
+        expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
+
+    });
+});
