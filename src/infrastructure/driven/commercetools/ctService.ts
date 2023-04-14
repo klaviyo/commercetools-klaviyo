@@ -102,8 +102,9 @@ export const getOrderByPaymentId = async (paymentId: string): Promise<Order> => 
         const orderResults = (await getApiRoot().orders().get({
             queryArgs: {
                 limit: 1,
-                where: `paymentInfo(payments(id = "${paymentId}"))`
-            }
+                where: `paymentInfo(payments(id = "${paymentId}"))`,
+                expand: 'paymentInfo.payments[*]',
+            },
         }).execute()).body?.results;
         if (!orderResults?.length) {
             throw new StatusError(

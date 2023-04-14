@@ -45,25 +45,11 @@ export class OrderRefundedEvent extends AbstractEventProcessor {
 
         const ctOrder = await getOrderByPaymentId(message.resource.id);
 
-        const body: EventRequest = this.context.orderMapper.mapCtOrderToKlaviyoEvent(ctOrder, config.get('order.metrics.refundedOrder'), ctOrder.lastModifiedAt)
-        // const body: EventRequest = {
-        //     data: {
-        //         type: 'event',
-        //         attributes: {
-        //             profile: getCustomerProfileFromOrder(ctOrder),
-        //             metric: {
-        //                 name: config.get('order.metrics.refundedOrder'),
-        //             },
-        //             value: this.context.currencyService.convert(
-        //                 getTypedMoneyAsNumber(ctOrder?.totalPrice),
-        //                 ctOrder.totalPrice.currencyCode,
-        //             ),
-        //             properties: mapAllowedProperties('order', { ...ctOrder }) as any,
-        //             unique_id: message.resource.id,
-        //             time: message.createdAt,
-        //         },
-        //     },
-        // };
+        const body: EventRequest = this.context.orderMapper.mapCtRefundedOrderToKlaviyoEvent(
+            ctOrder,
+            config.get('order.metrics.refundedOrder'),
+            ctOrder.lastModifiedAt,
+        );
 
         return [
             {

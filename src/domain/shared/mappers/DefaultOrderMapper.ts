@@ -29,6 +29,34 @@ export class DefaultOrderMapper implements OrderMapper {
         };
     }
 
+    public mapCtRefundedOrderToKlaviyoEvent(order: Order, metric: string, time?: string): EventRequest {
+        const refundAmounts =
+            order.paymentInfo?.payments
+                .map((p) =>
+                    p.obj?.transactions
+                        .filter((t) => t.state === 'Success' && t.type === 'Refund')
+                        .map((t) => getTypedMoneyAsNumber(t.amount)),
+                )
+                .flat().filter((r) => r !== undefined) || [];
+        const refundTotal = refundAmounts.length ? refundAmounts.reduce((a, b) => (a || 0) + (b || 0)) || 0 : 0;
+
+        return {
+            data: {
+                type: 'event',
+                attributes: {
+                    profile: getCustomerProfileFromOrder(order),
+                    metric: {
+                        name: metric,
+                    },
+                    value: this.currencyService.convert(refundTotal, order.totalPrice.currencyCode),
+                    properties: mapAllowedProperties('order', { ...order }) as any,
+                    unique_id: order.id,
+                    time: time ?? order.createdAt,
+                },
+            },
+        };
+    }
+
     public mapOrderLineToProductOrderedEvent(lineItem: LineItem, order: Order, time?: string): EventRequest {
         return {
             data: {

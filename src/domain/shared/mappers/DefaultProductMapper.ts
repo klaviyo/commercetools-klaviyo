@@ -28,7 +28,7 @@ export class DefaultProductMapper implements ProductMapper {
                         ? productDescription[Object.keys(productDescription || {})[0]]
                         : 'None',
                     url: productUrl,
-                    image_full_url: productMasterVariantImages ? productMasterVariantImages[0].url : undefined,
+                    image_full_url: productMasterVariantImages ? productMasterVariantImages[0]?.url : undefined,
                 },
                 relationships: product.masterData.current.categories?.length
                     ? {

@@ -12,7 +12,41 @@ describe("map CT order to Klaviyo event", () => {
     const klaviyoEvent = orderMapper.mapCtOrderToKlaviyoEvent(sampleOrderCreatedMessage.order, "someMetric");
     expect(klaviyoEvent).toMatchSnapshot();
   })
+});
+
+describe("map CT refunded order to Klaviyo event", () => {
+  it("should map a commercetools refunded order with a given metric to a klaviyo event", () => {
+
+    const klaviyoEvent = orderMapper.mapCtRefundedOrderToKlaviyoEvent({
+      ...sampleOrderCreatedMessage.order,
+      paymentInfo: {
+          payments: [
+              {
+                  typeId: 'payment',
+                  id: '123456',
+                  obj: {
+                      transactions: [
+                          {
+                              id: '123456',
+                              amount: {
+                                  type: 'centPrecision',
+                                  currencyCode: 'EUR',
+                                  centAmount: 1300,
+                                  fractionDigits: 2
+                              },
+                              type: 'Refund',
+                              state: 'Success',
+                          },
+                      ],
+                  },
+              },
+          ],
+      },
+    } as any, "someMetric");
+    expect(klaviyoEvent).toMatchSnapshot();
+  })
 })
+
 describe("map CT order line to klaviyo event", () => {
   it("should map a commercetools order line to a klaviyo Order Product event", () => {
 

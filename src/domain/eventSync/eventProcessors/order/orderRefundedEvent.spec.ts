@@ -13,8 +13,8 @@ import { Context } from "../../../../types/klaviyo-context";
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 const eventRequestMock = mock<EventRequest>();
 const mockedOrderId = "mockedOrder";
-eventRequestMock.data.id = mockedOrderId
-contextMock.orderMapper.mapCtOrderToKlaviyoEvent.mockImplementation((order, metric, time) => eventRequestMock)
+eventRequestMock.data.id = mockedOrderId;
+contextMock.orderMapper.mapCtRefundedOrderToKlaviyoEvent.mockImplementation((order, metric, time) => eventRequestMock);
 
 describe('orderRefundedEvent > isEventValid', () => {
     it('should return valid when a payment transaction has type "Refund" (PaymentTransactionAdded)', async () => {
@@ -107,7 +107,7 @@ describe('orderRefundedEvent > generateKlaviyoEvent', () => {
 
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(0);
-        expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(0);
+        expect(contextMock.orderMapper.mapCtRefundedOrderToKlaviyoEvent).toBeCalledTimes(0);
     });
 
     it('should generate klaviyo events for a PaymentTransactionAdded message', async () => {
@@ -140,7 +140,7 @@ describe('orderRefundedEvent > generateKlaviyoEvent', () => {
 
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
-        expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(1);
+        expect(contextMock.orderMapper.mapCtRefundedOrderToKlaviyoEvent).toBeCalledTimes(1);
         exp(klaviyoEvent[0].body.data.id).to.eq("mockedOrder");
     });
 });

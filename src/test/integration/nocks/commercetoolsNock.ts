@@ -137,6 +137,7 @@ export const ctGetOrderByPaymentIdNock = (paymentId: string, responseStatusCode 
         .query({
             limit: '1',
             where: `paymentInfo%28payments%28id%20%3D%20%22${paymentId}%22%29%29`,
+            expand: 'paymentInfo.payments[*]',
         })
         .reply(responseStatusCode, {
             results: [
@@ -168,6 +169,21 @@ export const ctGetOrderByPaymentIdNock = (paymentId: string, responseStatusCode 
                             {
                                 typeId: 'payment',
                                 id: paymentId,
+                                obj: {
+                                    transactions: [
+                                        {
+                                            id: '1213456',
+                                            amount: {
+                                                type: 'centPrecision',
+                                                currencyCode: 'EUR',
+                                                centAmount: 1300,
+                                                fractionDigits: 2
+                                            },
+                                            type: 'Refund',
+                                            state: 'Success',
+                                        },
+                                    ],
+                                },
                             },
                         ],
                     },
