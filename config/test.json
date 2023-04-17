@@ -100,7 +100,8 @@
   "product": {
     "messages": {
       "deleted": [
-        "ProductUnpublished"
+        "ProductUnpublished",
+        "ResourceDeleted"
       ]
     }
   }

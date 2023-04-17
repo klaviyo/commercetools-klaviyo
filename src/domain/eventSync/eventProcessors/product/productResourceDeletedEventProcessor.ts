@@ -1,10 +1,11 @@
 import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
 import { ResourceDeletedDeliveryPayload } from '@commercetools/platform-sdk';
+import config from 'config';
 
 export class ProductResourceDeletedEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
-        return this.ctMessage.notificationType === 'ResourceDeleted' && this.ctMessage.resource.typeId === 'product';
+        return this.ctMessage.resource.typeId === 'product' && this.isValidMessageType(this.ctMessage.notificationType);
     }
 
     async generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {
@@ -20,6 +21,13 @@ export class ProductResourceDeletedEventProcessor extends AbstractEventProcessor
             type: 'itemDeleted',
         };
         return [klaviyoEvent];
+    }
+
+    private isValidMessageType(type: string): boolean {
+        return Boolean(
+            config.has('product.messages.deleted') &&
+                (config.get('product.messages.deleted') as string[])?.includes(type),
+        );
     }
 
     private generateDeleteVariantsJobRequestForKlaviyo = async (productId: string): Promise<KlaviyoEvent> => {

@@ -133,7 +133,7 @@ export const sampleProductUnpublishedMessage: ProductUnpublishedMessage = {
 	sequenceNumber: 1,
 	resource: {
 		typeId: 'product',
-		id: 'e54d8233-be41-4ce0-ae68-5d0674dd8517',
+		id: 'cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b',
 	},
 	resourceVersion: 1,
 	type: 'ProductUnpublished',

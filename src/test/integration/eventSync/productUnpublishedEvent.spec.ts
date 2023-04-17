@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { app } from '../../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
-import { klaviyoDeleteItemNock } from '../nocks/KlaviyoCatalogueNock';
+import { klaviyoDeleteItemNock, klaviyoDeleteVariantJobNock, klaviyoGetCatalogueVariantsNock, klaviyoGetDeleteVariantJobNock } from '../nocks/KlaviyoCatalogueNock';
 import { sampleProductUnpublishedMessage } from '../../testData/ctProductMessages';
 import nock from 'nock';
 
@@ -40,6 +40,60 @@ describe('pubSub adapter product unpublished message', () => {
             encodeURIComponent(`$custom:::$default:::${sampleProductUnpublishedMessage.resource.id}`),
         );
 
+        const getVariantsNock = klaviyoGetCatalogueVariantsNock(200, {
+            data: [{
+                id: 'test-id',
+            }],
+        });
+
+        const deleteVariantsJobNock = klaviyoDeleteVariantJobNock(
+            {
+                attributes: {
+                    variants: [{
+                        type: 'catalog-variant',
+                        id: 'test-id',
+                    }]
+                },
+                type: 'catalog-variant-bulk-delete-job',
+            },
+            202,
+            {
+                data: {
+                    type: 'catalog-variant-bulk-delete-job',
+                    id: 'test-id',
+                    attributes: {
+                        job_id: 'string',
+                        status: 'processing',
+                        created_at: '2022-11-08T00:00:00',
+                        total_count: 1,
+                        completed_count: 1,
+                        failed_count: 0,
+                        completed_at: '2022-11-08T00:00:00',
+                        expires_at: '2022-11-08T00:00:00',
+                        errors: [],
+                    },
+                },
+            },
+        );
+
+        const getDeleteVariantsJobNock = klaviyoGetDeleteVariantJobNock('test-id', 200, {
+            data: {
+                type: 'catalog-variant-bulk-delete-job',
+                id: 'test-id',
+                attributes: {
+                    job_id: 'string',
+                    status: 'complete',
+                    created_at: '2022-11-08T00:00:00',
+                    total_count: 1,
+                    completed_count: 1,
+                    failed_count: 0,
+                    completed_at: '2022-11-08T00:00:00',
+                    expires_at: '2022-11-08T00:00:00',
+                    errors: [],
+                },
+            },
+        });
+
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(sampleProductUnpublishedMessage)) } })
@@ -47,6 +101,33 @@ describe('pubSub adapter product unpublished message', () => {
                 expect(err).to.be.null;
                 expect(res.status).to.eq(204);
                 expect(deleteEventNock.isDone()).to.be.true;
+                expect(getVariantsNock.isDone()).to.be.true;
+                expect(deleteVariantsJobNock.isDone()).to.be.true;
+                expect(getDeleteVariantsJobNock.isDone()).to.be.true;
+                done();
+            });
+    });
+
+    it('should return status 204 when the request is accepted but ignored (because the item does not exist)', (done) => {
+        // recorder.rec();
+
+        const deleteEventNock = klaviyoDeleteItemNock(
+            encodeURIComponent(`$custom:::$default:::${sampleProductUnpublishedMessage.resource.id}`),
+            404,
+        );
+
+        const getVariantsNock = klaviyoGetCatalogueVariantsNock(200, {
+            data: [],
+        });
+
+        chai.request(server)
+            .post('/')
+            .send({ message: { data: Buffer.from(JSON.stringify(sampleProductUnpublishedMessage)) } })
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res.status).to.eq(204);
+                expect(deleteEventNock.isDone()).to.be.true;
+                expect(getVariantsNock.isDone()).to.be.true;
                 done();
             });
     });
@@ -103,12 +184,69 @@ describe('pubSub event that produces 5xx error', () => {
             500,
         );
 
+        const getVariantsNock = klaviyoGetCatalogueVariantsNock(200, {
+            data: [{
+                id: 'test-id',
+            }],
+        });
+
+        const deleteVariantsJobNock = klaviyoDeleteVariantJobNock(
+            {
+                attributes: {
+                    variants: [{
+                        type: 'catalog-variant',
+                        id: 'test-id',
+                    }]
+                },
+                type: 'catalog-variant-bulk-delete-job',
+            },
+            202,
+            {
+                data: {
+                    type: 'catalog-variant-bulk-delete-job',
+                    id: 'test-id',
+                    attributes: {
+                        job_id: 'string',
+                        status: 'processing',
+                        created_at: '2022-11-08T00:00:00',
+                        total_count: 1,
+                        completed_count: 1,
+                        failed_count: 0,
+                        completed_at: '2022-11-08T00:00:00',
+                        expires_at: '2022-11-08T00:00:00',
+                        errors: [],
+                    },
+                },
+            },
+        );
+
+        const getDeleteVariantsJobNock = klaviyoGetDeleteVariantJobNock('test-id', 200, {
+            data: {
+                type: 'catalog-variant-bulk-delete-job',
+                id: 'test-id',
+                attributes: {
+                    job_id: 'string',
+                    status: 'complete',
+                    created_at: '2022-11-08T00:00:00',
+                    total_count: 1,
+                    completed_count: 1,
+                    failed_count: 0,
+                    completed_at: '2022-11-08T00:00:00',
+                    expires_at: '2022-11-08T00:00:00',
+                    errors: [],
+                },
+            },
+        });
+
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(sampleProductUnpublishedMessage)) } })
             .end((res, err) => {
                 expect(err.status).to.eq(500);
                 expect(deleteEventNock.isDone()).to.be.true;
+                expect(getVariantsNock.isDone()).to.be.true;
+                expect(deleteVariantsJobNock.isDone()).to.be.true;
+                expect(getDeleteVariantsJobNock.isDone()).to.be.true;
                 done();
             });
     });

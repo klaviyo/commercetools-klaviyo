@@ -16,6 +16,7 @@ export class ProductUnpublishedEventProcessor extends AbstractEventProcessor {
             body: {
                 data: {
                     id: `$custom:::$default:::${message.resource.id}`,
+                    deleteVariantsJob: await this.generateDeleteVariantsJobRequestForKlaviyo(message.resource.id),
                 },
             },
             type: 'itemDeleted',
@@ -29,4 +30,18 @@ export class ProductUnpublishedEventProcessor extends AbstractEventProcessor {
                 (config.get('product.messages.deleted') as string[])?.includes(type),
         );
     }
+
+    private generateDeleteVariantsJobRequestForKlaviyo = async (productId: string): Promise<KlaviyoEvent> => {
+        const klaviyoVariants = (
+            await this.context.klaviyoService.getKlaviyoItemVariantsByCtSkus(productId, undefined, ['id'])
+        ).map((i: any) => i.id);
+        return {
+            type: 'variantDeleted',
+            body: this.context.productMapper.mapCtProductVariantsToKlaviyoVariantsJob(
+                {} as any,
+                klaviyoVariants as string[],
+                'variantDeleted',
+            ),
+        }
+    };
 }

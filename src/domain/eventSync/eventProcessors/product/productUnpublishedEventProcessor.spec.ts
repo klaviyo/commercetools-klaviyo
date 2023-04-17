@@ -40,6 +40,20 @@ describe('ProductUnpublishedEventProcessor > isEventValid', () => {
 
 describe('ProductUnpublishedEventProcessor > generateKlaviyoEvents', () => {
     it('should generate the klaviyo delete product event when the input product unpublished event is valid', async () => {
+        contextMock.klaviyoService.getKlaviyoItemVariantsByCtSkus.mockResolvedValue([]);
+        const event = ProductUnpublishedEventProcessor.instance(sampleProductUnpublishedMessage as any, contextMock);
+        const klaviyoEvent = await event.generateKlaviyoEvents();
+
+        exp(klaviyoEvent).to.not.be.undefined;
+        exp(klaviyoEvent.length).to.be.eq(1);
+    });
+
+    it('should generate the klaviyo delete product event and delete variants when they are found in klaviyo', async () => {
+        contextMock.klaviyoService.getKlaviyoItemVariantsByCtSkus.mockResolvedValue([
+            {
+                id: 'test-id',
+            } as any,
+        ]);
         const event = ProductUnpublishedEventProcessor.instance(sampleProductUnpublishedMessage as any, contextMock);
         const klaviyoEvent = await event.generateKlaviyoEvents();
 

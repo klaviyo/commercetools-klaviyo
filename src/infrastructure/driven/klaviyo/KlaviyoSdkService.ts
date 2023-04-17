@@ -93,12 +93,19 @@ export class KlaviyoSdkService extends KlaviyoService {
 
     private async deleteCatalogItemWithVariants(itemId?: string, deleteVariantsJob?: KlaviyoEvent) {
         try {
-            if (deleteVariantsJob) {
+            if (deleteVariantsJob && (deleteVariantsJob as any)?.body?.data?.attributes?.variants?.length) {
                 await this.spawnCreateJob(deleteVariantsJob.body, deleteVariantsJob.type);
             }
             return await Catalogs.deleteCatalogItem(itemId);
         } catch (e: any) {
             logger.error(`Error deleting item in Klaviyo. Response code ${e.status}, ${e.message}`, e);
+            if (e.status === 404) {
+                logger.error(`Item with itemId ${itemId} does not exist in Klaviyo. Failed to delete, ignoring.`);
+                // Avoid returning a 4XX error to the queue for this, just in case.
+                // This would end up returning the message to the queue indefinitely.
+                // The product may have been deleted manually with some other method.
+                return { status: 202, message: `Item with itemId ${itemId} does not exist in Klaviyo. Failed to delete, ignoring.` };
+            }
             throw e;
         }
     }
