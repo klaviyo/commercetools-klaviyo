@@ -3,15 +3,11 @@ import { DeepMockProxy, mock, mockDeep } from 'jest-mock-extended';
 import { expect as exp } from 'chai';
 import { CustomerResourceUpdatedEventProcessor } from './customerResourceUpdatedEventProcessor';
 import { getSampleCustomerResourceUpdatedMessage } from '../../../../test/testData/ctCustomerMessages';
-import { getCustomerProfile } from '../../../../infrastructure/driven/commercetools/ctService';
 import { getSampleCustomerApiResponse } from '../../../../test/testData/ctCustomerApi';
 import { Context } from '../../../../types/klaviyo-context';
-import mocked = jest.mocked;
 
-jest.mock('../../../../infrastructure/driven/commercetools/ctService');
 jest.mock('../../../../infrastructure/driven/klaviyo/KlaviyoService');
 
-const getCustomerProfileMock = mocked(getCustomerProfile);
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 const customerProfileRequestMock = mock<ProfileRequest>();
 customerProfileRequestMock.data = {
@@ -58,7 +54,7 @@ describe('CustomerResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
         const message = inputMessage as unknown as MessageDeliveryPayload;
         const event = CustomerResourceUpdatedEventProcessor.instance(message, contextMock);
-        getCustomerProfileMock.mockResolvedValue(getSampleCustomerApiResponse());
+        contextMock.ctCustomerService.getCustomerProfile.mockResolvedValue(getSampleCustomerApiResponse());
         contextMock.klaviyoService.getKlaviyoProfileByExternalId.mockResolvedValue({
             type: 'profile',
             id: 'someId',
@@ -78,7 +74,7 @@ describe('CustomerResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
         const message = inputMessage as unknown as MessageDeliveryPayload;
         const event = CustomerResourceUpdatedEventProcessor.instance(message, contextMock);
-        getCustomerProfileMock.mockResolvedValue(getSampleCustomerApiResponse());
+        contextMock.ctCustomerService.getCustomerProfile.mockResolvedValue(getSampleCustomerApiResponse());
         contextMock.klaviyoService.getKlaviyoProfileByExternalId.mockResolvedValue(undefined);
 
         const klaviyoEvent = await event.generateKlaviyoEvents();

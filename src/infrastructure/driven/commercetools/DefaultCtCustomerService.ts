@@ -2,6 +2,7 @@ import { Customer } from '@commercetools/platform-sdk';
 import logger from '../../../utils/log';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 import { CtCustomerService } from "./CtCustomerService";
+import { StatusError } from '../../../types/errors/StatusError';
 
 export type PaginatedCustomerResults = {
     data: Customer[];
@@ -45,6 +46,19 @@ export class DefaultCtCustomerService implements CtCustomerService{
         } catch (error) {
             logger.error(error);
             throw error;
+        }
+    };
+
+    getCustomerProfile = async (customerId: string): Promise<Customer> => {
+        logger.info(`Getting customer ${customerId} in commercetools`);
+        try {
+            return (await this.ctApiRoot.customers().withId({ ID: customerId }).get().execute()).body;
+        } catch (error: any) {
+            logger.error(`Error getting customer in CT with id ${customerId}, status: ${error.statusCode}`, error);
+            throw new StatusError(
+                error.statusCode,
+                `CT get customer api returns failed with status code ${error.statusCode}, msg: ${error.message}`,
+            );
         }
     };
 }

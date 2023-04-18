@@ -1,5 +1,34 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo create profile event getting the customer from CT when is not included in the message 1`] = `
+{
+  "body": {
+    "data": {
+      "attributes": {
+        "email": "Alfred_Lebsack@hotmail.com",
+        "external_id": "77d8e6f4-2dee-4ac9-bd21-4035b6ba76d8",
+        "first_name": "Jailyn",
+        "last_name": "Hilll",
+        "location": {
+          "address1": "12, First Street",
+          "address2": "",
+          "city": "Brookefort",
+          "country": "NL",
+          "region": undefined,
+          "zip": "12345",
+        },
+        "organization": undefined,
+        "phone_number": "+393234567892",
+        "title": "Miss",
+      },
+      "id": undefined,
+      "type": "profile",
+    },
+  },
+  "type": "profileCreated",
+}
+`;
+
 exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo create profile event when the input customer created event is valid 1`] = `
 {
   "body": {

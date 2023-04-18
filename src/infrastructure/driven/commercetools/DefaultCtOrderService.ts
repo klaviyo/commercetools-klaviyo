@@ -2,6 +2,7 @@ import { Order } from '@commercetools/platform-sdk';
 import logger from '../../../utils/log';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 import { CtOrderService } from "./CtOrderService";
+import { StatusError } from '../../../types/errors/StatusError';
 
 export type PaginatedOrderResults = {
     data: Order[];
@@ -49,4 +50,46 @@ export class DefaultCtOrderService implements CtOrderService{
             throw error;
         }
     }
+
+    getOrderById = async (orderId: string): Promise<Order | undefined> => {
+        logger.info(`Getting order ${orderId} in commercetools`);
+        let ctOrder: Order;
+
+        try {
+            ctOrder = (await this.ctApiRoot.orders().withId({ ID: orderId }).get().execute()).body;
+        } catch (error) {
+            logger.error(error);
+            return undefined;
+        }
+
+        return ctOrder;
+    };
+
+    getOrderByPaymentId = async (paymentId: string): Promise<Order> => {
+        logger.info(`Getting order with payment ${paymentId} in commercetools`);
+
+        try {
+            const orderResults = (await this.ctApiRoot.orders().get({
+                queryArgs: {
+                    limit: 1,
+                    where: `paymentInfo(payments(id = "${paymentId}"))`,
+                    expand: 'paymentInfo.payments[*]',
+                },
+            }).execute()).body?.results;
+            if (!orderResults?.length) {
+                throw new StatusError(
+                    404,
+                    `No results returned when querying orders with payment ID ${paymentId}`,
+                );
+            }
+            return orderResults[0];
+        } catch (error: any) {
+            logger.error(`Error getting order in CT with payment id ${paymentId}, status: ${error.status || error.statusCode}`, error);
+            throw new StatusError(
+                error.statusCode,
+                `CT get order by payment id api returns failed with status code ${error.status || error.statusCode}, msg: ${error.message}`,
+            );
+        }
+    };
+
 }

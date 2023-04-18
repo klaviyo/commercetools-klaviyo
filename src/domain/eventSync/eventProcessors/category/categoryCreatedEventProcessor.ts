@@ -1,12 +1,9 @@
 import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
 import { CategoryCreatedMessage, Category } from '@commercetools/platform-sdk'
-import { DefaultCtCategoryService } from '../../../../infrastructure/driven/commercetools/DefaultCtCategoryService';
 import config from 'config';
-import { getApiRoot } from '../../../../infrastructure/driven/commercetools/ctService';
 
 export class CategoryCreatedEventProcessor extends AbstractEventProcessor {
-    ctCategoryService = new DefaultCtCategoryService(getApiRoot());
     isEventValid(): boolean {
         const message = this.ctMessage as unknown as CategoryCreatedMessage;
         return (
@@ -23,7 +20,7 @@ export class CategoryCreatedEventProcessor extends AbstractEventProcessor {
         if ('category' in message) {
             category = message.category;
         } else {
-            category = (await this.ctCategoryService.getCategoryById((message as CategoryCreatedMessage).resource.id)) as Category;
+            category = (await this.context.ctCategoryService.getCategoryById((message as CategoryCreatedMessage).resource.id)) as Category;
         }
 
         const body: CategoryRequest = this.context.categoryMapper.mapCtCategoryToKlaviyoCategory(category);

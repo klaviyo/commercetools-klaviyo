@@ -4,16 +4,17 @@ import { OrderCreatedEvent } from './orderCreatedEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import { ctAuthNock, ctGetOrderByIdNock } from '../../../../test/integration/nocks/commercetoolsNock';
 import { Context } from '../../../../types/klaviyo-context';
+import { sampleOrderCreatedMessage } from '../../../../test/testData/orderData';
 
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 const orderEventRequestMock = mock<EventRequest>();
-const mockedOrderId = "mockedOrderId";
-orderEventRequestMock.data.id = mockedOrderId
+const mockedOrderId = 'mockedOrderId';
+orderEventRequestMock.data.id = mockedOrderId;
 const lineEventRequestMock = mock<EventRequest>();
-const mockedOrderLineId = "mockedOrderLineId";
-lineEventRequestMock.data.id = mockedOrderLineId
-contextMock.orderMapper.mapCtOrderToKlaviyoEvent.mockImplementation((order, metric, time) => orderEventRequestMock)
-contextMock.orderMapper.mapOrderLineToProductOrderedEvent.mockImplementation((lineItem, order) => lineEventRequestMock)
+const mockedOrderLineId = 'mockedOrderLineId';
+lineEventRequestMock.data.id = mockedOrderLineId;
+contextMock.orderMapper.mapCtOrderToKlaviyoEvent.mockImplementation((order, metric, time) => orderEventRequestMock);
+contextMock.orderMapper.mapOrderLineToProductOrderedEvent.mockImplementation((lineItem, order) => lineEventRequestMock);
 
 describe('orderCreatedEvent > isEventValid', () => {
     it('should return valid when is an Imported message', async () => {
@@ -21,17 +22,38 @@ describe('orderCreatedEvent > isEventValid', () => {
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'order' } }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'type', { value: 'OrderImported' });
         Object.defineProperty(ctMessageMock, 'order', { value: { customerId: '123-1230-123', orderState: 'Open' } });
+        Object.defineProperty(ctMessageMock, 'payloadNotIncluded', {
+            value: null,
+        });
 
         const event = OrderCreatedEvent.instance(ctMessageMock, contextMock);
 
         exp(event.isEventValid()).to.be.true;
     });
 
-    it('should return valid when is an OrderImported message', async () => {
+    it('should return valid when is an OrderCreated message', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'order' } }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'type', { value: 'OrderCreated' }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'order', { value: { customerId: '123-1230-123', orderState: 'Open' } }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'payloadNotIncluded', {
+            value: null,
+        });
+
+        const event = OrderCreatedEvent.instance(ctMessageMock, contextMock);
+
+        exp(event.isEventValid()).to.be.true;
+    });
+
+    it('should return valid when payloadNotIncluded is set', async () => {
+        const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
+        Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'order' } }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'payloadNotIncluded', {
+            value: {
+                payloadType: 'OrderCreated',
+                reason: 'Example reason',
+            },
+        });
 
         const event = OrderCreatedEvent.instance(ctMessageMock, contextMock);
 
@@ -80,13 +102,13 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'order' } }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'type', { value: 'OrderCreated' }); //mock readonly property
         const order = {
-                customerId: '123-123-123',
-                customerEmail: 'test@klaviyo.com',
-                orderState: 'Open',
-                totalPrice: { type: 'centPrecision', centAmount: 1300, currencyCode: 'USD', fractionDigits: 2 },
-                createdAt: '2023-01-27T15:00:00.000Z',
-        }
-        Object.defineProperty(ctMessageMock, 'order', { value: order}); //mock readonly property
+            customerId: '123-123-123',
+            customerEmail: 'test@klaviyo.com',
+            orderState: 'Open',
+            totalPrice: { type: 'centPrecision', centAmount: 1300, currencyCode: 'USD', fractionDigits: 2 },
+            createdAt: '2023-01-27T15:00:00.000Z',
+        };
+        Object.defineProperty(ctMessageMock, 'order', { value: order }); //mock readonly property
 
         const event = OrderCreatedEvent.instance(ctMessageMock, contextMock);
 
@@ -96,9 +118,29 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
         exp(klaviyoEvent.length).to.eq(1);
         expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(1);
         expect(contextMock.orderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(0);
-        expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(order, "Placed Order");
-        exp(klaviyoEvent[0].body.data.id).to.eq(mockedOrderId)
+        expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(order, 'Placed Order');
+        exp(klaviyoEvent[0].body.data.id).to.eq(mockedOrderId);
+    });
 
+    it('should generate the klaviyo event for an OrderCreated message when order is not in the message', async () => {
+        const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
+        Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'order' } }); //mock readonly property
+        Object.defineProperty(ctMessageMock, 'type', { value: 'OrderCreated' }); //mock readonly property
+        contextMock.ctOrderService.getOrderById.mockResolvedValue(sampleOrderCreatedMessage.order);
+
+        const event = OrderCreatedEvent.instance(ctMessageMock, contextMock);
+
+        const klaviyoEvent = await event.generateKlaviyoEvents();
+
+        exp(klaviyoEvent).to.not.be.undefined;
+        exp(klaviyoEvent.length).to.eq(1);
+        expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(1);
+        expect(contextMock.orderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(0);
+        expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(
+            sampleOrderCreatedMessage.order,
+            'Placed Order',
+        );
+        exp(klaviyoEvent[0].body.data.id).to.eq(mockedOrderId);
     });
 
     it('should generate the klaviyo events for line items in an OrderCreated message', async () => {
@@ -120,7 +162,7 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
                     },
                 },
             ],
-        }
+        };
         Object.defineProperty(ctMessageMock, 'order', {
             value: order,
         }); //mock readonly property
@@ -135,8 +177,8 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
         expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(order, 'Placed Order');
         expect(contextMock.orderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(contextMock.orderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(order.lineItems[0], order);
-        exp(klaviyoEvents[0].body.data.id).to.eq(mockedOrderId)
-        exp(klaviyoEvents[1].body.data.id).to.eq(mockedOrderLineId)
+        exp(klaviyoEvents[0].body.data.id).to.eq(mockedOrderId);
+        exp(klaviyoEvents[1].body.data.id).to.eq(mockedOrderLineId);
     });
 
     it('should generate the klaviyo event for an OrderCustomerSet message', async () => {
@@ -161,6 +203,6 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
         exp(klaviyoEvent.length).to.eq(1);
         expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(1);
         // expect(contextMock.currencyService.convert).toBeCalledWith(13, 'USD');
-        exp(klaviyoEvent[0].body.data.id).to.eq(mockedOrderId)
+        exp(klaviyoEvent[0].body.data.id).to.eq(mockedOrderId);
     });
 });

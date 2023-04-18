@@ -1,10 +1,11 @@
 import { CustomerCreatedEventProcessor } from './customerCreatedEventProcessor';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
-import { DeepMockProxy, mockDeep, mock } from 'jest-mock-extended';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { expect as exp } from 'chai';
 import { getSampleCustomerCreatedMessage } from '../../../../test/testData/ctCustomerMessages';
 import { Context } from '../../../../types/klaviyo-context';
 import { DefaultCustomerMapper } from '../../../shared/mappers/DefaultCustomerMapper';
+import { getSampleCustomerApiResponse } from '../../../../test/testData/ctCustomerApi';
 
 jest.mock('../../../../infrastructure/driven/klaviyo/KlaviyoService');
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
@@ -78,6 +79,24 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
         exp(klaviyoEvent.length).to.be.eq(1);
         expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledTimes(1);
         expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledWith(message.customer);
+        expect(klaviyoEvent[0]).toMatchSnapshot();
+    });
+
+    it('should generate the klaviyo create profile event getting the customer from CT when is not included in the message', async () => {
+        const message: any = {
+            ...getSampleCustomerCreatedMessage(),
+        };
+        delete message.customer;
+        contextMock.ctCustomerService.getCustomerProfile.mockResolvedValue(getSampleCustomerApiResponse());
+        const event = CustomerCreatedEventProcessor.instance(message as unknown as MessageDeliveryPayload, contextMock);
+
+        const klaviyoEvent = await event.generateKlaviyoEvents();
+
+        exp(klaviyoEvent).to.not.be.undefined;
+        exp(klaviyoEvent.length).to.be.eq(1);
+        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledTimes(1);
+        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledWith(getSampleCustomerApiResponse());
+        expect(contextMock.ctCustomerService.getCustomerProfile).toBeCalledTimes(1);
         expect(klaviyoEvent[0]).toMatchSnapshot();
     });
 

@@ -3,11 +3,8 @@ import { DeepMockProxy, mock, mockDeep } from 'jest-mock-extended';
 import { expect as exp } from 'chai';
 import { CategoryResourceUpdatedEventProcessor } from './categoryResourceUpdatedEventProcessor';
 import { getSampleCustomerResourceUpdatedMessage } from '../../../../test/testData/ctCustomerMessages';
-import { getCustomerProfile } from '../../../../infrastructure/driven/commercetools/ctService';
 import { Context } from '../../../../types/klaviyo-context';
 import { sampleCategoryCreatedMessage } from '../../../../test/testData/ctCategoryMessages';
-import { DefaultCtCategoryService } from '../../../../infrastructure/driven/commercetools/DefaultCtCategoryService';
-import mocked = jest.mocked;
 
 const ctCategoryServiceMock = {
     getCategoryById: jest.fn(),
@@ -71,7 +68,7 @@ describe('CategoryResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
         const message = inputMessage as unknown as MessageDeliveryPayload;
         const event = CategoryResourceUpdatedEventProcessor.instance(message, contextMock);
-        ctCategoryServiceMock.getCategoryById.mockImplementationOnce(() => (sampleCategoryCreatedMessage.category));
+        contextMock.ctCategoryService.getCategoryById.mockImplementation(async (id) => sampleCategoryCreatedMessage.category);
         contextMock.klaviyoService.getKlaviyoCategoryByExternalId.mockResolvedValue({
             attributes: {
                 external_id: 'someId',
@@ -96,7 +93,7 @@ describe('CategoryResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
         const message = inputMessage as unknown as MessageDeliveryPayload;
         const event = CategoryResourceUpdatedEventProcessor.instance(message, contextMock);
-        ctCategoryServiceMock.getCategoryById.mockImplementationOnce(() => (sampleCategoryCreatedMessage.category));
+        contextMock.ctCategoryService.getCategoryById.mockImplementation(async (id) => sampleCategoryCreatedMessage.category);
         contextMock.klaviyoService.getKlaviyoCategoryByExternalId.mockResolvedValue(undefined);
 
         const klaviyoEvent = await event.generateKlaviyoEvents();

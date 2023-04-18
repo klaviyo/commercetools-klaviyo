@@ -22,6 +22,12 @@ import { CategoryResourceDeletedEventProcessor } from './eventProcessors/categor
 import { CategoryResourceUpdatedEventProcessor } from './eventProcessors/category/categoryResourceUpdatedEventProcessor';
 import { ProductResourceDeletedEventProcessor } from './eventProcessors/product/productResourceDeletedEventProcessor';
 import { ProductUnpublishedEventProcessor } from './eventProcessors/product/productUnpublishedEventProcessor';
+import { getApiRoot } from '../../infrastructure/driven/commercetools/ctService';
+import { DefaultCtCustomerService } from '../../infrastructure/driven/commercetools/DefaultCtCustomerService';
+import { DefaultCtProductService } from '../../infrastructure/driven/commercetools/DefaultCtProductService';
+import { DefaultCtCategoryService } from '../../infrastructure/driven/commercetools/DefaultCtCategoryService';
+import { DefaultCtPaymentService } from '../../infrastructure/driven/commercetools/DefaultCtPaymentService';
+import { DefaultCtOrderService } from '../../infrastructure/driven/commercetools/DefaultCtOrderService';
 
 const context: Context = {
     klaviyoService: new KlaviyoSdkService(),
@@ -29,6 +35,11 @@ const context: Context = {
     customerMapper: new DefaultCustomerMapper(),
     categoryMapper: new DefaultCategoryMapper(),
     productMapper: new DefaultProductMapper(new DummyCurrencyService()),
+    ctCustomerService: new DefaultCtCustomerService(getApiRoot()),
+    ctProductService: new DefaultCtProductService(getApiRoot()),
+    ctCategoryService: new DefaultCtCategoryService(getApiRoot()),
+    ctPaymentService: new DefaultCtPaymentService(getApiRoot()),
+    ctOrderService: new DefaultCtOrderService(getApiRoot()),
 };
 
 // export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {

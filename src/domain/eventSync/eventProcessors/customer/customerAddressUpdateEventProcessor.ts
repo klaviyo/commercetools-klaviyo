@@ -5,7 +5,6 @@ import {
     CustomerAddressChangedMessage,
     CustomerAddressRemovedMessage,
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
-import { getCustomerProfile } from '../../../../infrastructure/driven/commercetools/ctService';
 import { getCTCustomerAddressForKlaviyo, getPhoneNumber } from './utils/CustomerAddressUtils';
 import { mapCTAddressToKlaviyoLocation } from './mappers/CTAddressToKlaviyoLocationMapper';
 import config from 'config';
@@ -28,7 +27,7 @@ export class CustomerAddressUpdateEventProcessor extends AbstractEventProcessor 
             | CustomerAddressRemovedMessage
             | CustomerAddressChangedMessage;
         logger.info(`processing CT ${message.type} message`);
-        const customer = await getCustomerProfile(message.resource.id);
+        const customer = await this.context.ctCustomerService.getCustomerProfile(message.resource.id);
         const address = getCTCustomerAddressForKlaviyo(customer);
 
         const body: ProfileRequest = {

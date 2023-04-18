@@ -1,10 +1,12 @@
 import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
-import { Order, OrderCreatedMessage, OrderCustomerSetMessage, OrderState } from '@commercetools/platform-sdk';
-import { getTypedMoneyAsNumber } from '../../../../utils/get-typed-money-as-number';
-import { getCustomerProfileFromOrder } from '../../../../utils/get-customer-profile-from-order';
-import { getOrderById } from '../../../../infrastructure/driven/commercetools/ctService';
-import { mapAllowedProperties } from '../../../../utils/property-mapper';
+import {
+    MessageDeliveryPayload,
+    Order,
+    OrderCreatedMessage,
+    OrderCustomerSetMessage,
+    OrderState,
+} from '@commercetools/platform-sdk';
 import config from 'config';
 
 export class OrderCreatedEvent extends AbstractEventProcessor {
@@ -12,7 +14,9 @@ export class OrderCreatedEvent extends AbstractEventProcessor {
         const message = this.ctMessage as unknown as OrderCreatedMessage | OrderCustomerSetMessage;
         return (
             message.resource.typeId === 'order' &&
-            this.isValidMessageType(message.type) &&
+            this.isValidMessageType(
+                (message as unknown as MessageDeliveryPayload).payloadNotIncluded?.payloadType || message.type,
+            ) &&
             this.hasExpectedMessageProperties(message)
         );
     }
@@ -25,10 +29,13 @@ export class OrderCreatedEvent extends AbstractEventProcessor {
         if ('order' in message) {
             order = message.order;
         } else {
-            order = (await getOrderById(message.resource.id)) as Order;
+            order = (await this.context.ctOrderService.getOrderById(message.resource.id)) as Order;
         }
 
-        const body: EventRequest = this.context.orderMapper.mapCtOrderToKlaviyoEvent(order, config.get('order.metrics.placedOrder'));
+        const body: EventRequest = this.context.orderMapper.mapCtOrderToKlaviyoEvent(
+            order,
+            config.get('order.metrics.placedOrder'),
+        );
 
         const events: KlaviyoEvent[] = [{ body, type: 'event' }];
 
@@ -61,6 +68,7 @@ export class OrderCreatedEvent extends AbstractEventProcessor {
 
     private hasExpectedMessageProperties(message: OrderCreatedMessage | OrderCustomerSetMessage) {
         return (
+            !!(message as unknown as MessageDeliveryPayload).payloadNotIncluded ||
             !!(message as OrderCustomerSetMessage).customer ||
             (!!(message as OrderCreatedMessage).order &&
                 (!!(message as OrderCreatedMessage).order?.customerEmail ||

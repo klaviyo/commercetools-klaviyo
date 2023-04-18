@@ -6,6 +6,7 @@ import { ByProjectKeyCategoriesByIDRequestBuilder } from '@commercetools/platfor
 import { ApiRequest } from '@commercetools/platform-sdk/dist/declarations/src/generated/shared/utils/requests-utils';
 import { CTErrorResponse } from '../../../test/utils/CTErrorResponse';
 import { DefaultCtCategoryService } from './DefaultCtCategoryService';
+import * as ctService from './ctService';
 
 jest.mock('./ctService', () => {
     return {
@@ -36,6 +37,7 @@ describe('getAllCategories', () => {
                 total: 0,
             },
         });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
 
         const ctCategoryService = new DefaultCtCategoryService(mockCtApiRoot);
         const result = await ctCategoryService.getAllCategories();
@@ -48,6 +50,7 @@ describe('getAllCategories', () => {
         mockGetCustomObjectApiPagedRequest.execute.mockImplementation(() => {
             throw new CTErrorResponse(504, 'CT Error');
         });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
 
         const ctCategoryService = new DefaultCtCategoryService(mockCtApiRoot);
         await expect(ctCategoryService.getAllCategories()).rejects.toThrow(Error);
@@ -61,6 +64,7 @@ describe('getCategoryById', () => {
         mockGetCustomObjectApiRequest.execute.mockResolvedValueOnce({
             body: mock<Category>()
         });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
 
         const ctCategoryService = new DefaultCtCategoryService(mockCtApiRoot);
         await ctCategoryService.getCategoryById('123456');
@@ -72,6 +76,7 @@ describe('getCategoryById', () => {
         mockGetCustomObjectApiRequest.execute.mockImplementation(() => {
             throw new CTErrorResponse(504, 'CT Error');
         });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
 
         const ctCategoryService = new DefaultCtCategoryService(mockCtApiRoot);
         await expect(ctCategoryService.getCategoryById('123456')).rejects.toThrow(Error);

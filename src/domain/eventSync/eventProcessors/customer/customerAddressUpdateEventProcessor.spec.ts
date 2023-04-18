@@ -1,15 +1,23 @@
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
-import { mock, mockDeep } from 'jest-mock-extended';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { expect as exp } from 'chai';
 import { CustomerAddressUpdateEventProcessor } from './customerAddressUpdateEventProcessor';
 import { getSampleCustomerAddressUpdateMessage } from '../../../../test/testData/ctCustomerMessages';
-import { getCustomerProfile } from '../../../../infrastructure/driven/commercetools/ctService';
 import { getSampleCustomerApiResponse } from '../../../../test/testData/ctCustomerApi';
-import mocked = jest.mocked;
 import { Context } from "../../../../types/klaviyo-context";
 
+const ctCustomerServiceMock = {
+    getCustomerProfile: jest.fn(),
+}
+
+jest.mock('../../../../infrastructure/driven/commercetools/DefaultCtCustomerService', () => ({
+    DefaultCtCustomerService: function() {
+        return ctCustomerServiceMock;
+    }
+}));
+
 jest.mock('../../../../infrastructure/driven/commercetools/ctService');
-const context: Context = mock<Context>();
+const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 describe('CustomerAddressUpdateEventProcessor > isEventValid', () => {
     it.each`
         type
@@ -21,7 +29,7 @@ describe('CustomerAddressUpdateEventProcessor > isEventValid', () => {
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'customer' } }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'type', { value: type });
 
-        const event = CustomerAddressUpdateEventProcessor.instance(ctMessageMock, context);
+        const event = CustomerAddressUpdateEventProcessor.instance(ctMessageMock, contextMock);
 
         exp(event.isEventValid()).to.be.true;
     });
@@ -35,7 +43,7 @@ describe('CustomerAddressUpdateEventProcessor > isEventValid', () => {
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: resource } });
         Object.defineProperty(ctMessageMock, 'type', { value: type });
 
-        const event = CustomerAddressUpdateEventProcessor.instance(ctMessageMock, context);
+        const event = CustomerAddressUpdateEventProcessor.instance(ctMessageMock, contextMock);
 
         exp(event.isEventValid()).to.be.false;
     });
@@ -45,9 +53,8 @@ describe('CustomerAddressUpdateEventProcessor > generateKlaviyoEvent', () => {
     it('should generate the klaviyo event when the customer address update event is valid', async () => {
         const inputMessage = getSampleCustomerAddressUpdateMessage();
         const message = inputMessage as unknown as MessageDeliveryPayload;
-        const event = CustomerAddressUpdateEventProcessor.instance(message, context);
-        const getCustomerProfileMock = mocked(getCustomerProfile);
-        getCustomerProfileMock.mockResolvedValue(getSampleCustomerApiResponse());
+        const event = CustomerAddressUpdateEventProcessor.instance(message, contextMock);
+        contextMock.ctCustomerService.getCustomerProfile.mockResolvedValue(getSampleCustomerApiResponse());
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
@@ -59,9 +66,8 @@ describe('CustomerAddressUpdateEventProcessor > generateKlaviyoEvent', () => {
     it("should set the profile location to null in Klaviyo if CT doesn't return and address", async () => {
         const inputMessage = getSampleCustomerAddressUpdateMessage();
         const message = inputMessage as unknown as MessageDeliveryPayload;
-        const event = CustomerAddressUpdateEventProcessor.instance(message, context);
-        const getCustomerProfileMock = mocked(getCustomerProfile);
-        getCustomerProfileMock.mockResolvedValue(getSampleCustomerApiResponse([]));
+        const event = CustomerAddressUpdateEventProcessor.instance(message, contextMock);
+        contextMock.ctCustomerService.getCustomerProfile.mockResolvedValue(getSampleCustomerApiResponse([]));
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
 

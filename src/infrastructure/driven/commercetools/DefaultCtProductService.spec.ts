@@ -6,6 +6,7 @@ import { ByProjectKeyProductsByIDRequestBuilder } from '@commercetools/platform-
 import { ApiRequest } from '@commercetools/platform-sdk/dist/declarations/src/generated/shared/utils/requests-utils';
 import { CTErrorResponse } from '../../../test/utils/CTErrorResponse';
 import { DefaultCtProductService } from './DefaultCtProductService';
+import * as ctService from './ctService';
 
 jest.mock('./ctService', () => {
     return {
@@ -36,6 +37,7 @@ describe('getAllProducts', () => {
                 total: 0,
             },
         });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
 
         const ctProductService = new DefaultCtProductService(mockCtApiRoot);
         const result = await ctProductService.getAllProducts();
@@ -48,6 +50,7 @@ describe('getAllProducts', () => {
         mockGetCustomObjectApiPagedRequest.execute.mockImplementation(() => {
             throw new CTErrorResponse(504, 'CT Error');
         });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
 
         const ctProductService = new DefaultCtProductService(mockCtApiRoot);
         await expect(ctProductService.getAllProducts()).rejects.toThrow(Error);

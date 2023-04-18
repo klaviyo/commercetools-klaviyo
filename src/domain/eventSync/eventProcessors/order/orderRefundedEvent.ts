@@ -5,10 +5,6 @@ import {
     PaymentTransactionStateChangedMessage,
     Transaction,
 } from '@commercetools/platform-sdk';
-import { getTypedMoneyAsNumber } from '../../../../utils/get-typed-money-as-number';
-import { getCustomerProfileFromOrder } from '../../../../utils/get-customer-profile-from-order';
-import { getOrderByPaymentId, getPaymentById } from '../../../../infrastructure/driven/commercetools/ctService';
-import { mapAllowedProperties } from '../../../../utils/property-mapper';
 import config from 'config';
 
 export class OrderRefundedEvent extends AbstractEventProcessor {
@@ -30,7 +26,7 @@ export class OrderRefundedEvent extends AbstractEventProcessor {
             | PaymentTransactionStateChangedMessage;
         logger.info('Processing payment transaction state changed event');
 
-        const payment = await getPaymentById(message.resource.id);
+        const payment = await this.context.ctPaymentService.getPaymentById(message.resource.id);
         let transaction: Transaction | undefined;
         if ('transaction' in message) {
             transaction = message.transaction;
@@ -43,7 +39,7 @@ export class OrderRefundedEvent extends AbstractEventProcessor {
             return [];
         }
 
-        const ctOrder = await getOrderByPaymentId(message.resource.id);
+        const ctOrder = await this.context.ctOrderService.getOrderByPaymentId(message.resource.id);
 
         const body: EventRequest = this.context.orderMapper.mapCtRefundedOrderToKlaviyoEvent(
             ctOrder,

@@ -9,6 +9,7 @@ import {
 } from '../../../../test/integration/nocks/commercetoolsNock';
 import * as ctService from '../../../../infrastructure/driven/commercetools/ctService';
 import { Context } from "../../../../types/klaviyo-context";
+import { sampleOrderCreatedMessage } from '../../../../test/testData/orderData';
 
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 const eventRequestMock = mock<EventRequest>();
@@ -91,16 +92,14 @@ describe('orderRefundedEvent > generateKlaviyoEvent', () => {
             },
         }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'type', { value: 'PaymentTransactionAdded' }); //mock readonly property
-        jest.spyOn(ctService, 'getPaymentById').mockResolvedValueOnce({
+        contextMock.ctPaymentService.getPaymentById.mockResolvedValueOnce({
             id: '123456',
             createdAt: '2023-02-08T13:57:16.045Z',
             lastModifiedAt: '2023-02-08T13:57:16.045Z',
             paymentStatus: {},
             transactions: [],
         } as any);
-
-        ctAuthNock();
-        ctGetPaymentByIdNock('3456789');
+        contextMock.ctOrderService.getOrderByPaymentId.mockResolvedValue(sampleOrderCreatedMessage.order);
 
         const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
         const klaviyoEvent = await event.generateKlaviyoEvents();
@@ -130,10 +129,14 @@ describe('orderRefundedEvent > generateKlaviyoEvent', () => {
             ],
         }); //mock readonly property
 
-        ctAuthNock();
-        ctGetPaymentByIdNock('3456789');
-        ctAuthNock();
-        ctGetOrderByPaymentIdNock('3456789');
+        contextMock.ctPaymentService.getPaymentById.mockResolvedValueOnce({
+            id: '123456',
+            createdAt: '2023-02-08T13:57:16.045Z',
+            lastModifiedAt: '2023-02-08T13:57:16.045Z',
+            paymentStatus: {},
+            transactions: [],
+        } as any);
+        contextMock.ctOrderService.getOrderByPaymentId.mockResolvedValue(sampleOrderCreatedMessage.order);
 
         const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
         const klaviyoEvent = await event.generateKlaviyoEvents();

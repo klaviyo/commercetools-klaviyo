@@ -2,14 +2,14 @@ import { expect as exp } from 'chai';
 import { DeepMockProxy, mock, mockDeep } from 'jest-mock-extended';
 import { CategoryCreatedEventProcessor } from './categoryCreatedEventProcessor';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
-import { ctAuthNock, ctGetCategoryByIdNock } from '../../../../test/integration/nocks/commercetoolsNock';
 import { Context } from '../../../../types/klaviyo-context';
+import { sampleCategoryCreatedMessage } from '../../../../test/testData/ctCategoryMessages';
 
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 const categoryRequestMock = mock<CategoryRequest>();
 const mockedCategoryId = "mockedCategoryId";
 categoryRequestMock.data.id = mockedCategoryId;
-contextMock.categoryMapper.mapCtCategoryToKlaviyoCategory.mockImplementation((category) => categoryRequestMock)
+contextMock.categoryMapper.mapCtCategoryToKlaviyoCategory.mockImplementation((category) => categoryRequestMock);
 
 describe('categoryCreatedEventProcessor > isEventValid', () => {
     it('should return valid when is a CategoryCreated message', async () => {
@@ -50,7 +50,7 @@ describe('categoryCreatedEventProcessor > generateKlaviyoEvents', () => {
         const category = {
                 id: '123-123-123',
                 name: {
-					en: "Test"
+                    en: "Test"
                 },
                 createdAt: '2023-01-27T15:00:00.000Z',
         }
@@ -71,9 +71,7 @@ describe('categoryCreatedEventProcessor > generateKlaviyoEvents', () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'category', id: '3456789' } }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'type', { value: 'CategoryCreated' }); //mock readonly property
-
-        ctAuthNock();
-        ctGetCategoryByIdNock('3456789');
+        contextMock.ctCategoryService.getCategoryById.mockImplementation(async (id) => sampleCategoryCreatedMessage.category);
 
         const event = CategoryCreatedEventProcessor.instance(ctMessageMock, contextMock);
 

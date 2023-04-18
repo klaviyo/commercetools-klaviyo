@@ -2,7 +2,6 @@ import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
 import { OrderStateChangedMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
 import { OrderState } from '@commercetools/platform-sdk';
-import { getOrderById } from '../../../../infrastructure/driven/commercetools/ctService';
 import config from 'config';
 
 export class OrderStateChangedEvent extends AbstractEventProcessor {
@@ -19,7 +18,7 @@ export class OrderStateChangedEvent extends AbstractEventProcessor {
         const orderStateChangedMessage = this.ctMessage as unknown as OrderStateChangedMessage;
         logger.info('Processing order state changed event');
 
-        const ctOrder = await getOrderById(orderStateChangedMessage.resource.id);
+        const ctOrder = await this.context.ctOrderService.getOrderById(orderStateChangedMessage.resource.id);
 
         if (!ctOrder) {
             return [];
