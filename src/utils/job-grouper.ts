@@ -31,6 +31,8 @@ export const groupIntoMaxSizeJobs = (inputArray: KlaviyoEvent[], resultArrayKeys
                         },
                     });
                 }
+            } else {
+                resultArrays[event.type].push(event);
             }
         } else {
             resultArrays[event.type].push(event);
