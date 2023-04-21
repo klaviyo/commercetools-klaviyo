@@ -3,6 +3,7 @@ import logger from '../../../utils/log';
 import { Client, ConfigWrapper, Events, Profiles, Catalogs } from 'klaviyo-api';
 import * as dotenv from 'dotenv';
 import { delaySeconds } from '../../../utils/delay-seconds';
+import { StatusError } from '../../../types/errors/StatusError';
 
 dotenv.config();
 
@@ -20,9 +21,9 @@ export class KlaviyoSdkService extends KlaviyoService {
             case 'event':
                 return Events.createEvent(event.body);
             case 'profileCreated':
-                return this.createOrUpdateProfile(event.body);
+                return this.createOrUpdateProfile(event.body, true);
             case 'profileResourceUpdated':
-                return Profiles.updateProfile(event.body, event.body.data?.id);
+                return this.createOrUpdateProfile(event.body, false);
             case 'profileUpdated':
                 return Client.createClientProfile(event.body, process.env.KLAVIYO_COMPANY_ID);
             case 'categoryCreated':
@@ -32,7 +33,10 @@ export class KlaviyoSdkService extends KlaviyoService {
             case 'categoryUpdated':
                 return Catalogs.updateCatalogCategory(event.body, event.body.data?.id);
             case 'itemDeleted':
-                return this.deleteCatalogItemWithVariants(event.body.data.id, (event.body.data as any).deleteVariantsJob);
+                return this.deleteCatalogItemWithVariants(
+                    event.body.data.id,
+                    (event.body.data as any).deleteVariantsJob,
+                );
             default:
                 throw new Error(`Unsupported event type ${event.type}`);
         }
@@ -73,11 +77,57 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
-    private async createOrUpdateProfile(body: KlaviyoRequestType) {
+    private async createOrUpdateProfile(body: KlaviyoRequestType, create: boolean) {
         try {
-            return await Profiles.createProfile(body);
+            return await (create ? Profiles.createProfile(body) : Profiles.updateProfile(body, body.data?.id));
         } catch (e: any) {
-            logger.error(`Error creating profile in Klaviyo. Response code ${e.status}, ${e.message}`, e);
+            if (e.status === 400) {
+                let errorCauses;
+                try {
+                    errorCauses = JSON.parse(e?.response?.error?.text)?.errors.map((e: any) => e?.source?.pointer);
+                } catch (e) {
+                    logger.error('Error getting error source pointer from error response', e);
+                    throw new StatusError(
+                        400,
+                        `Bad request, error getting error source pointer from error response. Request body: ${JSON.stringify(
+                            body,
+                        )}`,
+                    );
+                }
+                if (errorCauses.includes('/data/attributes/phone_number')) {
+                    logger.info(
+                        `Invalid phone number when ${
+                            create ? 'creating' : 'updating'
+                        } profile. Retrying after removing phone number from profile...`, JSON.parse(e?.response?.error?.text)
+                    );
+                    const modifiedBody: any = {
+                        data: {
+                            ...body.data,
+                            attributes: {
+                                ...(body.data as any).attributes,
+                                phone_number: undefined,
+                            },
+                        },
+                    };
+                    try {
+                        return await (create
+                            ? Profiles.createProfile(modifiedBody)
+                            : Profiles.updateProfile(modifiedBody, modifiedBody.data?.id));
+                    } catch (e: any) {
+                        logger.error(
+                            `Error ${
+                                create ? 'creating' : 'updating'
+                            } profile in Klaviyo after removing phone_number. Response code ${e.status}, ${e.message}`,
+                            e,
+                        );
+                        throw e;
+                    }
+                }
+            }
+            logger.error(
+                `Error ${create ? 'creating' : 'updating'} profile in Klaviyo. Response code ${e.status}, ${e.message}`,
+                e,
+            );
             throw e;
         }
     }
@@ -104,7 +154,10 @@ export class KlaviyoSdkService extends KlaviyoService {
                 // Avoid returning a 4XX error to the queue for this, just in case.
                 // This would end up returning the message to the queue indefinitely.
                 // The product may have been deleted manually with some other method.
-                return { status: 202, message: `Item with itemId ${itemId} does not exist in Klaviyo. Failed to delete, ignoring.` };
+                return {
+                    status: 202,
+                    message: `Item with itemId ${itemId} does not exist in Klaviyo. Failed to delete, ignoring.`,
+                };
             }
             throw e;
         }

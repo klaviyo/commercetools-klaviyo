@@ -25,7 +25,7 @@ export class DefaultCustomerMapper implements CustomerMapper {
                     first_name,
                     last_name,
                     title,
-                    phone_number: this.getPhoneNumber(address),
+                    phone_number: address?.mobile || address?.phone,
                     organization,
                     location: this.mapCTAddressToKlaviyoLocation(address),
                 },
@@ -60,6 +60,8 @@ export class DefaultCustomerMapper implements CustomerMapper {
             : null;
     }
 
+    // No longer in use, validation only handled by Klaviyo.
+    // Phone number removed in worse case scenario.
     public getPhoneNumber(address?: Address): string | null {
         const phoneNumber = address?.mobile || address?.phone;
         if (phoneNumber) {

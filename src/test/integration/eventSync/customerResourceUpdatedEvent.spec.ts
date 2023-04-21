@@ -100,7 +100,6 @@ describe('pubSub adapter customer resource updated message', () => {
                 first_name: 'Roberto',
                 last_name: 'Smith',
                 title: 'Mr',
-                phone_number: null,
                 organization: 'Klaviyo',
                 location: null,
             },

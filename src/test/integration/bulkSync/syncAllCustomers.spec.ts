@@ -34,7 +34,7 @@ describe('syncAllCustomers', () => {
                 first_name: 'Kaylee',
                 last_name: 'Bayer',
                 location: { address1: '12, First Street', address2: '', city: 'Raleigh', country: 'NL', zip: '12345' },
-                phone_number: '+393234567892',
+                phone_number: '+39 3234567892',
                 title: 'Miss',
             },
         });
@@ -52,7 +52,7 @@ describe('syncAllCustomers', () => {
                     country: 'NL',
                     zip: '12345',
                 },
-                phone_number: '+393234567892',
+                phone_number: '+39 3234567892',
                 title: 'Miss',
             },
         });
