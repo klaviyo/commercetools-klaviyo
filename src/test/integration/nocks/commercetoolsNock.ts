@@ -1,5 +1,5 @@
 import nock from 'nock';
-import { Address } from '@commercetools/platform-sdk';
+import { Address, CustomFields } from '@commercetools/platform-sdk';
 
 export const ctAuthNock = (times = 1) => {
     return nock('https://auth.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
@@ -11,7 +11,11 @@ export const ctAuthNock = (times = 1) => {
         .reply(200, {}, []);
 };
 
-export const ctGetCustomerNock = (customerId: string, responseStatusCode = 200, addresses: Address[] = []) => {
+export const ctGetCustomerNock = (
+    customerId: string,
+    responseStatusCode = 200,
+    { addresses = [], custom }: { addresses?: Address[]; custom?: CustomFields } = {},
+) => {
     return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
         .persist()
         .get(`/klaviyo-dev/customers/${customerId}`)
@@ -52,6 +56,7 @@ export const ctGetCustomerNock = (customerId: string, responseStatusCode = 200, 
                 isEmailVerified: false,
                 stores: [],
                 authenticationMode: 'Password',
+                custom,
             },
             [],
         );
@@ -177,7 +182,7 @@ export const ctGetOrderByPaymentIdNock = (paymentId: string, responseStatusCode 
                                                 type: 'centPrecision',
                                                 currencyCode: 'EUR',
                                                 centAmount: 1300,
-                                                fractionDigits: 2
+                                                fractionDigits: 2,
                                             },
                                             type: 'Refund',
                                             state: 'Success',

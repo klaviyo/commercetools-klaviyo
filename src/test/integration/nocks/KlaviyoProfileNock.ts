@@ -89,9 +89,9 @@ export const klaviyoGetProfilesNock = (responseStatusCode = 200, noDataInRespons
         );
 };
 
-export const klaviyoPatchProfileNock = (responseStatus = 200) => {
-    return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
-        .patch('/api/profiles/01GRKR887TDV7JS4JGM003ANYJ/', {
+export const klaviyoPatchProfileNock = (responseStatus = 200, body?: any) => {
+    if (!body) {
+        body = {
             data: {
                 type: 'profile',
                 id: '01GRKR887TDV7JS4JGM003ANYJ',
@@ -113,6 +113,10 @@ export const klaviyoPatchProfileNock = (responseStatus = 200) => {
                     },
                 },
             },
-        })
+        };
+    }
+
+    return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
+        .patch('/api/profiles/01GRKR887TDV7JS4JGM003ANYJ/', body)
         .reply(responseStatus, {}, []);
 };

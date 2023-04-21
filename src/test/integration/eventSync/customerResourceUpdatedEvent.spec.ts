@@ -15,11 +15,11 @@ describe('pubSub adapter customer resource updated message', () => {
         server = app.listen(0);
     });
 
-  afterAll((done) => {
-    server.close(() => {
-      done();
+    afterAll((done) => {
+        server.close(() => {
+            done();
+        });
     });
-  });
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -30,23 +30,25 @@ describe('pubSub adapter customer resource updated message', () => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
 
         const authNock = ctAuthNock();
-        const getCustomerNock = ctGetCustomerNock(inputMessage.resource.id, 200, [
-            {
-                id: '1235aa3a-5417-4b51-a76c-d6721472531f',
-                region: 'aRegion',
-                city: 'London',
-                country: 'UK',
-                phone: '+4407476588266',
-                postalCode: 'WE1 2DP',
-                streetName: 'High Road',
-                streetNumber: '23',
-                additionalStreetInfo: 'private access',
-                building: 'Tall Tower',
-                apartment: 'C',
-                additionalAddressInfo: 'additional address info',
-                state: 'a state',
-            },
-        ]);
+        const getCustomerNock = ctGetCustomerNock(inputMessage.resource.id, 200, {
+            addresses: [
+                {
+                    id: '1235aa3a-5417-4b51-a76c-d6721472531f',
+                    region: 'aRegion',
+                    city: 'London',
+                    country: 'UK',
+                    phone: '+4407476588266',
+                    postalCode: 'WE1 2DP',
+                    streetName: 'High Road',
+                    streetNumber: '23',
+                    additionalStreetInfo: 'private access',
+                    building: 'Tall Tower',
+                    apartment: 'C',
+                    additionalAddressInfo: 'additional address info',
+                    state: 'a state',
+                },
+            ],
+        });
         const getKlaviyoGetProfilesNock = klaviyoGetProfilesNock();
         const getKlaviyoPatchProfileNock = klaviyoPatchProfileNock();
 
@@ -62,6 +64,83 @@ describe('pubSub adapter customer resource updated message', () => {
                 expect(getKlaviyoPatchProfileNock.isDone()).to.be.true;
                 done();
             });
+    });
+
+    it('should update the profile in klaviyo and return status code 204 when a customer resource updated message is received from CT (with custom fields)', async () => {
+        const inputMessage = getSampleCustomerResourceUpdatedMessage();
+
+        const authNock = ctAuthNock();
+        const getCustomerNock = ctGetCustomerNock(inputMessage.resource.id, 200, {
+            addresses: [
+                {
+                    id: '1235aa3a-5417-4b51-a76c-d6721472531f',
+                    region: 'aRegion',
+                    city: 'London',
+                    country: 'UK',
+                    phone: '+4407476588266',
+                    postalCode: 'WE1 2DP',
+                    streetName: 'High Road',
+                    streetNumber: '23',
+                    additionalStreetInfo: 'private access',
+                    building: 'Tall Tower',
+                    apartment: 'C',
+                    additionalAddressInfo: 'additional address info',
+                    state: 'a state',
+                },
+            ],
+            custom: {
+                type: {
+                    typeId: 'type',
+                    id: 'some-type',
+                },
+                fields: {
+                    customField1: 'custom value 1',
+                    nestedField: {
+                        customField2: 'custom value 2',
+                    },
+                },
+            },
+        });
+        const getKlaviyoGetProfilesNock = klaviyoGetProfilesNock();
+        const getKlaviyoPatchProfileNock = klaviyoPatchProfileNock(200, {
+            data: {
+                type: 'profile',
+                id: '01GRKR887TDV7JS4JGM003ANYJ',
+                attributes: {
+                    email: 'roberto.smith@klaviyo.com',
+                    external_id: 'e54d8233-be41-4ce0-ae68-5d0674dd8517',
+                    first_name: 'Roberto',
+                    last_name: 'Smith',
+                    title: 'Mr',
+                    phone_number: '+4407476588266',
+                    organization: 'Klaviyo',
+                    location: {
+                        address1: 'C, Tall Tower, 23, High Road',
+                        address2: 'private access, additional address info',
+                        city: 'London',
+                        country: 'UK',
+                        region: 'aRegion',
+                        zip: 'WE1 2DP',
+                    },
+                    properties: {
+                        customField1: 'custom value 1',
+                        nestedField: {
+                            customField2: 'custom value 2',
+                        },
+                    }
+                },
+            },
+        });
+
+        const res = await chai.request(server)
+            .post('/')
+            .send({ message: { data: Buffer.from(JSON.stringify(inputMessage)) } });
+        
+        expect(res.status).to.eq(204);
+        expect(authNock.isDone()).to.be.true;
+        expect(getCustomerNock.isDone()).to.be.true;
+        expect(getKlaviyoGetProfilesNock.isDone()).to.be.true;
+        expect(getKlaviyoPatchProfileNock.isDone()).to.be.true;
     });
 
     it('should return status code 202 and not send the event to klaviyo when the get customer call to CT fails with status code 400', (done) => {

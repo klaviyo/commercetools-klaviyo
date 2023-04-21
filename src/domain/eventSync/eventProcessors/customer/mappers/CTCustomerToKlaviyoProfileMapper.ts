@@ -15,6 +15,7 @@ export const mapCTCustomerToKlaviyoProfile = (customer: Customer): Profile => {
         title,
         companyName: organization,
         id: external_id,
+        custom,
     } = customer;
 
     return {
@@ -26,5 +27,6 @@ export const mapCTCustomerToKlaviyoProfile = (customer: Customer): Profile => {
         phone_number: getPhoneNumber(address),
         organization,
         location: mapCTAddressToKlaviyoLocation(address),
+        properties: custom?.fields,
     };
 };

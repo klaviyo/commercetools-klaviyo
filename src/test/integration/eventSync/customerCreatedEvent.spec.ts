@@ -57,6 +57,65 @@ describe('pubSub adapter customer event', () => {
             });
     });
 
+    it('should return status 204 when the request is valid and the profile is sent to klaviyo (with custom fields)', async () => {
+        // nock.recorder.rec();
+        const createProfileNock = klaviyoCreateProfileNock({
+            type: 'profile',
+            attributes: {
+                email: 'roberto.smith@klaviyo.com',
+                external_id: 'e54d8233-be41-4ce0-ae68-5d0674dd8517',
+                first_name: 'Roberto',
+                last_name: 'Smith',
+                title: 'Mr',
+                location: {
+                    address1: 'C, Tall Tower, 23, High Road',
+                    address2: 'private access, additional address info',
+                    city: 'London',
+                    country: 'UK',
+                    region: 'aRegion',
+                    zip: 'WE1 2DP',
+                },
+                organization: 'Klaviyo',
+                phone_number: '+4407476588266',
+                properties: {
+                    customField1: 'custom value 1',
+                    nestedField: {
+                        customField2: 'custom value 2',
+                    },
+                },
+            },
+        });
+
+        const sampleCustomerCreatedMessage = getSampleCustomerCreatedMessage();
+
+        const inputMessage = {
+            ...sampleCustomerCreatedMessage,
+            customer: {
+                ...sampleCustomerCreatedMessage.customer,
+                custom: {
+                    type: {
+                        typeId: 'type',
+                        id: 'some-type',
+                    },
+                    fields: {
+                        customField1: 'custom value 1',
+                        nestedField: {
+                            customField2: 'custom value 2',
+                        },
+                    },
+                },
+            },
+        };
+
+        const res = await chai
+            .request(server)
+            .post('/')
+            .send({ message: { data: Buffer.from(JSON.stringify(inputMessage)) } });
+
+        expect(res.status).to.eq(204);
+        expect(createProfileNock.isDone()).to.be.true;
+    });
+
     it('should not process the message and return status 202 when the profile already exists in klaviyo (klaviyo identifies profiles by email and or phone and or externalId)', (done) => {
         // nock.recorder.rec();
         const createProfileNock = klaviyoCreateProfileNock(

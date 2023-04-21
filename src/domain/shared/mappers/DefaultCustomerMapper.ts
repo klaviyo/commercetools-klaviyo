@@ -13,6 +13,7 @@ export class DefaultCustomerMapper implements CustomerMapper {
             title,
             companyName: organization,
             id: external_id,
+            custom,
         } = customer;
 
         return {
@@ -28,6 +29,7 @@ export class DefaultCustomerMapper implements CustomerMapper {
                     phone_number: address?.mobile || address?.phone,
                     organization,
                     location: this.mapCTAddressToKlaviyoLocation(address),
+                    properties: custom?.fields,
                 },
             },
         };
