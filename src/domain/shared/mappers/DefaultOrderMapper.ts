@@ -21,7 +21,10 @@ export class DefaultOrderMapper implements OrderMapper {
                         getTypedMoneyAsNumber(order?.totalPrice),
                         order.totalPrice.currencyCode,
                     ),
-                    properties: mapAllowedProperties('order', { ...order }) as any,
+                    properties: {
+                        ...mapAllowedProperties('order', { ...order }),
+                        ...mapAllowedProperties('order.customFields', { ...(order.custom?.fields || {}) }),
+                    } as any,
                     unique_id: order.id,
                     time: time ?? order.createdAt,
                 },
@@ -49,7 +52,10 @@ export class DefaultOrderMapper implements OrderMapper {
                         name: metric,
                     },
                     value: this.currencyService.convert(refundTotal, order.totalPrice.currencyCode),
-                    properties: mapAllowedProperties('order', { ...order }) as any,
+                    properties: {
+                        ...mapAllowedProperties('order', { ...order }),
+                        ...mapAllowedProperties('order.customFields', { ...(order.custom?.fields || {}) }),
+                    } as any,
                     unique_id: order.id,
                     time: time ?? order.createdAt,
                 },

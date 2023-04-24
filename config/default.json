@@ -62,6 +62,13 @@
       "placedOrder": "Placed Order",
       "orderedProduct": "Ordered Product",
       "refundedOrder": "Refunded Order"
+    },
+    "customFields": {
+      "properties": {
+        "include": [],
+        "exclude": [],
+        "map": {}
+      }
     }
   },
   "customer": {
