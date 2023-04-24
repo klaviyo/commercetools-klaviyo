@@ -32,8 +32,8 @@ export class DefaultCtOrderService implements CtOrderService{
     getOrdersByStartId = async (startId: string, lastId?: string): Promise<PaginatedOrderResults> => {
         logger.info(`Getting orders by id start id in commercetools with id ${lastId ? 'after ' + lastId : 'from ' + startId}`);
         const queryArgs = lastId
-            ? { limit: this.limit, withTotal: false, sort: 'id asc', where: `id > "${lastId}"` }
-            : { limit: this.limit, withTotal: false, sort: 'id asc', where: `id >= "${startId}"` };
+            ? { limit: this.limit, withTotal: false, sort: ['createdAt asc', 'id asc'], where: `id > "${lastId}"` }
+            : { limit: this.limit, withTotal: false, sort: ['createdAt asc', 'id asc'], where: `id >= "${startId}"` };
         return await this.getOrders(queryArgs);
     };
 
