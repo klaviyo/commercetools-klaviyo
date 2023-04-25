@@ -78,6 +78,13 @@
         "CustomerAddressRemoved",
         "CustomerAddressChanged"
       ]
+    },
+    "customFields": {
+      "properties": {
+        "include": [],
+        "exclude": [],
+        "map": {}
+      }
     }
   },
   "payment": {

@@ -1,5 +1,6 @@
 import { Address, Customer } from '@commercetools/platform-sdk';
 import { CustomerMapper } from './CustomerMapper';
+import { mapAllowedProperties } from '../../../utils/property-mapper';
 
 const E_164_REGEX = /^\+[1-9]\d{10,14}$/;
 
@@ -15,6 +16,7 @@ export class DefaultCustomerMapper implements CustomerMapper {
             id: external_id,
             custom,
         } = customer;
+        const props = mapAllowedProperties('customer.customFields', { ...(custom?.fields || {}) });
 
         return {
             data: {
@@ -29,7 +31,7 @@ export class DefaultCustomerMapper implements CustomerMapper {
                     phone_number: address?.mobile || address?.phone,
                     organization,
                     location: this.mapCTAddressToKlaviyoLocation(address),
-                    properties: custom?.fields,
+                    properties: Object.keys(props).length ? { ...props } : undefined,
                 },
             },
         };

@@ -80,6 +80,15 @@
         "CustomerAddressRemoved",
         "CustomerAddressChanged"
       ]
+    },
+    "customFields": {
+      "properties": {
+        "include": ["includedField"],
+        "exclude": ["ignoredField"],
+        "map": {
+          "includedField": "includedFieldAfterMap"
+        }
+      }
     }
   },
   "payment": {

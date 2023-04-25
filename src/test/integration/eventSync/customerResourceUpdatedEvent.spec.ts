@@ -94,7 +94,8 @@ describe('pubSub adapter customer resource updated message', () => {
                     id: 'some-type',
                 },
                 fields: {
-                    customField1: 'custom value 1',
+                    includedField: true,
+                    ignoredField: 'test-ignored-field',
                     nestedField: {
                         customField2: 'custom value 2',
                     },
@@ -123,10 +124,7 @@ describe('pubSub adapter customer resource updated message', () => {
                         zip: 'WE1 2DP',
                     },
                     properties: {
-                        customField1: 'custom value 1',
-                        nestedField: {
-                            customField2: 'custom value 2',
-                        },
+                        includedFieldAfterMap: true,
                     }
                 },
             },

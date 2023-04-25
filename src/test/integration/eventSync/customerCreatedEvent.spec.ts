@@ -78,10 +78,7 @@ describe('pubSub adapter customer event', () => {
                 organization: 'Klaviyo',
                 phone_number: '+4407476588266',
                 properties: {
-                    customField1: 'custom value 1',
-                    nestedField: {
-                        customField2: 'custom value 2',
-                    },
+                    includedFieldAfterMap: true,
                 },
             },
         });
@@ -98,7 +95,8 @@ describe('pubSub adapter customer event', () => {
                         id: 'some-type',
                     },
                     fields: {
-                        customField1: 'custom value 1',
+                        includedField: true,
+                        ignoredField: 'test-ignored-field',
                         nestedField: {
                             customField2: 'custom value 2',
                         },

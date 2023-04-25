@@ -9,6 +9,23 @@ describe('map CT customer to Klaviyo profile', () => {
         expect(klaviyoEvent).toMatchSnapshot();
     });
 
+    it('should include/exclude/map custom fields and send them with the klaviyo profile', () => {
+        const klaviyoEvent = customerMapper.mapCtCustomerToKlaviyoProfile({
+            ...sampleCustomerApiResponse,
+            custom: {
+                type: {
+                    typeId: 'type',
+                    id: '123456',
+                },
+                fields: {
+                    includedField: true,
+                    ignoredField: 'test-ignored-field',
+                },
+            }
+        });
+        expect(klaviyoEvent).toMatchSnapshot();
+    });
+
     it('should map a commercetools customer to a klaviyo profile with an existing profile id', () => {
         const klaviyoEvent = customerMapper.mapCtCustomerToKlaviyoProfile(sampleCustomerApiResponse, '123456');
         expect(klaviyoEvent).toMatchSnapshot();
