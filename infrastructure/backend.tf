@@ -10,6 +10,6 @@ terraform {
     commercetools = {
       source = "labd/commercetools"
     }
-    google = ">= 3.3"
+    google = ">= 3.3.0"
   }
 }
