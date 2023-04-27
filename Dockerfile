@@ -1,4 +1,4 @@
-FROM node:19-alpine AS BUILD_IMAGE
+FROM node:20-alpine AS BUILD_IMAGE
 RUN apk add --update dumb-init
 
 WORKDIR /usr/src/app
@@ -12,7 +12,7 @@ RUN yarn build
 RUN yarn install --production --ignore-scripts --prefer-offline --force --frozen-lockfile
 
 
-FROM node:19-slim
+FROM node:20-slim
 
 ENV NODE_ENV production
 ENV NODE_CONFIG_DIR ./dist/config
