@@ -45,6 +45,19 @@ export const klaviyoGetCategoriesNock = (responseStatusCode = 200, noDataInRespo
         );
 };
 
+export const klaviyoGetAllCategoriesNock = (responseStatusCode = 200, body?: any) => {
+    return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
+        .get('/api/catalog-categories/')
+        .reply(
+            responseStatusCode,
+            body || {
+                data: [],
+                links: {}
+            },
+            [],
+        );
+};
+
 export const klaviyoPatchCategoryNock = (responseStatus = 200) => {
     return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
         .patch('/api/catalog-categories/%24custom%3A%3A%3A%24default%3A%3A%3Ab218c09d-aad7-460b-9da3-d91a4fb8c4b7/', {

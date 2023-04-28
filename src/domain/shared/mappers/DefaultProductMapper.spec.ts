@@ -10,21 +10,21 @@ const productMapper = new DefaultProductMapper(mockCurrencyService);
 
 describe('map CT product to Klaviyo product', () => {
     it('should map a commercetools product to a klaviyo item', () => {
-        const klaviyoEvent = productMapper.mapCtProductToKlaviyoItem(ctGet1Product.results[0] as Product);
+        const klaviyoEvent = productMapper.mapCtProductToKlaviyoItem(ctGet1Product.results[0] as unknown as Product);
         expect(klaviyoEvent).toMatchSnapshot();
     });
 
     it('should map commercetools product variants to a klaviyo variants', () => {
         const klaviyoEvent = productMapper.mapCtProductVariantToKlaviyoVariant(
-            ctGet1Product.results[0] as Product,
-            ctGet1Product.results[0].masterData.current.masterVariant as ProductVariant,
+            ctGet1Product.results[0] as unknown as Product,
+            ctGet1Product.results[0].masterData.current.masterVariant as unknown as ProductVariant,
         );
         expect(klaviyoEvent).toMatchSnapshot();
     });
 
     it('should map a commercetools product array to a klaviyo create items job request', () => {
         const klaviyoEvent = productMapper.mapCtProductsToKlaviyoItemJob(
-            ctGet1Product.results as Product[],
+            ctGet1Product.results as unknown as Product[],
             'itemCreated',
         );
         expect(klaviyoEvent).toMatchSnapshot();
@@ -32,7 +32,7 @@ describe('map CT product to Klaviyo product', () => {
 
     it('should map a commercetools product array to a klaviyo update items job request', () => {
         const klaviyoEvent = productMapper.mapCtProductsToKlaviyoItemJob(
-            ctGet1Product.results as Product[],
+            ctGet1Product.results as unknown as Product[],
             'itemUpdated',
         );
         expect(klaviyoEvent).toMatchSnapshot();
@@ -40,8 +40,8 @@ describe('map CT product to Klaviyo product', () => {
 
     it('should map a commercetools product with variants to a klaviyo create variants job request', () => {
         const klaviyoEvent = productMapper.mapCtProductVariantsToKlaviyoVariantsJob(
-            ctGet1Product.results[0] as Product,
-            [ctGet1Product.results[0].masterData.current.masterVariant as ProductVariant],
+            ctGet1Product.results[0] as unknown as Product,
+            [ctGet1Product.results[0].masterData.current.masterVariant as unknown as ProductVariant],
             'variantCreated',
         );
         expect(klaviyoEvent).toMatchSnapshot();
@@ -49,8 +49,8 @@ describe('map CT product to Klaviyo product', () => {
 
     it('should map a commercetools product with variants to a klaviyo update variants job request', () => {
         const klaviyoEvent = productMapper.mapCtProductVariantsToKlaviyoVariantsJob(
-            ctGet1Product.results[0] as Product,
-            [ctGet1Product.results[0].masterData.current.masterVariant as ProductVariant],
+            ctGet1Product.results[0] as unknown as Product,
+            [ctGet1Product.results[0].masterData.current.masterVariant as unknown as ProductVariant],
             'variantUpdated',
         );
         expect(klaviyoEvent).toMatchSnapshot();
@@ -58,7 +58,7 @@ describe('map CT product to Klaviyo product', () => {
 
     it('should map a commercetools product with variants to a klaviyo delete variants job request', () => {
         const klaviyoEvent = productMapper.mapCtProductVariantsToKlaviyoVariantsJob(
-            ctGet1Product.results[0] as Product,
+            ctGet1Product.results[0] as unknown as Product,
             [`$custom:::$default:::${ctGet1Product.results[0].masterData.current.masterVariant.sku}`],
             'variantDeleted',
         );

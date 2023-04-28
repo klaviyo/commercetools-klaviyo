@@ -1,5 +1,5 @@
 import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
-import { CategoryReference, Product, ProductVariant } from '@commercetools/platform-sdk';
+import { Category, CategoryReference, Product, ProductVariant } from '@commercetools/platform-sdk';
 import { ProductMapper } from './ProductMapper';
 import { CurrencyService } from '../services/CurrencyService';
 
@@ -14,6 +14,9 @@ export class DefaultProductMapper implements ProductMapper {
             ? String(process.env.PRODUCT_URL_TEMPLATE).replace('{{productSlug}}', defaultProductSlug)
             : 'None';
         const productMasterVariantImages = product.masterData.current.masterVariant.images;
+        const allProductCategories = product.masterData.current.categories.concat(
+            product.masterData.current.categories.map((c) => (c.obj as Category).ancestors).flat(),
+        );
         return {
             data: {
                 type: 'catalog-item',
@@ -21,7 +24,7 @@ export class DefaultProductMapper implements ProductMapper {
                 attributes: {
                     published: true,
                     integration_type: !update ? '$custom' : undefined,
-                    catalog_type: !update ? '$default': undefined,
+                    catalog_type: !update ? '$default' : undefined,
                     external_id: !update ? product.id : undefined,
                     title: productName[Object.keys(productName || {})[0]],
                     description: productDescription
@@ -33,7 +36,7 @@ export class DefaultProductMapper implements ProductMapper {
                 relationships: product.masterData.current.categories?.length
                     ? {
                           categories: {
-                              data: product.masterData.current.categories.map((category) =>
+                              data: allProductCategories.map((category) =>
                                   this.mapCtProductCategoryToKlaviyoItemCategory(category),
                               ),
                           },
@@ -43,7 +46,11 @@ export class DefaultProductMapper implements ProductMapper {
         };
     }
 
-    public mapCtProductVariantToKlaviyoVariant(product: Product, productVariant: ProductVariant, update = false): ItemVariantRequest {
+    public mapCtProductVariantToKlaviyoVariant(
+        product: Product,
+        productVariant: ProductVariant,
+        update = false,
+    ): ItemVariantRequest {
         const productName = product.masterData.current.name;
         const productDescription = product.masterData.current.description;
         const productSlug = product.masterData.current.slug;
@@ -58,7 +65,7 @@ export class DefaultProductMapper implements ProductMapper {
                 id: update ? `$custom:::$default:::${productVariant.sku}` : undefined,
                 attributes: {
                     published: true,
-                    integration_type: !update ? '$custom': undefined,
+                    integration_type: !update ? '$custom' : undefined,
                     catalog_type: !update ? '$default' : undefined,
                     external_id: !update ? productVariant.sku : undefined,
                     title: `${productName[Object.keys(productName || {})[0]]} | Variant: ${productVariant.sku}`,
@@ -71,11 +78,13 @@ export class DefaultProductMapper implements ProductMapper {
                     inventory_quantity: productVariant.availability?.availableQuantity || 0,
                     price: productVariant.prices ? getTypedMoneyAsNumber(productVariant.prices[0].value) : 0,
                 },
-                relationships: !update ? {
-                    items: {
-                        data: [this.mapCtProductToKlaviyoVariantItem(product)],
-                    },
-                } : undefined,
+                relationships: !update
+                    ? {
+                          items: {
+                              data: [this.mapCtProductToKlaviyoVariantItem(product)],
+                          },
+                      }
+                    : undefined,
             },
         };
     }
@@ -103,7 +112,11 @@ export class DefaultProductMapper implements ProductMapper {
         };
     }
 
-    public mapCtProductVariantsToKlaviyoVariantsJob(product: Product, productVariants: ProductVariant[] | string[], type: string): ItemVariantJobRequest {
+    public mapCtProductVariantsToKlaviyoVariantsJob(
+        product: Product,
+        productVariants: ProductVariant[] | string[],
+        type: string,
+    ): ItemVariantJobRequest {
         let jobType: any;
         switch (type) {
             case 'variantCreated':
@@ -120,11 +133,23 @@ export class DefaultProductMapper implements ProductMapper {
             data: {
                 type: jobType,
                 attributes: {
-                    variants: type === 'variantDeleted' ? productVariants.map(v => ({
-                        type: 'catalog-variant',
-                        id: v as string,
-                    } as ItemVariantType)) : productVariants
-                        .map((v) => this.mapCtProductVariantToKlaviyoVariant(product, v as ProductVariant, type === 'variantUpdated').data),
+                    variants:
+                        type === 'variantDeleted'
+                            ? productVariants.map(
+                                  (v) =>
+                                      ({
+                                          type: 'catalog-variant',
+                                          id: v as string,
+                                      } as ItemVariantType),
+                              )
+                            : productVariants.map(
+                                  (v) =>
+                                      this.mapCtProductVariantToKlaviyoVariant(
+                                          product,
+                                          v as ProductVariant,
+                                          type === 'variantUpdated',
+                                      ).data,
+                              ),
                 },
             },
         };

@@ -1,5 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`map CT category to Klaviyo category should extend the klaviyo category name if the category is a subcategory (has ancestors) 1`] = `
+{
+  "data": {
+    "attributes": {
+      "catalog_type": "$default",
+      "external_id": "cd2cd62b-7f08-44e4-96a8-d3e34c40cac9",
+      "integration_type": "$custom",
+      "name": "Test main category > Test subcategory > MessageTriggerTest1",
+    },
+    "id": undefined,
+    "type": "catalog-category",
+  },
+}
+`;
+
 exports[`map CT category to Klaviyo category should map a commercetools category to a klaviyo category 1`] = `
 {
   "data": {
@@ -15,7 +30,7 @@ exports[`map CT category to Klaviyo category should map a commercetools category
 }
 `;
 
-exports[`map CT category to Klaviyo category should map a commercetools category to a klaviyo category with an existing profile id 1`] = `
+exports[`map CT category to Klaviyo category should map a commercetools category to a klaviyo category with an existing category id 1`] = `
 {
   "data": {
     "attributes": {
@@ -26,6 +41,14 @@ exports[`map CT category to Klaviyo category should map a commercetools category
     },
     "id": "123456",
     "type": "catalog-category",
+  },
+}
+`;
+
+exports[`map Klaviyo category to Klaviyo delete category request should map a klaviyo category id to a klaviyo delete category 1`] = `
+{
+  "data": {
+    "id": "cd2cd62b-7f08-44e4-96a8-d3e34c40cac9",
   },
 }
 `;

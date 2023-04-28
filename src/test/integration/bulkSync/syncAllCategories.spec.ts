@@ -20,7 +20,7 @@ describe('syncAllCategories', () => {
     afterEach(() => {
         nock.cleanAll();
     });
-    it('should sync all category events with klaviyo', async () => {
+    it('should sync all categories with klaviyo', async () => {
         ctAuthNock(4);
         const nockCtGetCustomObject = ctGetCustomObjectNock(404, 'categoryFullSync', {});
         const nockCtCreateCustomObject = ctPostCustomObjectNock('categoryFullSync');

@@ -286,4 +286,16 @@ export class KlaviyoSdkService extends KlaviyoService {
             throw e;
         }
     }
+
+    public async getKlaviyoPaginatedCategories(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCategory>> {
+        logger.info(`Getting categories in Klaviyo ${nextPageCursor ? 'with pagination cursor: ' + nextPageCursor : ''}`);
+        try {
+            const categories = await Catalogs.getCatalogCategories({ pageCursor: nextPageCursor });
+            logger.debug('Categories response', categories);
+            return categories.body;
+        } catch (e) {
+            logger.error(`Error getting categories in Klaviyo ${nextPageCursor ? 'with pagination cursor: ' + nextPageCursor : ''}`);
+            throw e;
+        }
+    }
 }

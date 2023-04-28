@@ -44,8 +44,7 @@ bulkSyncApp.post('/sync/orders', async (req, res) => {
         let startId = '';
         if (req.body?.ids?.length) {
             orderIds = req.body?.ids;
-        }
-        else if (req.body?.startId?.length) {
+        } else if (req.body?.startId?.length) {
             startId = req.body?.startId;
         }
         await bree.add([
@@ -150,10 +149,27 @@ bulkSyncApp.post('/sync/customers/stop', async (req, res) => {
 bulkSyncApp.post('/sync/categories', async (req, res) => {
     logger.info('Received request to sync categories');
     try {
+        let confirmDeletion = '';
+        if (req.body?.deleteAll) {
+            if (req.body?.confirmDeletion !== 'categories') {
+                res.status(400).send({
+                    message:
+                        'For testing only. This operation will delete ALL CATEGORIES in Klaviyo, including those not created by this plugin. If you understand the risk and still want to do it, add "confirmDeletion": "categories" to the request body.',
+                });
+                return;
+            } else {
+                confirmDeletion = 'categories';
+            }
+        }
         await ctLockService.checkLock('categoryFullSync');
         await bree.add([
             {
                 name: 'categoriesSync',
+                worker: {
+                    workerData: {
+                        confirmDeletion,
+                    },
+                },
             },
         ]);
         await bree.run('categoriesSync');

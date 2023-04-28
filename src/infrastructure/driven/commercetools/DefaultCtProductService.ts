@@ -15,9 +15,13 @@ export class DefaultCtProductService implements CtProductService {
     getAllProducts = async (lastId?: string): Promise<PaginatedProductResults> => {
         logger.info(`Getting all products in commercetools with id after ${lastId}`);
         try {
-            const queryArgs = lastId
-                ? { limit: this.limit, withTotal: false, sort: 'id asc', where: `masterData(published = true) and id > "${lastId}"` }
-                : { limit: this.limit, withTotal: false, sort: 'id asc', where: 'masterData(published = true)' };
+            const queryArgs = {
+                limit: this.limit,
+                withTotal: false,
+                sort: 'id asc',
+                expand: 'masterData.current.categories[*].ancestors[*]',
+                where: `masterData(published = true)${lastId ? ' and id > "${lastId}"' : ''}`,
+            };
             const ctProducts = (await this.ctApiRoot.products().get({ queryArgs }).execute()).body;
             return {
                 data: ctProducts.results,

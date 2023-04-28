@@ -17,8 +17,8 @@ export class DefaultCtCategoryService implements CtCategoryService {
         logger.info(`Getting all categories in commercetools with id after ${lastId}`);
         try {
             const queryArgs = lastId
-                ? { limit: this.limit, withTotal: false, sort: 'id asc', where: `id > "${lastId}"` }
-                : { limit: this.limit, withTotal: false, sort: 'id asc' };
+                ? { limit: this.limit, withTotal: false, sort: 'id asc', expand: 'ancestors[*]', where: `id > "${lastId}"` }
+                : { limit: this.limit, withTotal: false, sort: 'id asc', expand: 'ancestors[*]' };
             const ctCategories = (await this.ctApiRoot.categories().get({ queryArgs }).execute()).body;
             return {
                 data: ctCategories.results,
@@ -35,7 +35,11 @@ export class DefaultCtCategoryService implements CtCategoryService {
         logger.info(`Getting category in commercetools with id ${categoryId}`);
 
         try {
-            return (await this.ctApiRoot.categories().withId({ ID: categoryId }).get().execute()).body;
+            return (await this.ctApiRoot.categories().withId({ ID: categoryId }).get({
+                queryArgs: {
+                    expand: 'ancestors[*]',
+                },
+            }).execute()).body;
         } catch (error: any) {
             logger.error(`Error getting category in CT with id ${categoryId}, status: ${error.statusCode}`, error);
             throw new StatusError(

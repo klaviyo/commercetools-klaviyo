@@ -85,6 +85,7 @@ type CategoryType = {
 
 type KlaviyoCategory = {
     external_id?: string;
+    id?: string;
     name: string;
     integration_type?: string | '$custom';
     catalog_type?: string | '$default';
@@ -184,4 +185,15 @@ type ItemVariantJobType = {
     attributes: {
         variants: ItemVariantType[];
     };
+};
+
+type KlaviyoQueryResult<KlaviyoElement> = {
+    data: KlaviyoElement[],
+    links: {
+        self: "string",
+        first: "string",
+        last: "string",
+        prev: "string",
+        next: "string"
+    }
 };

@@ -65,6 +65,10 @@ describe('syncAllProducts', () => {
                                             id: '$custom:::$default:::12c2780d-5b45-4de7-8bbb-448df3e7a341',
                                             type: 'catalog-category',
                                         },
+                                        {
+                                            id: '$custom:::$default:::5b4de911-e0c3-473e-a6ba-dd61d47d0bce',
+                                            type: 'catalog-category',
+                                        },
                                     ],
                                 },
                             },

@@ -30,15 +30,42 @@ export const ctGet1Product = {
                 },
                 "categories": [{
                         "typeId": "category",
-                        "id": "5b4de911-e0c3-473e-a6ba-dd61d47d0bbd"
+                        "id": "5b4de911-e0c3-473e-a6ba-dd61d47d0bbd",
+                        "obj": {
+                            "name": {
+                                "en-US": "Category 1"
+                            },
+                            "ancestors": [{
+                                "typeId": "category",
+                                "id": "5b4de911-e0c3-473e-a6ba-dd61d47d0bce",
+                                "obj": {
+                                    "name": {
+                                        "en-US": "Category 1 Ancestor 1"
+                                    },
+                                    "ancestors": [],
+                                }
+                            }]
+                        }
                     },
                     {
                         "typeId": "category",
-                        "id": "c7ee29ed-c092-4ed3-bda3-a66839ce90c7"
+                        "id": "c7ee29ed-c092-4ed3-bda3-a66839ce90c7",
+                        "obj": {
+                            "name": {
+                                "en-US": "Category 2"
+                            },
+                            "ancestors": []
+                        }
                     },
                     {
                         "typeId": "category",
-                        "id": "12c2780d-5b45-4de7-8bbb-448df3e7a341"
+                        "id": "12c2780d-5b45-4de7-8bbb-448df3e7a341",
+                        "obj": {
+                            "name": {
+                                "en-US": "Category 3"
+                            },
+                            "ancestors": []
+                        }
                     }
                 ],
                 "categoryOrderHints": {},
@@ -673,15 +700,33 @@ export const ctGet1Product = {
                 },
                 "categories": [{
                         "typeId": "category",
-                        "id": "5b4de911-e0c3-473e-a6ba-dd61d47d0bbd"
+                        "id": "5b4de911-e0c3-473e-a6ba-dd61d47d0bbd",
+                        "obj": {
+                            "name": {
+                                "en-US": "Category 1"
+                            },
+                            "ancestors": []
+                        }
                     },
                     {
                         "typeId": "category",
-                        "id": "c7ee29ed-c092-4ed3-bda3-a66839ce90c7"
+                        "id": "c7ee29ed-c092-4ed3-bda3-a66839ce90c7",
+                        "obj": {
+                            "name": {
+                                "en-US": "Category 2"
+                            },
+                            "ancestors": []
+                        }
                     },
                     {
                         "typeId": "category",
-                        "id": "12c2780d-5b45-4de7-8bbb-448df3e7a341"
+                        "id": "12c2780d-5b45-4de7-8bbb-448df3e7a341",
+                        "obj": {
+                            "name": {
+                                "en-US": "Category 3"
+                            },
+                            "ancestors": []
+                        }
                     }
                 ],
                 "categoryOrderHints": {},

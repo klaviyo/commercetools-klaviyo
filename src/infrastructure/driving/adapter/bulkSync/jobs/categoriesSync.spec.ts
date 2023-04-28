@@ -5,6 +5,8 @@ let categoryWorkerThreadsMock = {
     },
     workerData: {
         categoryIds: [] as string[],
+        deleteAll: false,
+        confirmDeletion: '',
     },
 } as any;
 
@@ -12,6 +14,7 @@ const categoriesSyncMock = {
     syncAllCategories: jest.fn(),
     syncCategoriesByIdRange: jest.fn(),
     releaseLockExternally: jest.fn(),
+    deleteAllCategories: jest.fn(),
 };
 
 jest.mock('../../../../../domain/bulkSync/CategoriesSync', () => ({
@@ -48,6 +51,22 @@ describe('syncCategories', () => {
         }
         expect(error).toBeUndefined();
         expect(syncAllCategoriesSpy).toHaveBeenCalled();
+    });
+
+    it('should call the right methods when deleting (delete all from klaviyo)', async () => {
+        categoryWorkerThreadsMock.workerData.deleteAll = true;
+        categoryWorkerThreadsMock.workerData.confirmDeletion = 'categories';
+        const deleteAllCategoriesSpy = jest.spyOn(categoriesSyncMock, 'deleteAllCategories');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const deleteCategoriesJob = require('./categoriesSync');
+        let error;
+        try {
+            await deleteCategoriesJob;
+        } catch (e) {
+            error = e;
+        }
+        expect(error).toBeUndefined();
+        expect(deleteAllCategoriesSpy).toHaveBeenCalled();
     });
 
     it('should call process.exit when not running as a thread', async () => {

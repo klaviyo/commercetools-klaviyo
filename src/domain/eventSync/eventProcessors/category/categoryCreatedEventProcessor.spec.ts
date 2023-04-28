@@ -53,6 +53,7 @@ describe('categoryCreatedEventProcessor > generateKlaviyoEvents', () => {
                     en: "Test"
                 },
                 createdAt: '2023-01-27T15:00:00.000Z',
+                ancestors: [],
         }
         Object.defineProperty(ctMessageMock, 'category', { value: category }); //mock readonly property
 

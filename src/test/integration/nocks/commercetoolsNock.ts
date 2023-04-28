@@ -243,7 +243,7 @@ export const getAllCustomers = (responseBody = {}) => {
 export const getAllCategories = (responseBody = {}) => {
     return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
         .get('/klaviyo-dev/categories')
-        .query({ limit: '20', withTotal: 'false', sort: 'id%20asc' })
+        .query({ limit: '20', withTotal: 'false', sort: 'id%20asc', expand: 'ancestors[*]' })
         .reply(200, responseBody, []);
 };
 
@@ -251,6 +251,7 @@ export const ctGetCategoryByIdNock = (categoryId: string, status = 200) => {
     return nock(/https:\/\/api\..*\.gcp.commercetools\.com:443/, { encodedQueryParams: true })
         .persist()
         .get(`/klaviyo-dev/categories/${categoryId}`)
+        .query({ expand: 'ancestors[*]' })
         .reply(status, {
             id: categoryId,
             version: 1,
@@ -269,6 +270,12 @@ export const ctGetCategoryByIdNock = (categoryId: string, status = 200) => {
 export const getAllProducts = (responseBody = {}) => {
     return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
         .get('/klaviyo-dev/products')
-        .query({ limit: '20', withTotal: 'false', sort: 'id%20asc', where: 'masterData(published = true)' })
+        .query({
+            limit: '20',
+            withTotal: 'false',
+            sort:'id%20asc',
+            expand: 'masterData.current.categories[*].ancestors[*]',
+            where: 'masterData(published = true)',
+        })
         .reply(200, responseBody, []);
 };

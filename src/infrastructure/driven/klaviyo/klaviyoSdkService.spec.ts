@@ -22,10 +22,10 @@ const klvSdkModule = {
         getCatalogItems: jest.fn(),
         getCatalogVariants: jest.fn(),
         getCatalogItemVariants: jest.fn(),
+        getCatalogCategories: jest.fn(),
     },
 };
 
-import { Events, Profiles, Catalogs } from 'klaviyo-api';
 import { KlaviyoSdkService } from './KlaviyoSdkService';
 
 jest.mock('klaviyo-api', () => {
@@ -711,6 +711,61 @@ describe('klaviyoService > getKlaviyoItemVariantsByCtSkus', () => {
         let error;
         try {
             await klaviyoService.getKlaviyoItemVariantsByCtSkus('test-id', undefined, undefined);
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error).toBeInstanceOf(StatusError);
+    });
+});
+
+describe('klaviyoService > getKlaviyoPaginatedCategories', () => {
+    test('should return categories from klaviyo ', async () => {
+        klvSdkModule.Catalogs.getCatalogCategories = jest.fn().mockResolvedValueOnce({
+            body: {
+                data: [
+                    {
+                        id: 'test-id',
+                    },
+                ],
+                links: {},
+            },
+        });
+
+        const result = await klaviyoService.getKlaviyoPaginatedCategories();
+
+        expect(result.data[0]).toBeDefined();
+        expect(result.data[0].id).toEqual('test-id');
+        expect(klvSdkModule.Catalogs.getCatalogCategories).toBeCalledTimes(1);
+    });
+
+    test('should return categories from klaviyo when using a pagination cursor', async () => {
+        klvSdkModule.Catalogs.getCatalogCategories = jest.fn().mockResolvedValueOnce({
+            body: {
+                data: [
+                    {
+                        id: 'test-id',
+                    },
+                ],
+                links: {},
+            },
+        });
+
+        const result = await klaviyoService.getKlaviyoPaginatedCategories('page-cursor');
+
+        expect(result.data[0]).toBeDefined();
+        expect(result.data[0].id).toEqual('test-id');
+        expect(klvSdkModule.Catalogs.getCatalogCategories).toBeCalledTimes(1);
+    });
+
+    test('should log error when klaviyo sdk throws error', async () => {
+        klvSdkModule.Catalogs.getCatalogCategories = jest.fn().mockImplementationOnce(() => {
+            throw new StatusError(500, 'Unknown error');
+        });
+
+        let error;
+        try {
+            await klaviyoService.getKlaviyoPaginatedCategories();
         } catch (e) {
             error = e;
         }

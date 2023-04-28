@@ -41,6 +41,7 @@ describe('processEvent', () => {
         checkRateLimitsAndDelay: jest.fn(),
         getKlaviyoItemsByIds: jest.fn(),
         getKlaviyoItemVariantsByCtSkus: jest.fn(),
+        getKlaviyoPaginatedCategories: jest.fn(),
     };
 
     const responseHandlerMock = mocked(responseHandler);

@@ -16,10 +16,14 @@ export class CategoryCreatedEventProcessor extends AbstractEventProcessor {
         const message = this.ctMessage as unknown as CategoryCreatedMessage;
         logger.info('Processing category created event');
 
-        let category: Category;
+        let category: Category | undefined = undefined;
         if ('category' in message) {
-            category = message.category;
-        } else {
+            if (!message.category.ancestors.length) {
+                category = message.category;
+            }
+        }
+
+        if (!category) {
             category = (await this.context.ctCategoryService.getCategoryById((message as CategoryCreatedMessage).resource.id)) as Category;
         }
 

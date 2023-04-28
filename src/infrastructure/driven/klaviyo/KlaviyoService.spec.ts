@@ -38,6 +38,10 @@ describe('Klaviyo abstract service', () => {
         getKlaviyoItemVariantsByCtSkus (productId?: string, skus?: string[], fieldsCatalogVariant?: string[]): Promise<ItemVariantType[]> {
             return Promise.resolve(mock<ItemVariantType[]>());
         }
+
+        getKlaviyoPaginatedCategories(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCategory>> {
+            return Promise.resolve(mock<KlaviyoQueryResult<KlaviyoCategory>>())
+        }
     }
 
     test('should log all the rateLimit headers when they are available', async () => {

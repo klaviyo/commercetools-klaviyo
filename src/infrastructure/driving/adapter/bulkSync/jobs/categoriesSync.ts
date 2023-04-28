@@ -1,4 +1,4 @@
-import { parentPort } from 'node:worker_threads';
+import { parentPort, workerData  } from 'node:worker_threads';
 import { CategoriesSync } from '../../../../../domain/bulkSync/CategoriesSync';
 import { CTCustomObjectLockService } from '../../../../../domain/bulkSync/services/CTCustomObjectLockService';
 import { KlaviyoSdkService } from '../../../../driven/klaviyo/KlaviyoSdkService';
@@ -31,7 +31,13 @@ const releaseLock = async () => {
 		new DefaultCtCategoryService(getApiRoot()),
 	);
 
-	await categoriesSync.syncAllCategories();
+	if (workerData?.confirmDeletion === 'categories') {
+		await categoriesSync.deleteAllCategories();
+	}
+	else {
+		await categoriesSync.syncAllCategories();
+	}
+
 
 	if (parentPort) parentPort.postMessage('done');
 	else process.exit(0);

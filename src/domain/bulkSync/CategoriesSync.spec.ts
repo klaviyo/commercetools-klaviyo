@@ -6,7 +6,7 @@ import { Category } from '@commercetools/platform-sdk';
 import { ErrorCodes, StatusError } from '../../types/errors/StatusError';
 import { DefaultCtCategoryService } from '../../infrastructure/driven/commercetools/DefaultCtCategoryService';
 import { DefaultCategoryMapper } from '../shared/mappers/DefaultCategoryMapper';
-import logger from '../../utils/log'
+import logger from '../../utils/log';
 
 const mockCtCustomObjectLockService: DeepMockProxy<CTCustomObjectLockService> = mockDeep<CTCustomObjectLockService>();
 const mockDefaultCategoryMapper: DeepMockProxy<DefaultCategoryMapper> = mockDeep<DefaultCategoryMapper>();
@@ -86,6 +86,83 @@ describe('syncAllCategories', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtCategoryService.getAllCategories).toBeCalledTimes(0);
         expect(mockDefaultCategoryMapper.mapCtCategoryToKlaviyoCategory).toBeCalledTimes(0);
+        expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(0);
+        expect(errorSpy).toBeCalledTimes(1);
+    });
+});
+
+describe('deleteAllCategories', () => {
+    it('should delete a single category in klaviyo when Klaviyo returns a single category', async () => {
+        mockCtCustomObjectLockService.acquireLock.mockResolvedValueOnce();
+
+        const mockCategory = {
+            id: 'test',
+        } as any;
+        mockKlaviyoSdkService.getKlaviyoPaginatedCategories.mockResolvedValueOnce({
+            data: [mockCategory],
+            links: { next: undefined } as any,
+        });
+
+        await historicalCategories.deleteAllCategories();
+
+        expect(mockCtCustomObjectLockService.acquireLock).toBeCalledTimes(1);
+        expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
+        expect(mockKlaviyoSdkService.getKlaviyoPaginatedCategories).toBeCalledTimes(1);
+        expect(mockDefaultCategoryMapper.mapKlaviyoCategoryIdToDeleteCategoryRequest).toBeCalledTimes(1);
+        expect(mockDefaultCategoryMapper.mapKlaviyoCategoryIdToDeleteCategoryRequest).toBeCalledWith(mockCategory.id);
+        expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(1);
+    });
+
+    it('should delete 10 categories from klaviyo when klaviyo returns 10 categories with pagination', async () => {
+        mockCtCustomObjectLockService.acquireLock.mockResolvedValueOnce();
+
+        const mockCategory = {
+            id: 'test',
+        } as any;
+        mockKlaviyoSdkService.getKlaviyoPaginatedCategories.mockResolvedValueOnce({
+            data: Array(6).fill(mockCategory),
+            links: { next: 'next-page' } as any,
+        });
+        mockKlaviyoSdkService.getKlaviyoPaginatedCategories.mockResolvedValueOnce({
+            data: Array(4).fill(mockCategory),
+            links: { next: undefined } as any,
+        });
+
+        await historicalCategories.deleteAllCategories();
+
+        expect(mockCtCustomObjectLockService.acquireLock).toBeCalledTimes(1);
+        expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
+        expect(mockKlaviyoSdkService.getKlaviyoPaginatedCategories).toBeCalledTimes(2);
+        expect(mockDefaultCategoryMapper.mapKlaviyoCategoryIdToDeleteCategoryRequest).toBeCalledTimes(10);
+        expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(10);
+    });
+
+    it('should not allow to run the category sync if there is another sync in progress', async () => {
+        mockCtCustomObjectLockService.acquireLock.mockImplementation(() => {
+            throw new StatusError(409, 'is locked', ErrorCodes.LOCKED);
+        });
+
+        await historicalCategories.deleteAllCategories();
+
+        expect(mockCtCustomObjectLockService.acquireLock).toBeCalledTimes(1);
+        expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(0);
+        expect(mockKlaviyoSdkService.getKlaviyoPaginatedCategories).toBeCalledTimes(0);
+        expect(mockDefaultCategoryMapper.mapKlaviyoCategoryIdToDeleteCategoryRequest).toBeCalledTimes(0);
+        expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(0);
+    });
+
+    it('should log errors and release lock if an unhandled error is thrown during processing', async () => {
+        const errorSpy = jest.spyOn(logger, 'error');
+        mockCtCustomObjectLockService.acquireLock.mockImplementation(() => {
+            throw new StatusError(500, 'Unknown error', ErrorCodes.UNKNOWN_ERROR);
+        });
+
+        await historicalCategories.deleteAllCategories();
+
+        expect(mockCtCustomObjectLockService.acquireLock).toBeCalledTimes(1);
+        expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
+        expect(mockKlaviyoSdkService.getKlaviyoPaginatedCategories).toBeCalledTimes(0);
+        expect(mockDefaultCategoryMapper.mapKlaviyoCategoryIdToDeleteCategoryRequest).toBeCalledTimes(0);
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(0);
         expect(errorSpy).toBeCalledTimes(1);
     });

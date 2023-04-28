@@ -98,6 +98,17 @@ resource "google_api_gateway_api_config" "api_cfg" {
             post:
               summary: Sync all commercetools categories to Klaviyo
               operationId: sync-categories
+              parameters:
+                - in: body
+                  name: Parameters
+                  description: Optional parameters for the bulk import job
+                  schema:
+                    type: object
+                    properties:
+                      deleteAll:
+                          type: boolean
+                      confirmDeletion:
+                          type: string
               responses:
                 '202':
                   description: Request accepted
