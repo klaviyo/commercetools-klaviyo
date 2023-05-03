@@ -1,5 +1,6 @@
 import nock from 'nock';
 import { Address, CustomFields } from '@commercetools/platform-sdk';
+import { ctGet2Orders } from '../../testData/ctGetOrders';
 
 export const ctAuthNock = (times = 1) => {
     return nock('https://auth.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
@@ -63,7 +64,7 @@ export const ctGetCustomerNock = (
 };
 
 export const ctGetOrderByIdNock = (orderId: string, status = 200) => {
-    return nock(/https:\/\/api\..*\.gcp.commercetools\.com:443/, { encodedQueryParams: true })
+    return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
         .persist()
         .get(`/klaviyo-dev/orders/${orderId}`)
         .reply(status, {
@@ -73,7 +74,9 @@ export const ctGetOrderByIdNock = (orderId: string, status = 200) => {
             version: 24,
             createdAt: '2023-01-27T15:00:00.000Z',
             lastModifiedAt: '2023-01-27T15:00:00.000Z',
-            lineItems: [],
+            lineItems: [{
+                ...ctGet2Orders.results[0].lineItems[0],
+            }],
             customLineItems: [],
             totalPrice: { type: 'centPrecision', centAmount: 1300, currencyCode: 'USD', fractionDigits: 2 },
             shipping: [],
@@ -161,7 +164,9 @@ export const ctGetOrderByPaymentIdNock = (paymentId: string, responseStatusCode 
                     },
                     orderState: 'Open',
                     returnInfo: [],
-                    lineItems: [],
+                    lineItems: [{
+                        ...ctGet2Orders.results[0].lineItems[0],
+                    }],
                     customLineItems: [],
                     shippingMode: '',
                     shipping: [],
@@ -248,7 +253,7 @@ export const getAllCategories = (responseBody = {}) => {
 };
 
 export const ctGetCategoryByIdNock = (categoryId: string, status = 200) => {
-    return nock(/https:\/\/api\..*\.gcp.commercetools\.com:443/, { encodedQueryParams: true })
+    return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
         .persist()
         .get(`/klaviyo-dev/categories/${categoryId}`)
         .query({ expand: 'ancestors[*]' })
@@ -276,6 +281,20 @@ export const getAllProducts = (responseBody = {}) => {
             sort:'id%20asc',
             expand: 'masterData.current.categories[*].ancestors[*]',
             where: 'masterData(published = true)',
+        })
+        .reply(200, responseBody, []);
+};
+
+export const getProductsByIdRange = (ids: string[], responseBody = {}) => {
+    return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: false })
+        .persist()
+        .get('/klaviyo-dev/products')
+        .query({
+            limit: '20',
+            withTotal: 'false',
+            sort:'id asc',
+            expand: 'masterData.current.categories[*].ancestors[*]',
+            where: `id in ("${ids.join('","')}")`,
         })
         .reply(200, responseBody, []);
 };

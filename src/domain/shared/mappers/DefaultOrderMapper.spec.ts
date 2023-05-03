@@ -8,7 +8,72 @@ mockCurrencyService.convert.mockImplementation((value, currency) => value);
 const orderMapper = new DefaultOrderMapper(mockCurrencyService);
 describe('map CT order to Klaviyo event', () => {
     it('should map a commercetools order with a given metric to a klaviyo event', () => {
-        const klaviyoEvent = orderMapper.mapCtOrderToKlaviyoEvent(sampleOrderCreatedMessage.order, 'someMetric');
+        const klaviyoEvent = orderMapper.mapCtOrderToKlaviyoEvent(sampleOrderCreatedMessage.order, [], 'someMetric');
+        expect(klaviyoEvent).toMatchSnapshot();
+    });
+
+    it('should map order line items and custom line items to ItemNames property in the klaviyo event', () => {
+        const klaviyoEvent = orderMapper.mapCtOrderToKlaviyoEvent(
+            {
+                ...sampleOrderCreatedMessage.order,
+                lineItems: [
+                    {
+                        name: {
+                            'en-US': 'Product Line Item 1',
+                        },
+                    },
+                ] as any,
+                customLineItems: [
+                    {
+                        name: {
+                            'en-US': 'Custom Line Item 1',
+                        },
+                    },
+                ] as any,
+            },
+            [],
+            'someMetric',
+        );
+        expect(klaviyoEvent).toMatchSnapshot();
+    });
+
+    it('should map product categories to the Categories property in the klaviyo event', () => {
+        const klaviyoEvent = orderMapper.mapCtOrderToKlaviyoEvent(
+            {
+                ...sampleOrderCreatedMessage.order,
+                lineItems: [
+                    {
+                        name: {
+                            'en-US': 'Product Line Item 1',
+                        },
+                    },
+                ] as any,
+                customLineItems: [
+                    {
+                        name: {
+                            'en-US': 'Custom Line Item 1',
+                        },
+                    },
+                ] as any,
+            },
+            [
+                {
+                    masterData: {
+                        current: {
+                            categories: {
+                                obj: {
+                                    name: {
+                                        'en-US': 'Test Category 1',
+                                    },
+                                    ancestors: [],
+                                },
+                            },
+                        },
+                    },
+                } as any,
+            ],
+            'someMetric',
+        );
         expect(klaviyoEvent).toMatchSnapshot();
     });
 
@@ -27,6 +92,7 @@ describe('map CT order to Klaviyo event', () => {
                     },
                 },
             },
+            [],
             'someMetric',
         );
         expect(klaviyoEvent).toMatchSnapshot();
@@ -62,6 +128,7 @@ describe('map CT refunded order to Klaviyo event', () => {
                     ],
                 },
             } as any,
+            [],
             'someMetric',
         );
         expect(klaviyoEvent).toMatchSnapshot();
@@ -105,6 +172,7 @@ describe('map CT refunded order to Klaviyo event', () => {
                     ],
                 },
             } as any,
+            [],
             'someMetric',
         );
         expect(klaviyoEvent).toMatchSnapshot();

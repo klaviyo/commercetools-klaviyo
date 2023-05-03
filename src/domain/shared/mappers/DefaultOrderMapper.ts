@@ -1,14 +1,19 @@
 import { getCustomerProfileFromOrder } from '../../../utils/get-customer-profile-from-order';
 import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
 import { mapAllowedProperties } from '../../../utils/property-mapper';
-import { LineItem, Order } from '@commercetools/platform-sdk';
+import { Category, CategoryReference, LineItem, LocalizedString, Order, Product } from '@commercetools/platform-sdk';
 import { OrderMapper } from './OrderMapper';
 import config from 'config';
 import { CurrencyService } from '../services/CurrencyService';
 
 export class DefaultOrderMapper implements OrderMapper {
     constructor(private readonly currencyService: CurrencyService) {}
-    public mapCtOrderToKlaviyoEvent(order: Order, metric: string, time?: string): EventRequest {
+    public mapCtOrderToKlaviyoEvent(
+        order: Order,
+        orderProducts: Product[],
+        metric: string,
+        time?: string,
+    ): EventRequest {
         return {
             data: {
                 type: 'event',
@@ -24,6 +29,10 @@ export class DefaultOrderMapper implements OrderMapper {
                     properties: {
                         ...mapAllowedProperties('order', { ...order }),
                         ...mapAllowedProperties('order.customFields', { ...(order.custom?.fields || {}) }),
+                        ItemNames: this.mapOrderLineItemsToItemNames(order),
+                        Categories: this.getCategoryNamesFromProduct(
+                            orderProducts.map((product) => product.masterData.current.categories).flat(),
+                        ),
                     } as any,
                     unique_id: order.id,
                     time: time ?? order.createdAt,
@@ -32,7 +41,12 @@ export class DefaultOrderMapper implements OrderMapper {
         };
     }
 
-    public mapCtRefundedOrderToKlaviyoEvent(order: Order, metric: string, time?: string): EventRequest {
+    public mapCtRefundedOrderToKlaviyoEvent(
+        order: Order,
+        orderProducts: Product[],
+        metric: string,
+        time?: string,
+    ): EventRequest {
         const refundAmounts =
             order.paymentInfo?.payments
                 .map((p) =>
@@ -40,7 +54,8 @@ export class DefaultOrderMapper implements OrderMapper {
                         .filter((t) => t.state === 'Success' && t.type === 'Refund')
                         .map((t) => getTypedMoneyAsNumber(t.amount)),
                 )
-                .flat().filter((r) => r !== undefined) || [];
+                .flat()
+                .filter((r) => r !== undefined) || [];
         const refundTotal = refundAmounts.length ? refundAmounts.reduce((a, b) => (a || 0) + (b || 0)) || 0 : 0;
 
         return {
@@ -55,6 +70,10 @@ export class DefaultOrderMapper implements OrderMapper {
                     properties: {
                         ...mapAllowedProperties('order', { ...order }),
                         ...mapAllowedProperties('order.customFields', { ...(order.custom?.fields || {}) }),
+                        ItemNames: this.mapOrderLineItemsToItemNames(order),
+                        Categories: this.getCategoryNamesFromProduct(
+                            orderProducts.map((product) => product.masterData.current.categories).flat(),
+                        ),
                     } as any,
                     unique_id: order.id,
                     time: time ?? order.createdAt,
@@ -82,5 +101,39 @@ export class DefaultOrderMapper implements OrderMapper {
                 },
             },
         };
+    }
+
+    private mapOrderLineItemsToItemNames(order: Order): string[] {
+        const lineItemNames = order.lineItems.map((item) => this.getNameFromLocalizedString(item.name));
+        const customLineItemNames =
+            order.customLineItems?.map((item) => this.getNameFromLocalizedString(item.name)) || [];
+        return Array.from(new Set(lineItemNames.concat(customLineItemNames)));
+    }
+
+    private getCategoryNamesFromProduct(categories: CategoryReference[]): string[] {
+        const categoryNames = categories.map((category) => {
+            const categoryAncestorNames = (category.obj as Category).ancestors.map((ancestor) =>
+                this.getNameFromLocalizedString((ancestor.obj as Category).name),
+            );
+            const categoryName = this.getNameFromLocalizedString((category.obj as Category).name);
+            const discreteCategoryNames = categoryAncestorNames.concat(categoryName);
+            return discreteCategoryNames.map((name, index) => {
+                const ancestorNames = [];
+                for (let i = index; i >= 0; i--) {
+                    ancestorNames.push(discreteCategoryNames[i]);
+                }
+                return ancestorNames.reverse().join(' > ');
+            });
+        });
+
+        // Conversion from Array -> Set -> Array removes duplicate entries.
+        // Useful for certain cases where you have a common main category such as:
+        // Women > Pants > Jeans and Women > Seasonal Fashion > Fall
+        return Array.from(new Set(categoryNames.flat()));
+    }
+
+    // Additional method for custom logic to handle locales when needed.
+    private getNameFromLocalizedString(itemName: LocalizedString): string {
+        return itemName[Object.keys(itemName)[0]];
     }
 }

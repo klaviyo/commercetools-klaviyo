@@ -6,6 +6,7 @@ import { getApiRoot } from '../../../../driven/commercetools/ctService';
 import { DefaultOrderMapper } from '../../../../../domain/shared/mappers/DefaultOrderMapper';
 import { DummyCurrencyService } from '../../../../../domain/shared/services/dummyCurrencyService';
 import { DefaultCtOrderService } from '../../../../driven/commercetools/DefaultCtOrderService';
+import { DefaultCtProductService } from '../../../../driven/commercetools/DefaultCtProductService';
 
 let ordersSync: OrdersSync;
 
@@ -29,6 +30,7 @@ const releaseLock = async () => {
 		new DefaultOrderMapper(new DummyCurrencyService()),
 		new KlaviyoSdkService(),
 		new DefaultCtOrderService(getApiRoot()),
+		new DefaultCtProductService(getApiRoot()),
 	);
 
 	if (workerData?.orderIds.length) {

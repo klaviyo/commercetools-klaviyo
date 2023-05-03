@@ -4,20 +4,23 @@ import { KlaviyoSdkService } from "../../infrastructure/driven/klaviyo/KlaviyoSd
 import { CTCustomObjectLockService } from "./services/CTCustomObjectLockService";
 import { DeepMockProxy, mock, mockDeep } from "jest-mock-extended";
 import { DefaultCtOrderService } from "../../infrastructure/driven/commercetools/DefaultCtOrderService";
-import { LineItem, Order } from "@commercetools/platform-sdk";
+import { LineItem, Order, Product } from "@commercetools/platform-sdk";
 import { ErrorCodes, StatusError } from "../../types/errors/StatusError";
 import logger from '../../utils/log'
+import { DefaultCtProductService } from '../../infrastructure/driven/commercetools/DefaultCtProductService';
 
 const mockCtCustomObjectLockService: DeepMockProxy<CTCustomObjectLockService> = mockDeep<CTCustomObjectLockService>();
 const mockDefaultOrderMapper: DeepMockProxy<DefaultOrderMapper> = mockDeep<DefaultOrderMapper>();
 const mockKlaviyoSdkService: DeepMockProxy<KlaviyoSdkService> = mockDeep<KlaviyoSdkService>();
 const mockDefaultCtOrderService: DeepMockProxy<DefaultCtOrderService> = mockDeep<DefaultCtOrderService>();
+const mockDefaultCtProductService: DeepMockProxy<DefaultCtProductService> = mockDeep<DefaultCtProductService>();
 
 const historicalOrders = new OrdersSync(
   mockCtCustomObjectLockService,
   mockDefaultOrderMapper,
   mockKlaviyoSdkService,
   mockDefaultCtOrderService,
+  mockDefaultCtProductService,
 );
 
 describe('syncAllOrders', () => {
@@ -25,18 +28,22 @@ describe('syncAllOrders', () => {
         mockCtCustomObjectLockService.acquireLock.mockResolvedValueOnce();
 
         const mockOrder = mock<Order>();
+        const mockProduct = mock<Product>();
         Object.defineProperty(mockOrder, 'createdAt', { value: "2023-01-27T15:00:00.000Z" });
         const mockOrderLineItems = mock<LineItem>();
         Object.defineProperty(mockOrder, 'lineItems', { value: [mockOrderLineItems] });
-        mockDefaultCtOrderService.getAllOrders.mockResolvedValueOnce({data: [mockOrder], hasMore: false})
+        Object.defineProperty(mockOrder, 'customLineItems', { value: [] });
+        mockDefaultCtOrderService.getAllOrders.mockResolvedValueOnce({data: [mockOrder], hasMore: false});
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
 
         await historicalOrders.syncAllOrders();
 
         expect(mockCtCustomObjectLockService.acquireLock).toBeCalledTimes(1);
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getAllOrders).toBeCalledTimes(1);
+        expect(mockDefaultCtProductService.getProductsByIdRange).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(1);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(mockOrder, "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(mockOrder, [mockProduct], "Placed Order");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(2);
@@ -54,7 +61,10 @@ describe('syncAllOrders', () => {
         Object.defineProperty(mockOrder, 'orderState', { value: ctOrderState });
         const mockOrderLineItems = mock<LineItem>();
         Object.defineProperty(mockOrder, 'lineItems', { value: [mockOrderLineItems] });
-        mockDefaultCtOrderService.getAllOrders.mockResolvedValueOnce({data: [mockOrder], hasMore: false})
+        Object.defineProperty(mockOrder, 'customLineItems', { value: [] });
+        mockDefaultCtOrderService.getAllOrders.mockResolvedValueOnce({data: [mockOrder], hasMore: false});
+        const mockProduct = mock<Product>();
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
 
         await historicalOrders.syncAllOrders();
 
@@ -62,8 +72,8 @@ describe('syncAllOrders', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getAllOrders).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(2);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, "Placed Order");
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, "Fulfilled Order", "2023-01-27T15:00:02.000Z");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Fulfilled Order", "2023-01-27T15:00:02.000Z");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(3);
@@ -77,7 +87,10 @@ describe('syncAllOrders', () => {
         Object.defineProperty(mockOrder, 'orderState', { value: "Cancelled" });
         const mockOrderLineItems = mock<LineItem>();
         Object.defineProperty(mockOrder, 'lineItems', { value: [mockOrderLineItems] });
-        mockDefaultCtOrderService.getAllOrders.mockResolvedValueOnce({data: [mockOrder], hasMore: false})
+        Object.defineProperty(mockOrder, 'customLineItems', { value: [] });
+        mockDefaultCtOrderService.getAllOrders.mockResolvedValueOnce({data: [mockOrder], hasMore: false});
+        const mockProduct = mock<Product>();
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
 
         await historicalOrders.syncAllOrders();
 
@@ -85,8 +98,8 @@ describe('syncAllOrders', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getAllOrders).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(2);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, "Placed Order");
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, "Cancelled Order", "2023-01-27T15:00:02.000Z");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Cancelled Order", "2023-01-27T15:00:02.000Z");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(3);
@@ -101,8 +114,11 @@ describe('syncAllOrders', () => {
         Object.defineProperty(mockOrder, 'orderState', { value: "Open" });
         const mockOrderLineItems = mock<LineItem>();
         Object.defineProperty(mockOrder, 'lineItems', { value: [mockOrderLineItems] });
-        mockDefaultCtOrderService.getAllOrders.mockResolvedValueOnce({data: Array(6).fill(mockOrder), hasMore: true})
-        mockDefaultCtOrderService.getAllOrders.mockResolvedValueOnce({data: Array(4).fill(mockOrder), hasMore: false})
+        Object.defineProperty(mockOrder, 'customLineItems', { value: [] });
+        mockDefaultCtOrderService.getAllOrders.mockResolvedValueOnce({data: Array(6).fill(mockOrder), hasMore: true});
+        mockDefaultCtOrderService.getAllOrders.mockResolvedValueOnce({data: Array(4).fill(mockOrder), hasMore: false});
+        const mockProduct = mock<Product>();
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
 
         await historicalOrders.syncAllOrders();
 
@@ -110,7 +126,7 @@ describe('syncAllOrders', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getAllOrders).toBeCalledTimes(2);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(10);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [], "Placed Order");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(10);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(20);
@@ -158,7 +174,10 @@ describe('syncOrdersByIdRange', () => {
         Object.defineProperty(mockOrder, 'createdAt', { value: "2023-01-27T15:00:00.000Z" });
         const mockOrderLineItems = mock<LineItem>();
         Object.defineProperty(mockOrder, 'lineItems', { value: [mockOrderLineItems] });
-        mockDefaultCtOrderService.getOrdersByIdRange.mockResolvedValueOnce({data: [mockOrder], hasMore: false})
+        Object.defineProperty(mockOrder, 'customLineItems', { value: [] });
+        mockDefaultCtOrderService.getOrdersByIdRange.mockResolvedValueOnce({data: [mockOrder], hasMore: false});
+        const mockProduct = mock<Product>();
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
 
         await historicalOrders.syncOrdersByIdRange(['123456']);
 
@@ -166,7 +185,7 @@ describe('syncOrdersByIdRange', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByIdRange).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(1);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(mockOrder, "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(mockOrder, [mockProduct], "Placed Order");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(2);
@@ -184,7 +203,10 @@ describe('syncOrdersByIdRange', () => {
         Object.defineProperty(mockOrder, 'orderState', { value: ctOrderState });
         const mockOrderLineItems = mock<LineItem>();
         Object.defineProperty(mockOrder, 'lineItems', { value: [mockOrderLineItems] });
-        mockDefaultCtOrderService.getOrdersByIdRange.mockResolvedValueOnce({data: [mockOrder], hasMore: false})
+        Object.defineProperty(mockOrder, 'customLineItems', { value: [] });
+        mockDefaultCtOrderService.getOrdersByIdRange.mockResolvedValueOnce({data: [mockOrder], hasMore: false});
+        const mockProduct = mock<Product>();
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
 
         await historicalOrders.syncOrdersByIdRange(['123456']);
 
@@ -192,8 +214,8 @@ describe('syncOrdersByIdRange', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByIdRange).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(2);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, "Placed Order");
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, "Fulfilled Order", "2023-01-27T15:00:02.000Z");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Fulfilled Order", "2023-01-27T15:00:02.000Z");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(3);
@@ -207,7 +229,10 @@ describe('syncOrdersByIdRange', () => {
         Object.defineProperty(mockOrder, 'orderState', { value: "Cancelled" });
         const mockOrderLineItems = mock<LineItem>();
         Object.defineProperty(mockOrder, 'lineItems', { value: [mockOrderLineItems] });
-        mockDefaultCtOrderService.getOrdersByIdRange.mockResolvedValueOnce({data: [mockOrder], hasMore: false})
+        Object.defineProperty(mockOrder, 'customLineItems', { value: [] });
+        mockDefaultCtOrderService.getOrdersByIdRange.mockResolvedValueOnce({data: [mockOrder], hasMore: false});
+        const mockProduct = mock<Product>();
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
 
         await historicalOrders.syncOrdersByIdRange(['123456']);
 
@@ -215,8 +240,8 @@ describe('syncOrdersByIdRange', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByIdRange).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(2);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, "Placed Order");
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, "Cancelled Order", "2023-01-27T15:00:02.000Z");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Cancelled Order", "2023-01-27T15:00:02.000Z");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(3);
@@ -231,8 +256,12 @@ describe('syncOrdersByIdRange', () => {
         Object.defineProperty(mockOrder, 'orderState', { value: "Open" });
         const mockOrderLineItems = mock<LineItem>();
         Object.defineProperty(mockOrder, 'lineItems', { value: [mockOrderLineItems] });
-        mockDefaultCtOrderService.getOrdersByIdRange.mockResolvedValueOnce({data: Array(6).fill(mockOrder), hasMore: true})
-        mockDefaultCtOrderService.getOrdersByIdRange.mockResolvedValueOnce({data: Array(4).fill(mockOrder), hasMore: false})
+        Object.defineProperty(mockOrder, 'customLineItems', { value: [] });
+        mockDefaultCtOrderService.getOrdersByIdRange.mockResolvedValueOnce({data: Array(6).fill(mockOrder), hasMore: true});
+        mockDefaultCtOrderService.getOrdersByIdRange.mockResolvedValueOnce({data: Array(4).fill(mockOrder), hasMore: false});
+        const mockProduct = mock<Product>();
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
 
         await historicalOrders.syncOrdersByIdRange(Array(10).fill('123456'));
 
@@ -240,7 +269,7 @@ describe('syncOrdersByIdRange', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByIdRange).toBeCalledTimes(2);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(10);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [], "Placed Order");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(10);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(20);
@@ -288,7 +317,10 @@ describe('syncOrdersByStartId', () => {
         Object.defineProperty(mockOrder, 'createdAt', { value: "2023-01-27T15:00:00.000Z" });
         const mockOrderLineItems = mock<LineItem>();
         Object.defineProperty(mockOrder, 'lineItems', { value: [mockOrderLineItems] });
-        mockDefaultCtOrderService.getOrdersByStartId.mockResolvedValueOnce({data: [mockOrder], hasMore: false})
+        Object.defineProperty(mockOrder, 'customLineItems', { value: [] });
+        mockDefaultCtOrderService.getOrdersByStartId.mockResolvedValueOnce({data: [mockOrder], hasMore: false});
+        const mockProduct = mock<Product>();
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
 
         await historicalOrders.syncOrdersByStartId('123456');
 
@@ -296,7 +328,7 @@ describe('syncOrdersByStartId', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByStartId).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(1);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(mockOrder, "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(mockOrder, [mockProduct], "Placed Order");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(2);
@@ -314,7 +346,10 @@ describe('syncOrdersByStartId', () => {
         Object.defineProperty(mockOrder, 'orderState', { value: ctOrderState });
         const mockOrderLineItems = mock<LineItem>();
         Object.defineProperty(mockOrder, 'lineItems', { value: [mockOrderLineItems] });
-        mockDefaultCtOrderService.getOrdersByStartId.mockResolvedValueOnce({data: [mockOrder], hasMore: false})
+        Object.defineProperty(mockOrder, 'customLineItems', { value: [] });
+        mockDefaultCtOrderService.getOrdersByStartId.mockResolvedValueOnce({data: [mockOrder], hasMore: false});
+        const mockProduct = mock<Product>();
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
 
         await historicalOrders.syncOrdersByStartId('123456');
 
@@ -322,8 +357,8 @@ describe('syncOrdersByStartId', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByStartId).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(2);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, "Placed Order");
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, "Fulfilled Order", "2023-01-27T15:00:02.000Z");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Fulfilled Order", "2023-01-27T15:00:02.000Z");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(3);
@@ -337,7 +372,10 @@ describe('syncOrdersByStartId', () => {
         Object.defineProperty(mockOrder, 'orderState', { value: "Cancelled" });
         const mockOrderLineItems = mock<LineItem>();
         Object.defineProperty(mockOrder, 'lineItems', { value: [mockOrderLineItems] });
-        mockDefaultCtOrderService.getOrdersByStartId.mockResolvedValueOnce({data: [mockOrder], hasMore: false})
+        Object.defineProperty(mockOrder, 'customLineItems', { value: [] });
+        mockDefaultCtOrderService.getOrdersByStartId.mockResolvedValueOnce({data: [mockOrder], hasMore: false});
+        const mockProduct = mock<Product>();
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
 
         await historicalOrders.syncOrdersByStartId('123456');
 
@@ -345,8 +383,8 @@ describe('syncOrdersByStartId', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByStartId).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(2);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, "Placed Order");
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, "Cancelled Order", "2023-01-27T15:00:02.000Z");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Cancelled Order", "2023-01-27T15:00:02.000Z");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(3);
@@ -361,8 +399,12 @@ describe('syncOrdersByStartId', () => {
         Object.defineProperty(mockOrder, 'orderState', { value: "Open" });
         const mockOrderLineItems = mock<LineItem>();
         Object.defineProperty(mockOrder, 'lineItems', { value: [mockOrderLineItems] });
-        mockDefaultCtOrderService.getOrdersByStartId.mockResolvedValueOnce({data: Array(6).fill(mockOrder), hasMore: true})
-        mockDefaultCtOrderService.getOrdersByStartId.mockResolvedValueOnce({data: Array(4).fill(mockOrder), hasMore: false})
+        Object.defineProperty(mockOrder, 'customLineItems', { value: [] });
+        mockDefaultCtOrderService.getOrdersByStartId.mockResolvedValueOnce({data: Array(6).fill(mockOrder), hasMore: true});
+        mockDefaultCtOrderService.getOrdersByStartId.mockResolvedValueOnce({data: Array(4).fill(mockOrder), hasMore: false});
+        const mockProduct = mock<Product>();
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
+        mockDefaultCtProductService.getProductsByIdRange.mockResolvedValueOnce({data: [mockProduct], hasMore: false});
 
         await historicalOrders.syncOrdersByStartId('123456');
 
@@ -370,7 +412,7 @@ describe('syncOrdersByStartId', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByStartId).toBeCalledTimes(2);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(10);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [], "Placed Order");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(10);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(20);

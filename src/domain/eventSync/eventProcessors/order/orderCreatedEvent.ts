@@ -6,8 +6,10 @@ import {
     OrderCreatedMessage,
     OrderCustomerSetMessage,
     OrderState,
+    Product,
 } from '@commercetools/platform-sdk';
 import config from 'config';
+import { PaginatedProductResults } from '../../../../infrastructure/driven/commercetools/DefaultCtProductService';
 
 export class OrderCreatedEvent extends AbstractEventProcessor {
     isEventValid(): boolean {
@@ -32,8 +34,23 @@ export class OrderCreatedEvent extends AbstractEventProcessor {
             order = (await this.context.ctOrderService.getOrderById(message.resource.id)) as Order;
         }
 
+        let orderProducts: Product[] = [];
+        let ctProductsResult: PaginatedProductResults | undefined;
+        do {
+            try {
+                ctProductsResult = await this.context.ctProductService.getProductsByIdRange(
+                    order.lineItems.map((item) => item.productId),
+                    ctProductsResult?.lastId,
+                );
+                orderProducts = orderProducts.concat(ctProductsResult.data);
+            } catch (err) {
+                logger.info(`Failed to get product details for order: ${order.id}`, err);
+            }
+        } while ((ctProductsResult as PaginatedProductResults)?.hasMore);
+
         const body: EventRequest = this.context.orderMapper.mapCtOrderToKlaviyoEvent(
             order,
+            orderProducts,
             config.get('order.metrics.placedOrder'),
         );
 

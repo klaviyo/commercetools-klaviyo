@@ -7,9 +7,11 @@ import config from 'config';
 import { isFulfilled, isRejected } from '../../utils/promise';
 import { ErrorCodes } from '../../types/errors/StatusError';
 import { isOrderCancelled, isOrderFulfilled } from '../../utils/order-utils';
-import { Order } from '@commercetools/platform-sdk';
+import { Order, Product } from '@commercetools/platform-sdk';
 import { CtOrderService } from '../../infrastructure/driven/commercetools/CtOrderService';
 import { getElapsedSeconds, startTime } from '../../utils/time-utils';
+import { CtProductService } from '../../infrastructure/driven/commercetools/CtProductService';
+import { PaginatedProductResults } from '../../infrastructure/driven/commercetools/DefaultCtProductService';
 
 export class OrdersSync {
     lockKey = 'orderFullSync';
@@ -18,6 +20,7 @@ export class OrdersSync {
         private readonly orderMapper: OrderMapper,
         private readonly klaviyoService: KlaviyoService,
         private readonly ctOrderService: CtOrderService,
+        private readonly ctProductService: CtProductService,
     ) {}
 
     public syncAllOrders = async () => {
@@ -41,6 +44,7 @@ export class OrdersSync {
             await this.lockService.acquireLock(this.lockKey);
 
             let ctOrdersResult: PaginatedOrderResults | undefined;
+            let ctProductsByOrder: any = {};
             let succeeded = 0,
                 errored = 0,
                 totalOrders = 0,
@@ -50,8 +54,28 @@ export class OrdersSync {
             do {
                 ctOrdersResult = await ordersMethod(...args, ctOrdersResult?.lastId);
 
+                // Used to set Categories for Order properties in Klaviyo
+                ctProductsByOrder = {};
+                for (const order of (ctOrdersResult as PaginatedOrderResults).data) {
+                    ctProductsByOrder[order.id] = [];
+                    let ctProductsResult: PaginatedProductResults | undefined;
+                    do {
+                        try {
+                            ctProductsResult = await this.ctProductService.getProductsByIdRange(
+                                order.lineItems.map((item) => item.productId),
+                                ctProductsResult?.lastId,
+                            );
+                            ctProductsByOrder[order.id] = ctProductsByOrder[order.id].concat(ctProductsResult.data);
+                        } catch (err) {
+                            logger.info(`Failed to get product details for order: ${order.id}`);
+                        }
+                    } while (ctProductsResult?.hasMore);
+                }
+
                 const promiseResults = await Promise.allSettled(
-                    (ctOrdersResult as PaginatedOrderResults).data.flatMap((order) => this.generateAndSendOrderEventsToKlaviyo(order)),
+                    (ctOrdersResult as PaginatedOrderResults).data.flatMap((order) =>
+                        this.generateAndSendOrderEventsToKlaviyo(order, ctProductsByOrder[order.id]),
+                    ),
                 );
 
                 const rejectedPromises = promiseResults.filter(isRejected);
@@ -81,13 +105,15 @@ export class OrdersSync {
                 logger.warn('Already locked');
             }
         }
-    }
+    };
 
-    private generateAndSendOrderEventsToKlaviyo = (order: Order): Promise<any>[] => {
+    private generateAndSendOrderEventsToKlaviyo = (order: Order, orderProducts: Product[]): Promise<any>[] => {
         const events: EventRequest[] = [];
 
         //Order placed event
-        events.push(this.orderMapper.mapCtOrderToKlaviyoEvent(order, config.get('order.metrics.placedOrder')));
+        events.push(
+            this.orderMapper.mapCtOrderToKlaviyoEvent(order, orderProducts, config.get('order.metrics.placedOrder')),
+        );
 
         //Ordered product event
         const eventTime: Date = new Date(order.createdAt);
@@ -102,6 +128,7 @@ export class OrdersSync {
             events.push(
                 this.orderMapper.mapCtOrderToKlaviyoEvent(
                     order,
+                    orderProducts,
                     config.get('order.metrics.fulfilledOrder'),
                     eventTime.toISOString(),
                 ),
@@ -114,6 +141,7 @@ export class OrdersSync {
             events.push(
                 this.orderMapper.mapCtOrderToKlaviyoEvent(
                     order,
+                    orderProducts,
                     config.get('order.metrics.cancelledOrder'),
                     eventTime.toISOString(),
                 ),

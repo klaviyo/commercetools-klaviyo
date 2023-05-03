@@ -14,14 +14,30 @@ export class DefaultCtProductService implements CtProductService {
 
     getAllProducts = async (lastId?: string): Promise<PaginatedProductResults> => {
         logger.info(`Getting all products in commercetools with id after ${lastId}`);
+        const queryArgs = {
+            limit: this.limit,
+            withTotal: false,
+            sort: 'id asc',
+            expand: 'masterData.current.categories[*].ancestors[*]',
+            where: `masterData(published = true)${lastId ? ' and id > `"${lastId}"`' : ''}`,
+        };
+        return await this.getProducts(queryArgs);
+    };
+
+    getProductsByIdRange = async (ids: string[], lastId?: string): Promise<PaginatedProductResults> => {
+        logger.info(`Getting products by id range in commercetools${lastId ? ' with id after: ' + lastId : ''}`);
+        const queryArgs = {
+            limit: this.limit,
+            withTotal: false,
+            sort: 'id asc',
+            expand: 'masterData.current.categories[*].ancestors[*]',
+            where: `id in ("${ids.join('","')}")${lastId ? ' and id > `"${lastId}"`' : ''}`,
+        };
+        return await this.getProducts(queryArgs);
+    };
+
+    private getProducts = async (queryArgs: any): Promise<PaginatedProductResults> => {
         try {
-            const queryArgs = {
-                limit: this.limit,
-                withTotal: false,
-                sort: 'id asc',
-                expand: 'masterData.current.categories[*].ancestors[*]',
-                where: `masterData(published = true)${lastId ? ' and id > "${lastId}"' : ''}`,
-            };
             const ctProducts = (await this.ctApiRoot.products().get({ queryArgs }).execute()).body;
             return {
                 data: ctProducts.results,

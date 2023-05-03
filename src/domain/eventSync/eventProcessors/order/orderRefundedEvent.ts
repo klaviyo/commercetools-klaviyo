@@ -3,9 +3,11 @@ import logger from '../../../../utils/log';
 import {
     PaymentTransactionAddedMessage,
     PaymentTransactionStateChangedMessage,
+    Product,
     Transaction,
 } from '@commercetools/platform-sdk';
 import config from 'config';
+import { PaginatedProductResults } from '../../../../infrastructure/driven/commercetools/DefaultCtProductService';
 
 export class OrderRefundedEvent extends AbstractEventProcessor {
     isEventValid(): boolean {
@@ -40,9 +42,23 @@ export class OrderRefundedEvent extends AbstractEventProcessor {
         }
 
         const ctOrder = await this.context.ctOrderService.getOrderByPaymentId(message.resource.id);
+        let orderProducts: Product[] = [];
+        let ctProductsResult: PaginatedProductResults | undefined;
+        do {
+            try {
+                ctProductsResult = await this.context.ctProductService.getProductsByIdRange(
+                    ctOrder.lineItems.map((item) => item.productId),
+                    ctProductsResult?.lastId,
+                );
+                orderProducts = orderProducts.concat(ctProductsResult.data);
+            } catch (err) {
+                logger.info(`Failed to get product details for order: ${ctOrder.id}`, err);
+            }
+        } while ((ctProductsResult as PaginatedProductResults)?.hasMore);
 
         const body: EventRequest = this.context.orderMapper.mapCtRefundedOrderToKlaviyoEvent(
             ctOrder,
+            orderProducts,
             config.get('order.metrics.refundedOrder'),
             ctOrder.lastModifiedAt,
         );

@@ -77,6 +77,10 @@ describe('orderStateChangedEvent > generateKlaviyoEvent', () => {
         Object.defineProperty(ctMessageMock, 'type', { value: 'OrderStateChanged' }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'orderState', { value: 'Cancelled' }); //mock readonly property
         contextMock.ctOrderService.getOrderById.mockResolvedValueOnce(undefined);
+        contextMock.ctProductService.getProductsByIdRange.mockResolvedValueOnce({
+            data: [],
+            hasMore: false,
+        });
 
         const event = OrderStateChangedEvent.instance(ctMessageMock, contextMock);
         const klaviyoEvent = await event.generateKlaviyoEvents();
@@ -115,6 +119,10 @@ describe('orderStateChangedEvent > generateKlaviyoEvent', () => {
             origin: 'Customer',
             refusedGifts: [],
         });
+        contextMock.ctProductService.getProductsByIdRange.mockResolvedValueOnce({
+            data: [],
+            hasMore: false,
+        });
 
         const event = OrderStateChangedEvent.instance(ctMessageMock, contextMock);
         const klaviyoEvent = await event.generateKlaviyoEvents();
@@ -124,6 +132,7 @@ describe('orderStateChangedEvent > generateKlaviyoEvent', () => {
         expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(1);
         expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(
             expect.anything(),
+            [],
             'Cancelled Order',
             '2023-01-27T15:00:00.000Z',
         );

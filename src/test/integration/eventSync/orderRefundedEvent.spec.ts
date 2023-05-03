@@ -4,8 +4,14 @@ import { app } from '../../../infrastructure/driving/adapter/eventSync/pubsubAda
 import { klaviyoEventNock } from '../nocks/KlaviyoEventNock';
 import { sampleOrderWithPaymentMessage } from '../../testData/orderData';
 import { samplePaymentTransactionAddedMessage } from '../../testData/ctPaymentMessages';
-import { ctAuthNock, ctGetOrderByPaymentIdNock, ctGetPaymentByIdNock } from '../nocks/commercetoolsNock';
+import {
+    ctAuthNock,
+    ctGetOrderByPaymentIdNock,
+    ctGetPaymentByIdNock,
+    getProductsByIdRange,
+} from '../nocks/commercetoolsNock';
 import { mapAllowedProperties } from '../../../utils/property-mapper';
+import { ctGet2Orders } from '../../testData/ctGetOrders';
 
 chai.use(chaiHttp);
 
@@ -22,10 +28,28 @@ describe('pubSub adapter order refunded mesasge', () => {
     });
 
     beforeEach(() => {
-        ctAuthNock();
-        ctAuthNock();
+        ctAuthNock(3);
         ctGetPaymentByIdNock('3456789');
         ctGetOrderByPaymentIdNock('3456789');
+        getProductsByIdRange(['2d69d31e-cccc-450d-83c8-aa27c2a0a620'], {
+            results: [
+                {
+                    masterData: {
+                        current: {
+                            categories: {
+                                obj: {
+                                    name: {
+                                        'en-US': 'Test Category 1',
+                                    },
+                                    ancestors: [],
+                                },
+                            },
+                        },
+                    },
+                },
+            ],
+            count: 0,
+        });
     });
 
     it('should return status 204 when the request is valid but ignored as message type is not supported', (done) => {
@@ -50,7 +74,16 @@ describe('pubSub adapter order refunded mesasge', () => {
                 metric: { name: 'Refunded Order' },
                 value: 13,
                 properties: {
-                    ...mapAllowedProperties('order', { ...sampleOrderWithPaymentMessage.order }),
+                    ...mapAllowedProperties('order', {
+                        ...sampleOrderWithPaymentMessage.order,
+                        lineItems: [
+                            {
+                                ...ctGet2Orders.results[0].lineItems[0],
+                            },
+                        ],
+                    }),
+                    ItemNames: ['Product Name'],
+                    Categories: ['Test Category 1'],
                 },
                 unique_id: '3456789',
                 time: '2023-01-27T15:00:00.000Z',
@@ -80,7 +113,6 @@ describe('pubSub event that produces 4xx error', () => {
             done();
         });
     });
-
 
     beforeEach(() => {
         ctAuthNock();
@@ -125,9 +157,28 @@ describe('pubSub event that produces 5xx error', () => {
     });
 
     beforeEach(() => {
-        ctAuthNock();
+        ctAuthNock(3);
         ctGetPaymentByIdNock('3456789');
         ctGetOrderByPaymentIdNock('3456789');
+        getProductsByIdRange(['2d69d31e-cccc-450d-83c8-aa27c2a0a620'], {
+            results: [
+                {
+                    masterData: {
+                        current: {
+                            categories: {
+                                obj: {
+                                    name: {
+                                        'en-US': 'Test Category 1',
+                                    },
+                                    ancestors: [],
+                                },
+                            },
+                        },
+                    },
+                },
+            ],
+            count: 0,
+        });
     });
 
     it('should not acknowledge the message to pub/sub and return status 500 when the request is invalid', (done) => {
@@ -141,7 +192,16 @@ describe('pubSub event that produces 5xx error', () => {
                     metric: { name: 'Refunded Order' },
                     value: 13,
                     properties: {
-                        ...mapAllowedProperties('order', { ...sampleOrderWithPaymentMessage.order }),
+                        ...mapAllowedProperties('order', {
+                            ...sampleOrderWithPaymentMessage.order,
+                            lineItems: [
+                                {
+                                    ...ctGet2Orders.results[0].lineItems[0],
+                                },
+                            ],
+                        }),
+                        ItemNames: ['Product Name'],
+                        Categories: ['Test Category 1'],
                     },
                     unique_id: '3456789',
                     time: '2023-01-27T15:00:00.000Z',

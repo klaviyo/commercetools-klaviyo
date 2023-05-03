@@ -100,6 +100,10 @@ describe('orderRefundedEvent > generateKlaviyoEvent', () => {
             transactions: [],
         } as any);
         contextMock.ctOrderService.getOrderByPaymentId.mockResolvedValue(sampleOrderCreatedMessage.order);
+        contextMock.ctProductService.getProductsByIdRange.mockResolvedValueOnce({
+            data: [],
+            hasMore: false,
+        });
 
         const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
         const klaviyoEvent = await event.generateKlaviyoEvents();
@@ -137,6 +141,10 @@ describe('orderRefundedEvent > generateKlaviyoEvent', () => {
             transactions: [],
         } as any);
         contextMock.ctOrderService.getOrderByPaymentId.mockResolvedValue(sampleOrderCreatedMessage.order);
+        contextMock.ctProductService.getProductsByIdRange.mockResolvedValueOnce({
+            data: [],
+            hasMore: false,
+        });
 
         const event = OrderRefundedEvent.instance(ctMessageMock, contextMock);
         const klaviyoEvent = await event.generateKlaviyoEvents();

@@ -1,8 +1,9 @@
 import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
 import { OrderStateChangedMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
-import { OrderState } from '@commercetools/platform-sdk';
+import { OrderState, Product } from '@commercetools/platform-sdk';
 import config from 'config';
+import { PaginatedProductResults } from '../../../../infrastructure/driven/commercetools/DefaultCtProductService';
 
 export class OrderStateChangedEvent extends AbstractEventProcessor {
     isEventValid(): boolean {
@@ -24,8 +25,23 @@ export class OrderStateChangedEvent extends AbstractEventProcessor {
             return [];
         }
 
+        let orderProducts: Product[] = [];
+        let ctProductsResult: PaginatedProductResults | undefined;
+        do {
+            try {
+                ctProductsResult = await this.context.ctProductService.getProductsByIdRange(
+                    ctOrder.lineItems.map((item) => item.productId),
+                    ctProductsResult?.lastId,
+                );
+                orderProducts = orderProducts.concat(ctProductsResult.data);
+            } catch (err) {
+                logger.info(`Failed to get product details for order: ${ctOrder.id}`, err);
+            }
+        } while ((ctProductsResult as PaginatedProductResults)?.hasMore);
+
         const body: EventRequest = this.context.orderMapper.mapCtOrderToKlaviyoEvent(
             ctOrder,
+            orderProducts,
             this.getOrderMetricByState(orderStateChangedMessage.orderState),
             ctOrder.lastModifiedAt,
         );
