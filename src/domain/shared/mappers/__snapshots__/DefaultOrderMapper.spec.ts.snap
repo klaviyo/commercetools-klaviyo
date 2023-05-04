@@ -96,6 +96,45 @@ exports[`map CT order to Klaviyo event should include/exclude/map custom fields 
 }
 `;
 
+exports[`map CT order to Klaviyo event should map a billing address profile property for a realtime klaviyo event 1`] = `
+{
+  "data": {
+    "attributes": {
+      "metric": {
+        "name": "someMetric",
+      },
+      "profile": {
+        "$email": "test@klaviyo.com",
+        "$id": "123-123-123",
+      },
+      "properties": {
+        "Categories": [],
+        "ItemNames": [],
+        "createdAt": "2023-01-27T15:00:00.000Z",
+        "customItems": [],
+        "customerEmail": "test@klaviyo.com",
+        "customerId": "123-123-123",
+        "items": [],
+        "lastModifiedAt": "2023-01-27T15:00:00.000Z",
+        "orderId": "3456789",
+        "orderState": "Open",
+        "totalPrice": {
+          "centAmount": 1300,
+          "currencyCode": "USD",
+          "fractionDigits": 2,
+          "type": "centPrecision",
+        },
+        "version": 24,
+      },
+      "time": "2023-01-27T15:00:00.000Z",
+      "unique_id": "3456789",
+      "value": 13,
+    },
+    "type": "event",
+  },
+}
+`;
+
 exports[`map CT order to Klaviyo event should map a commercetools order with a given metric to a klaviyo event 1`] = `
 {
   "data": {

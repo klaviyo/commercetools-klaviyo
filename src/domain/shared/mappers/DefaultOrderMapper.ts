@@ -5,20 +5,26 @@ import { Category, CategoryReference, LineItem, LocalizedString, Order, Product 
 import { OrderMapper } from './OrderMapper';
 import config from 'config';
 import { CurrencyService } from '../services/CurrencyService';
+import { CustomerMapper } from './CustomerMapper';
 
 export class DefaultOrderMapper implements OrderMapper {
-    constructor(private readonly currencyService: CurrencyService) {}
+    constructor(private readonly currencyService: CurrencyService, private readonly customerMapper: CustomerMapper) {}
     public mapCtOrderToKlaviyoEvent(
         order: Order,
         orderProducts: Product[],
         metric: string,
+        updateAdditionalProfileProperties: boolean,
         time?: string,
     ): EventRequest {
         return {
             data: {
                 type: 'event',
                 attributes: {
-                    profile: getCustomerProfileFromOrder(order),
+                    profile: getCustomerProfileFromOrder(
+                        order,
+                        this.customerMapper,
+                        updateAdditionalProfileProperties && metric === config.get('order.metrics.placedOrder'),
+                    ),
                     metric: {
                         name: metric,
                     },
@@ -62,7 +68,7 @@ export class DefaultOrderMapper implements OrderMapper {
             data: {
                 type: 'event',
                 attributes: {
-                    profile: getCustomerProfileFromOrder(order),
+                    profile: getCustomerProfileFromOrder(order, this.customerMapper),
                     metric: {
                         name: metric,
                     },
@@ -87,7 +93,7 @@ export class DefaultOrderMapper implements OrderMapper {
             data: {
                 type: 'event',
                 attributes: {
-                    profile: getCustomerProfileFromOrder(order),
+                    profile: getCustomerProfileFromOrder(order, this.customerMapper),
                     metric: {
                         name: config.get('order.metrics.orderedProduct'),
                     },

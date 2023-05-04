@@ -134,6 +134,7 @@ describe('orderStateChangedEvent > generateKlaviyoEvent', () => {
             expect.anything(),
             [],
             'Cancelled Order',
+            false,
             '2023-01-27T15:00:00.000Z',
         );
         exp(klaviyoEvent[0].body.data.id).to.eq(mockedOrderId);

@@ -124,7 +124,7 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
         exp(klaviyoEvent.length).to.eq(1);
         expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(1);
         expect(contextMock.orderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(0);
-        expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(order, [], 'Placed Order');
+        expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(order, [], 'Placed Order', true);
         exp(klaviyoEvent[0].body.data.id).to.eq(mockedOrderId);
     });
 
@@ -150,6 +150,7 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
             sampleOrderCreatedMessage.order,
             [],
             'Placed Order',
+            true,
         );
         exp(klaviyoEvent[0].body.data.id).to.eq(mockedOrderId);
     });
@@ -190,7 +191,7 @@ describe('orderCreatedEvent > generateKlaviyoEvent', () => {
         exp(klaviyoEvents).to.not.be.undefined;
         exp(klaviyoEvents.length).to.eq(2);
         expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(1);
-        expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(order, [], 'Placed Order');
+        expect(contextMock.orderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(order, [], 'Placed Order', true);
         expect(contextMock.orderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(contextMock.orderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(order.lineItems[0], order);
         exp(klaviyoEvents[0].body.data.id).to.eq(mockedOrderId);

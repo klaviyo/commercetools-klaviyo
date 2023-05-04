@@ -7,6 +7,7 @@ import { DefaultOrderMapper } from '../../../../../domain/shared/mappers/Default
 import { DummyCurrencyService } from '../../../../../domain/shared/services/dummyCurrencyService';
 import { DefaultCtOrderService } from '../../../../driven/commercetools/DefaultCtOrderService';
 import { DefaultCtProductService } from '../../../../driven/commercetools/DefaultCtProductService';
+import { DefaultCustomerMapper } from '../../../../../domain/shared/mappers/DefaultCustomerMapper';
 
 let ordersSync: OrdersSync;
 
@@ -27,7 +28,7 @@ const releaseLock = async () => {
 (async () => {
 	ordersSync = new OrdersSync(
 		new CTCustomObjectLockService(getApiRoot()),
-		new DefaultOrderMapper(new DummyCurrencyService()),
+		new DefaultOrderMapper(new DummyCurrencyService(), new DefaultCustomerMapper()),
 		new KlaviyoSdkService(),
 		new DefaultCtOrderService(getApiRoot()),
 		new DefaultCtProductService(getApiRoot()),

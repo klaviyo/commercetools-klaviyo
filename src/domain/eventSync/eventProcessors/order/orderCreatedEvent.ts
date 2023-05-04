@@ -52,6 +52,7 @@ export class OrderCreatedEvent extends AbstractEventProcessor {
             order,
             orderProducts,
             config.get('order.metrics.placedOrder'),
+            true,
         );
 
         const events: KlaviyoEvent[] = [{ body, type: 'event' }];

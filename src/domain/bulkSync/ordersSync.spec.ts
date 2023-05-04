@@ -43,7 +43,7 @@ describe('syncAllOrders', () => {
         expect(mockDefaultCtOrderService.getAllOrders).toBeCalledTimes(1);
         expect(mockDefaultCtProductService.getProductsByIdRange).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(1);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(mockOrder, [mockProduct], "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(mockOrder, [mockProduct], "Placed Order", false);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(2);
@@ -72,8 +72,8 @@ describe('syncAllOrders', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getAllOrders).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(2);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order");
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Fulfilled Order", "2023-01-27T15:00:02.000Z");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order", false);
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Fulfilled Order", false, "2023-01-27T15:00:02.000Z");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(3);
@@ -98,8 +98,8 @@ describe('syncAllOrders', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getAllOrders).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(2);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order");
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Cancelled Order", "2023-01-27T15:00:02.000Z");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order", false);
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Cancelled Order", false, "2023-01-27T15:00:02.000Z");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(3);
@@ -126,7 +126,7 @@ describe('syncAllOrders', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getAllOrders).toBeCalledTimes(2);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(10);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [], "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [], "Placed Order", false);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(10);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(20);
@@ -185,7 +185,7 @@ describe('syncOrdersByIdRange', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByIdRange).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(1);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(mockOrder, [mockProduct], "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(mockOrder, [mockProduct], "Placed Order", false);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(2);
@@ -214,8 +214,8 @@ describe('syncOrdersByIdRange', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByIdRange).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(2);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order");
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Fulfilled Order", "2023-01-27T15:00:02.000Z");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order", false);
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Fulfilled Order", false, "2023-01-27T15:00:02.000Z");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(3);
@@ -240,8 +240,8 @@ describe('syncOrdersByIdRange', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByIdRange).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(2);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order");
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Cancelled Order", "2023-01-27T15:00:02.000Z");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order", false);
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Cancelled Order", false, "2023-01-27T15:00:02.000Z");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(3);
@@ -269,7 +269,7 @@ describe('syncOrdersByIdRange', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByIdRange).toBeCalledTimes(2);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(10);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [], "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [], "Placed Order", false);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(10);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(20);
@@ -328,7 +328,7 @@ describe('syncOrdersByStartId', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByStartId).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(1);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(mockOrder, [mockProduct], "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledWith(mockOrder, [mockProduct], "Placed Order", false);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(2);
@@ -357,8 +357,8 @@ describe('syncOrdersByStartId', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByStartId).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(2);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order");
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Fulfilled Order", "2023-01-27T15:00:02.000Z");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order", false);
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Fulfilled Order", false, "2023-01-27T15:00:02.000Z");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(3);
@@ -383,8 +383,8 @@ describe('syncOrdersByStartId', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByStartId).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(2);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order");
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Cancelled Order", "2023-01-27T15:00:02.000Z");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [mockProduct], "Placed Order", false);
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(2, mockOrder, [mockProduct], "Cancelled Order", false, "2023-01-27T15:00:02.000Z");
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(1);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(3);
@@ -412,7 +412,7 @@ describe('syncOrdersByStartId', () => {
         expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
         expect(mockDefaultCtOrderService.getOrdersByStartId).toBeCalledTimes(2);
         expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toBeCalledTimes(10);
-        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [], "Placed Order");
+        expect(mockDefaultOrderMapper.mapCtOrderToKlaviyoEvent).toHaveBeenNthCalledWith(1, mockOrder, [], "Placed Order", false);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledTimes(10);
         expect(mockDefaultOrderMapper.mapOrderLineToProductOrderedEvent).toBeCalledWith(mockOrderLineItems, mockOrder, "2023-01-27T15:00:01.000Z");
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(20);

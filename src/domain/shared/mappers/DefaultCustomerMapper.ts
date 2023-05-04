@@ -37,15 +37,16 @@ export class DefaultCustomerMapper implements CustomerMapper {
         };
     }
 
-    public mapCTAddressToKlaviyoLocation(address?: Address): KlaviyoLocation | null {
+    public mapCTAddressToKlaviyoLocation(address?: Address, useSpecialPrefix = false): KlaviyoLocation | null {
+        const specialPrefix = useSpecialPrefix ? '$' : '';
         return address
             ? {
-                  address1: this.getAddressLine1(address),
-                  address2: this.getAddressLine2(address),
-                  city: address.city,
-                  country: address.country,
-                  region: address.region,
-                  zip: address.postalCode,
+                  [`${specialPrefix}address1`]: this.getAddressLine1(address),
+                  [`${specialPrefix}address2`]: this.getAddressLine2(address),
+                  [`${specialPrefix}city`]: address.city,
+                  [`${specialPrefix}country`]: address.country,
+                  [`${specialPrefix}region`]: address.region,
+                  [`${specialPrefix}zip`]: address.postalCode,
               }
             : null;
     }

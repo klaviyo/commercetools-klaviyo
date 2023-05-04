@@ -18,6 +18,7 @@ import { KlaviyoSdkService } from '../../../infrastructure/driven/klaviyo/Klaviy
 import { DefaultCtOrderService } from '../../../infrastructure/driven/commercetools/DefaultCtOrderService';
 import nock from 'nock';
 import { DefaultCtProductService } from '../../../infrastructure/driven/commercetools/DefaultCtProductService';
+import { DefaultCustomerMapper } from '../../../domain/shared/mappers/DefaultCustomerMapper';
 
 describe('syncAllOrders', () => {
     afterEach(() => {
@@ -1069,7 +1070,7 @@ describe('syncAllOrders', () => {
 
         const ordersSync = new OrdersSync(
             new CTCustomObjectLockService(getApiRoot()),
-            new DefaultOrderMapper(new DummyCurrencyService()),
+            new DefaultOrderMapper(new DummyCurrencyService(), new DefaultCustomerMapper()),
             new KlaviyoSdkService(),
             new DefaultCtOrderService(getApiRoot()),
             new DefaultCtProductService(getApiRoot()),

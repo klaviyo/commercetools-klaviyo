@@ -112,7 +112,7 @@ export class OrdersSync {
 
         //Order placed event
         events.push(
-            this.orderMapper.mapCtOrderToKlaviyoEvent(order, orderProducts, config.get('order.metrics.placedOrder')),
+            this.orderMapper.mapCtOrderToKlaviyoEvent(order, orderProducts, config.get('order.metrics.placedOrder'), false),
         );
 
         //Ordered product event
@@ -130,6 +130,7 @@ export class OrdersSync {
                     order,
                     orderProducts,
                     config.get('order.metrics.fulfilledOrder'),
+                    false,
                     eventTime.toISOString(),
                 ),
             );
@@ -143,6 +144,7 @@ export class OrdersSync {
                     order,
                     orderProducts,
                     config.get('order.metrics.cancelledOrder'),
+                    false,
                     eventTime.toISOString(),
                 ),
             );

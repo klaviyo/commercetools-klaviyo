@@ -31,7 +31,7 @@ import { DefaultCtOrderService } from '../../infrastructure/driven/commercetools
 
 const context: Context = {
     klaviyoService: new KlaviyoSdkService(),
-    orderMapper: new DefaultOrderMapper(new DummyCurrencyService()),
+    orderMapper: new DefaultOrderMapper(new DummyCurrencyService(), new DefaultCustomerMapper()),
     customerMapper: new DefaultCustomerMapper(),
     categoryMapper: new DefaultCategoryMapper(),
     productMapper: new DefaultProductMapper(new DummyCurrencyService()),

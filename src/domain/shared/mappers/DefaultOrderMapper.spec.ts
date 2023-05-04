@@ -2,13 +2,20 @@ import { DefaultOrderMapper } from './DefaultOrderMapper';
 import { mock } from 'jest-mock-extended';
 import { DummyCurrencyService } from '../services/dummyCurrencyService';
 import { sampleOrderCreatedMessage } from '../../../test/testData/orderData';
+import { DefaultCustomerMapper } from './DefaultCustomerMapper';
 
 const mockCurrencyService = mock<DummyCurrencyService>();
 mockCurrencyService.convert.mockImplementation((value, currency) => value);
-const orderMapper = new DefaultOrderMapper(mockCurrencyService);
+const mockCustomerMapper = mock<DefaultCustomerMapper>();
+const orderMapper = new DefaultOrderMapper(mockCurrencyService, mockCustomerMapper);
 describe('map CT order to Klaviyo event', () => {
     it('should map a commercetools order with a given metric to a klaviyo event', () => {
-        const klaviyoEvent = orderMapper.mapCtOrderToKlaviyoEvent(sampleOrderCreatedMessage.order, [], 'someMetric');
+        const klaviyoEvent = orderMapper.mapCtOrderToKlaviyoEvent(
+            sampleOrderCreatedMessage.order,
+            [],
+            'someMetric',
+            false,
+        );
         expect(klaviyoEvent).toMatchSnapshot();
     });
 
@@ -33,6 +40,7 @@ describe('map CT order to Klaviyo event', () => {
             },
             [],
             'someMetric',
+            false,
         );
         expect(klaviyoEvent).toMatchSnapshot();
     });
@@ -73,6 +81,7 @@ describe('map CT order to Klaviyo event', () => {
                 } as any,
             ],
             'someMetric',
+            false,
         );
         expect(klaviyoEvent).toMatchSnapshot();
     });
@@ -94,6 +103,38 @@ describe('map CT order to Klaviyo event', () => {
             },
             [],
             'someMetric',
+            false,
+        );
+        expect(klaviyoEvent).toMatchSnapshot();
+    });
+
+    it('should map a billing address profile property for a realtime klaviyo event', () => {
+        mockCustomerMapper.mapCTAddressToKlaviyoLocation.mockImplementation((address) => {
+            const address1 = [address?.apartment, address?.building, address?.streetNumber, address?.streetName]
+                  .filter((element) => element)
+                  .join(', ');
+            return {
+                address1,
+                city: address?.city,
+                country: address?.country,
+                region: address?.region,
+                zip: address?.postalCode,
+            }
+        });
+        const klaviyoEvent = orderMapper.mapCtOrderToKlaviyoEvent(
+            {
+                ...sampleOrderCreatedMessage.order,
+                billingAddress: {
+                    streetName: 'Tribunali',
+                    streetNumber: '14',
+                    postalCode: '80100',
+                    city: 'Napoli',
+                    country: 'IT',
+                },
+            },
+            [],
+            'someMetric',
+            true,
         );
         expect(klaviyoEvent).toMatchSnapshot();
     });

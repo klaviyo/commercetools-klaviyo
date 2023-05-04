@@ -43,6 +43,7 @@ export class OrderStateChangedEvent extends AbstractEventProcessor {
             ctOrder,
             orderProducts,
             this.getOrderMetricByState(orderStateChangedMessage.orderState),
+            false,
             ctOrder.lastModifiedAt,
         );
 
