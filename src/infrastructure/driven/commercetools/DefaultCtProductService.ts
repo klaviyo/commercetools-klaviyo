@@ -19,7 +19,7 @@ export class DefaultCtProductService implements CtProductService {
             withTotal: false,
             sort: 'id asc',
             expand: 'masterData.current.categories[*].ancestors[*]',
-            where: `masterData(published = true)${lastId ? ' and id > `"${lastId}"`' : ''}`,
+            where: `masterData(published = true)${lastId ? ' and id > "' + lastId + '"' : ''}`,
         };
         return await this.getProducts(queryArgs);
     };
@@ -31,7 +31,7 @@ export class DefaultCtProductService implements CtProductService {
             withTotal: false,
             sort: 'id asc',
             expand: 'masterData.current.categories[*].ancestors[*]',
-            where: `id in ("${ids.join('","')}")${lastId ? ' and id > `"${lastId}"`' : ''}`,
+            where: `id in ("${ids.join('","')}")${lastId ? ' and id > "' + lastId + '"' : ''}`,
         };
         return await this.getProducts(queryArgs);
     };
