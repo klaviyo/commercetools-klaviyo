@@ -253,12 +253,15 @@ bulkSyncApp.post('/sync/products/stop', async (req, res) => {
 
 bulkSyncApp.get('/sync/status', async (req, res) => {
     logger.info('Received request to log global job status');
-    bree.run('status');
+    await bree.run('status');
     res.status(202).send();
 });
 
 export const bulkSyncApiAdapter: GenericAdapter = (): Promise<any> => {
+    if (process.env.APP_TYPE && process.env.APP_TYPE != 'BULK_IMPORT') {
+        return Promise.resolve();
+    }
     const PORT = 6779;
-    bulkSyncApp.listen(PORT, () => logger.info(`klaviyo commercetools plugin batch sync, listening on port ${PORT}`));
+    bulkSyncApp.listen(PORT, () => logger.info(`klaviyo commercetools plugin bulk sync, listening on port ${PORT}`));
     return Promise.resolve(app);
 };

@@ -3,7 +3,7 @@ import { GenericAdapter } from './genericAdapter';
 import { processEvent } from '../../../../domain/eventSync/processEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import logger from '../../../../utils/log';
-import { KlaviyoSdkService } from "../../../driven/klaviyo/KlaviyoSdkService";
+import { KlaviyoSdkService } from '../../../driven/klaviyo/KlaviyoSdkService';
 
 export const app = express();
 app.use(express.json());
@@ -45,6 +45,9 @@ app.post('/', async (req, res) => {
 });
 
 export const pubsubAdapter: GenericAdapter = (): Promise<any> => {
+    if (process.env.APP_TYPE && process.env.APP_TYPE != 'EVENT') {
+        return Promise.resolve();
+    }
     const PORT = 6789;
     app.listen(PORT, () => logger.info(`klaviyo commercetools plugin pub/sub adapter, listening on port ${PORT}`));
     return Promise.resolve(app);
