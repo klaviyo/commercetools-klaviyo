@@ -265,3 +265,80 @@ describe('syncAllProducts', () => {
         expect(errorSpy).toBeCalledTimes(1);
     });
 });
+
+describe('deleteAllProducts', () => {
+    it('should delete a single item in klaviyo when Klaviyo returns a single item', async () => {
+        mockCtCustomObjectLockService.acquireLock.mockResolvedValueOnce();
+
+        const mockProduct = {
+            id: 'test',
+        } as any;
+        mockKlaviyoSdkService.getKlaviyoPaginatedItems.mockResolvedValueOnce({
+            data: [mockProduct],
+            links: { next: undefined } as any,
+        });
+
+        await historicalProducts.deleteAllProducts();
+
+        expect(mockCtCustomObjectLockService.acquireLock).toBeCalledTimes(1);
+        expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
+        expect(mockKlaviyoSdkService.getKlaviyoPaginatedItems).toBeCalledTimes(1);
+        expect(mockDefaultProductMapper.mapKlaviyoItemIdToDeleteItemRequest).toBeCalledTimes(1);
+        expect(mockDefaultProductMapper.mapKlaviyoItemIdToDeleteItemRequest).toBeCalledWith(mockProduct.id);
+        expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(1);
+    });
+
+    it('should delete 10 items from klaviyo when klaviyo returns 10 items with pagination', async () => {
+        mockCtCustomObjectLockService.acquireLock.mockResolvedValueOnce();
+
+        const mockProduct = {
+            id: 'test',
+        } as any;
+        mockKlaviyoSdkService.getKlaviyoPaginatedItems.mockResolvedValueOnce({
+            data: Array(6).fill(mockProduct),
+            links: { next: 'next-page' } as any,
+        });
+        mockKlaviyoSdkService.getKlaviyoPaginatedItems.mockResolvedValueOnce({
+            data: Array(4).fill(mockProduct),
+            links: { next: undefined } as any,
+        });
+
+        await historicalProducts.deleteAllProducts();
+
+        expect(mockCtCustomObjectLockService.acquireLock).toBeCalledTimes(1);
+        expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
+        expect(mockKlaviyoSdkService.getKlaviyoPaginatedItems).toBeCalledTimes(2);
+        expect(mockDefaultProductMapper.mapKlaviyoItemIdToDeleteItemRequest).toBeCalledTimes(10);
+        expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(10);
+    });
+
+    it('should not allow to run the product sync if there is another sync in progress', async () => {
+        mockCtCustomObjectLockService.acquireLock.mockImplementation(() => {
+            throw new StatusError(409, 'is locked', ErrorCodes.LOCKED);
+        });
+
+        await historicalProducts.deleteAllProducts();
+
+        expect(mockCtCustomObjectLockService.acquireLock).toBeCalledTimes(1);
+        expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(0);
+        expect(mockKlaviyoSdkService.getKlaviyoPaginatedItems).toBeCalledTimes(0);
+        expect(mockDefaultProductMapper.mapKlaviyoItemIdToDeleteItemRequest).toBeCalledTimes(0);
+        expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(0);
+    });
+
+    it('should log errors and release lock if an unhandled error is thrown during processing', async () => {
+        const errorSpy = jest.spyOn(logger, 'error');
+        mockCtCustomObjectLockService.acquireLock.mockImplementation(() => {
+            throw new StatusError(500, 'Unknown error', ErrorCodes.UNKNOWN_ERROR);
+        });
+
+        await historicalProducts.deleteAllProducts();
+
+        expect(mockCtCustomObjectLockService.acquireLock).toBeCalledTimes(1);
+        expect(mockCtCustomObjectLockService.releaseLock).toBeCalledTimes(1);
+        expect(mockKlaviyoSdkService.getKlaviyoPaginatedItems).toBeCalledTimes(0);
+        expect(mockDefaultProductMapper.mapKlaviyoItemIdToDeleteItemRequest).toBeCalledTimes(0);
+        expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(0);
+        expect(errorSpy).toBeCalledTimes(1);
+    });
+});

@@ -35,7 +35,6 @@ export class KlaviyoSdkService extends KlaviyoService {
             case 'itemDeleted':
                 return this.deleteCatalogItemWithVariants(
                     event.body.data.id,
-                    (event.body.data as any).deleteVariantsJob,
                 );
             default:
                 throw new Error(`Unsupported event type ${event.type}`);
@@ -141,11 +140,8 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
-    private async deleteCatalogItemWithVariants(itemId?: string, deleteVariantsJob?: KlaviyoEvent) {
+    private async deleteCatalogItemWithVariants(itemId?: string) {
         try {
-            if (deleteVariantsJob && (deleteVariantsJob as any)?.body?.data?.attributes?.variants?.length) {
-                await this.spawnCreateJob(deleteVariantsJob.body, deleteVariantsJob.type);
-            }
             return await Catalogs.deleteCatalogItem(itemId);
         } catch (e: any) {
             logger.error(`Error deleting item in Klaviyo. Response code ${e.status}, ${e.message}`, e);
@@ -295,6 +291,18 @@ export class KlaviyoSdkService extends KlaviyoService {
             return categories.body;
         } catch (e) {
             logger.error(`Error getting categories in Klaviyo ${nextPageCursor ? 'with pagination cursor: ' + nextPageCursor : ''}`);
+            throw e;
+        }
+    }
+
+    public async getKlaviyoPaginatedItems(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCatalogItem>> {
+        logger.info(`Getting items in Klaviyo ${nextPageCursor ? 'with pagination cursor: ' + nextPageCursor : ''}`);
+        try {
+            const categories = await Catalogs.getCatalogItems({ pageCursor: nextPageCursor });
+            logger.debug('Items response', categories);
+            return categories.body;
+        } catch (e) {
+            logger.error(`Error getting items in Klaviyo ${nextPageCursor ? 'with pagination cursor: ' + nextPageCursor : ''}`);
             throw e;
         }
     }

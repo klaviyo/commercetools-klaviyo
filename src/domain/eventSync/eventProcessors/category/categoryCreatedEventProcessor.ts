@@ -23,7 +23,7 @@ export class CategoryCreatedEventProcessor extends AbstractEventProcessor {
             }
         }
 
-        if (!category) {
+        if (!category || category?.ancestors?.length) {
             category = (await this.context.ctCategoryService.getCategoryById((message as CategoryCreatedMessage).resource.id)) as Category;
         }
 

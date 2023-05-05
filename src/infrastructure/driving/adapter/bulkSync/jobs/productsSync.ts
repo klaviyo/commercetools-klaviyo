@@ -1,4 +1,4 @@
-import { parentPort } from 'node:worker_threads';
+import { parentPort, workerData } from 'node:worker_threads';
 import { ProductsSync } from '../../../../../domain/bulkSync/ProductsSync';
 import { CTCustomObjectLockService } from '../../../../../domain/bulkSync/services/CTCustomObjectLockService';
 import { KlaviyoSdkService } from '../../../../driven/klaviyo/KlaviyoSdkService';
@@ -32,7 +32,11 @@ const releaseLock = async () => {
 		new DefaultCtProductService(getApiRoot()),
 	);
 
-	await productsSync.syncAllProducts();
+	if (workerData?.confirmDeletion === 'products') {
+		await productsSync.deleteAllProducts();
+	} else {
+		await productsSync.syncAllProducts();
+	}
 
 	if (parentPort) parentPort.postMessage('done');
 	else process.exit(0);

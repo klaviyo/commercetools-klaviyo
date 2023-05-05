@@ -90,6 +90,8 @@ export class CategoriesSync {
 
                 this.klaviyoService.logRateLimitHeaders(fulfilledPromises, rejectedPromises);
 
+                await this.klaviyoService.checkRateLimitsAndDelay(promiseResults.filter(isRateLimited));
+
                 totalCategories += klaviyoCategoryResults.data.length;
                 errored += rejectedPromises.length;
                 succeeded += fulfilledPromises.length;

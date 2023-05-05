@@ -13,4 +13,5 @@ export interface ProductMapper {
         productVariants: ProductVariant[] | string[],
         type: string,
     ): ItemVariantJobRequest;
+    mapKlaviyoItemIdToDeleteItemRequest(klaviyoItemId: string): ItemDeletedRequest;
 }

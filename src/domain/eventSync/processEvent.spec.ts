@@ -42,6 +42,7 @@ describe('processEvent', () => {
         getKlaviyoItemsByIds: jest.fn(),
         getKlaviyoItemVariantsByCtSkus: jest.fn(),
         getKlaviyoPaginatedCategories: jest.fn(),
+        getKlaviyoPaginatedItems: jest.fn(),
     };
 
     const responseHandlerMock = mocked(responseHandler);

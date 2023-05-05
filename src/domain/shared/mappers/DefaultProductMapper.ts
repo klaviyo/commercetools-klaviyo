@@ -168,4 +168,12 @@ export class DefaultProductMapper implements ProductMapper {
             id: `$custom:::$default:::${product.id}`,
         };
     }
+
+    public mapKlaviyoItemIdToDeleteItemRequest(klaviyoItemId: string): ItemDeletedRequest {
+        return {
+            data: {
+                id: klaviyoItemId,
+            },
+        };
+    }
 }

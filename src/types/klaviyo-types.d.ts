@@ -111,6 +111,7 @@ type ItemType = {
 
 type KlaviyoCatalogItem = {
     external_id?: string;
+    id?: string;
     integration_type?: string | '$custom';
     catalog_type?: string | '$default';
     title?: string;
@@ -140,6 +141,7 @@ type ItemDeletedRequest = {
 
 type KlaviyoCatalogVariant = {
     external_id?: string;
+    id?: string;
     integration_type?: string | '$custom';
     catalog_type?: string | '$default';
     title?: string;

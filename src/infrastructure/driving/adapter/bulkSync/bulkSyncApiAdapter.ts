@@ -210,10 +210,27 @@ bulkSyncApp.post('/sync/categories/stop', async (req, res) => {
 bulkSyncApp.post('/sync/products', async (req, res) => {
     logger.info('Received request to sync products');
     try {
+        let confirmDeletion = '';
+        if (req.body?.deleteAll) {
+            if (req.body?.confirmDeletion !== 'products') {
+                res.status(400).send({
+                    message:
+                        'For testing only. This operation will delete ALL PRODUCTS/VARIANTS in Klaviyo, including those not created by this plugin. If you understand the risk and still want to do it, add "confirmDeletion": "products" to the request body.',
+                });
+                return;
+            } else {
+                confirmDeletion = 'products';
+            }
+        }
         await ctLockService.checkLock('productFullSync');
         await bree.add([
             {
                 name: 'productsSync',
+                worker: {
+                    workerData: {
+                        confirmDeletion,
+                    },
+                },
             },
         ]);
         await bree.run('productsSync');

@@ -40,7 +40,11 @@ describe('Klaviyo abstract service', () => {
         }
 
         getKlaviyoPaginatedCategories(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCategory>> {
-            return Promise.resolve(mock<KlaviyoQueryResult<KlaviyoCategory>>())
+            return Promise.resolve(mock<KlaviyoQueryResult<KlaviyoCategory>>());
+        }
+
+        getKlaviyoPaginatedItems(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCatalogItem>> {
+            return Promise.resolve(mock<KlaviyoQueryResult<KlaviyoCatalogItem>>());
         }
     }
 

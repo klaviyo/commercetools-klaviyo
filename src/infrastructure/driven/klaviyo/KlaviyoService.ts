@@ -60,4 +60,6 @@ export abstract class KlaviyoService {
     abstract getKlaviyoItemVariantsByCtSkus (productId?: string, skus?: string[], fieldsCatalogVariant?: string[]): Promise<ItemVariantType[]>;
 
     abstract getKlaviyoPaginatedCategories(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCategory>>;
+
+    abstract getKlaviyoPaginatedItems(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCatalogItem>>;
 }

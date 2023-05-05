@@ -773,3 +773,58 @@ describe('klaviyoService > getKlaviyoPaginatedCategories', () => {
         expect(error).toBeInstanceOf(StatusError);
     });
 });
+
+describe('klaviyoService > getKlaviyoPaginatedItems', () => {
+    test('should return items from klaviyo ', async () => {
+        klvSdkModule.Catalogs.getCatalogItems = jest.fn().mockResolvedValueOnce({
+            body: {
+                data: [
+                    {
+                        id: 'test-id',
+                    },
+                ],
+                links: {},
+            },
+        });
+
+        const result = await klaviyoService.getKlaviyoPaginatedItems();
+
+        expect(result.data[0]).toBeDefined();
+        expect(result.data[0].id).toEqual('test-id');
+        expect(klvSdkModule.Catalogs.getCatalogItems).toBeCalledTimes(1);
+    });
+
+    test('should return items from klaviyo when using a pagination cursor', async () => {
+        klvSdkModule.Catalogs.getCatalogItems = jest.fn().mockResolvedValueOnce({
+            body: {
+                data: [
+                    {
+                        id: 'test-id',
+                    },
+                ],
+                links: {},
+            },
+        });
+
+        const result = await klaviyoService.getKlaviyoPaginatedItems('page-cursor');
+
+        expect(result.data[0]).toBeDefined();
+        expect(result.data[0].id).toEqual('test-id');
+        expect(klvSdkModule.Catalogs.getCatalogItems).toBeCalledTimes(1);
+    });
+
+    test('should log error when klaviyo sdk throws error', async () => {
+        klvSdkModule.Catalogs.getCatalogItems = jest.fn().mockImplementationOnce(() => {
+            throw new StatusError(500, 'Unknown error');
+        });
+
+        let error;
+        try {
+            await klaviyoService.getKlaviyoPaginatedItems();
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error).toBeInstanceOf(StatusError);
+    });
+});

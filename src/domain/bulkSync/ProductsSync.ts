@@ -145,6 +145,54 @@ export class ProductsSync {
         }
     };
 
+    public deleteAllProducts = async () => {
+        logger.info('Started deletion of all products and variants in Klaviyo');
+        try {
+            //ensures that only one sync at the time is running
+            await this.lockService.acquireLock(this.lockKey);
+
+            let klaviyoItemResults: KlaviyoQueryResult<KlaviyoCatalogItem> | undefined;
+            let succeeded = 0,
+                errored = 0,
+                totalItems = 0;
+
+            do {
+                klaviyoItemResults = await this.klaviyoService.getKlaviyoPaginatedItems(klaviyoItemResults?.links.next);
+
+                const promiseResults = await Promise.allSettled(
+                    klaviyoItemResults.data.flatMap((item) => this.generateDeleteItemRequest(item.id as string)),
+                );
+
+                const rejectedPromises = promiseResults.filter(isRejected);
+                const fulfilledPromises = promiseResults.filter(isFulfilled);
+
+                this.klaviyoService.logRateLimitHeaders(fulfilledPromises, rejectedPromises);
+
+                await this.klaviyoService.checkRateLimitsAndDelay(promiseResults.filter(isRateLimited));
+
+                totalItems += klaviyoItemResults.data.length;
+                errored += rejectedPromises.length;
+                succeeded += fulfilledPromises.length;
+                if (rejectedPromises.length) {
+                    rejectedPromises.forEach((rejected) =>
+                        logger.error('Error deleting products in klaviyo', rejected),
+                    );
+                }
+            } while (klaviyoItemResults?.links.next);
+            logger.info(
+                `Klaviyo products/variants deletion. Total products to be deleted ${totalItems}, successfully deleted: ${succeeded}, errored: ${errored}`,
+            );
+            await this.lockService.releaseLock(this.lockKey);
+        } catch (e: any) {
+            if (e?.code !== ErrorCodes.LOCKED) {
+                logger.error('Error while deleting all products from Klaviyo', e);
+                await this.lockService.releaseLock(this.lockKey);
+            } else {
+                logger.warn('Already locked');
+            }
+        }
+    };
+
     private generateProductsJobRequestForKlaviyo = async (products: Product[]): Promise<KlaviyoEvent[]> => {
         const ctPublishedProducts = products.filter((p) => p.masterData.current);
         const klaviyoItems = (await this.klaviyoService.getKlaviyoItemsByIds(ctPublishedProducts.map((p) => p.id))).map(
@@ -222,6 +270,17 @@ export class ProductsSync {
         }
         return promises;
     };
+
+    private generateDeleteItemRequest = (itemId: string): Promise<any>[] => {
+        const events: CategoryDeletedRequest[] = [];
+
+        events.push(this.productMapper.mapKlaviyoItemIdToDeleteItemRequest(itemId));
+
+        const klaviyoItemPromises: Promise<any>[] = events.map((e) =>
+            this.klaviyoService.sendEventToKlaviyo({ type: 'itemDeleted', body: e }),
+        );
+        return klaviyoItemPromises;
+    }
 
     public async releaseLockExternally(): Promise<void> {
         await this.lockService.releaseLock(this.lockKey);
