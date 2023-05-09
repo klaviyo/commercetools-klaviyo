@@ -12,6 +12,7 @@ exports[`map CT product to Klaviyo product should map a commercetools product ar
             "external_id": "cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
             "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
             "integration_type": "$custom",
+            "price": 118.75,
             "published": true,
             "title": "Bag medium GUM black",
             "url": "https://example-store.com/products/gum-bag-medium-BS1900-black",
@@ -60,6 +61,7 @@ exports[`map CT product to Klaviyo product should map a commercetools product ar
             "external_id": undefined,
             "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
             "integration_type": undefined,
+            "price": 118.75,
             "published": true,
             "title": "Bag medium GUM black",
             "url": "https://example-store.com/products/gum-bag-medium-BS1900-black",
@@ -105,6 +107,7 @@ exports[`map CT product to Klaviyo product should map a commercetools product to
       "external_id": "cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
       "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
       "integration_type": "$custom",
+      "price": 118.75,
       "published": true,
       "title": "Bag medium GUM black",
       "url": "https://example-store.com/products/gum-bag-medium-BS1900-black",
@@ -218,6 +221,38 @@ exports[`map CT product to Klaviyo product should map a commercetools product wi
       ],
     },
     "type": "catalog-variant-bulk-update-job",
+  },
+}
+`;
+
+exports[`map CT product to Klaviyo product should map commercetools product variants prices by priority 1`] = `
+{
+  "data": {
+    "attributes": {
+      "catalog_type": "$default",
+      "description": "None",
+      "external_id": "A0E2000000027DV",
+      "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
+      "integration_type": "$custom",
+      "inventory_quantity": 0,
+      "price": 20,
+      "published": true,
+      "sku": "A0E2000000027DV",
+      "title": "Bag medium GUM black | Variant: A0E2000000027DV",
+      "url": "https://example-store.com/products/gum-bag-medium-BS1900-black",
+    },
+    "id": undefined,
+    "relationships": {
+      "items": {
+        "data": [
+          {
+            "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
+            "type": "catalog-item",
+          },
+        ],
+      },
+    },
+    "type": "catalog-variant",
   },
 }
 `;

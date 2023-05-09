@@ -119,6 +119,7 @@ type KlaviyoCatalogItem = {
     url?: string;
     image_full_url?: string;
     published: boolean;
+    price?: number;
 };
 
 type ItemVariantRequest = {

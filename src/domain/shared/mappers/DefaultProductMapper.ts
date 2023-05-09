@@ -1,7 +1,8 @@
 import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
-import { Category, CategoryReference, Product, ProductVariant } from '@commercetools/platform-sdk';
+import { Category, CategoryReference, Price, Product, ProductVariant, TypedMoney } from '@commercetools/platform-sdk';
 import { ProductMapper } from './ProductMapper';
 import { CurrencyService } from '../services/CurrencyService';
+import * as _ from 'lodash';
 
 export class DefaultProductMapper implements ProductMapper {
     constructor(private readonly currencyService: CurrencyService) {}
@@ -32,6 +33,11 @@ export class DefaultProductMapper implements ProductMapper {
                         : 'None',
                     url: productUrl,
                     image_full_url: productMasterVariantImages ? productMasterVariantImages[0]?.url : undefined,
+                    price: product.masterData.current.masterVariant.prices
+                        ? getTypedMoneyAsNumber(
+                              this.getProductPriceByPriority(product.masterData.current.masterVariant.prices),
+                          )
+                        : 0,
                 },
                 relationships: product.masterData.current.categories?.length
                     ? {
@@ -76,7 +82,9 @@ export class DefaultProductMapper implements ProductMapper {
                     url: productUrl,
                     image_full_url: variantImages ? variantImages[0].url : undefined,
                     inventory_quantity: productVariant.availability?.availableQuantity || 0,
-                    price: productVariant.prices ? getTypedMoneyAsNumber(productVariant.prices[0].value) : 0,
+                    price: productVariant.prices
+                        ? getTypedMoneyAsNumber(this.getProductPriceByPriority(productVariant.prices))
+                        : 0,
                 },
                 relationships: !update
                     ? {
@@ -167,6 +175,30 @@ export class DefaultProductMapper implements ProductMapper {
             type: 'catalog-item',
             id: `$custom:::$default:::${product.id}`,
         };
+    }
+
+    private getProductPriceByPriority(prices: Price[]): TypedMoney {
+        const currentDate = new Date().getTime();
+        const rangedPrices = prices
+            .filter((price) => price.validFrom || price.validUntil)
+            .map((price) => {
+                return {
+                    ...price,
+                    validFrom: price.validFrom ? new Date(price.validFrom).getTime() : currentDate,
+                    validUntil: price.validUntil ? new Date(price.validUntil).getTime() : 'N/A',
+                };
+            })
+            .filter(
+                (price) =>
+                    price.validFrom <= currentDate &&
+                    (price.validUntil !== 'N/A' ? (price.validUntil as number) >= currentDate : true),
+            );
+        const sortedRangedPrices = _.orderBy(rangedPrices, ['validFrom', 'validUntil'], ['asc', 'asc']);
+        const singleRangedPrice = sortedRangedPrices[0]?.value;
+        const regularPrices = prices.filter((price) => !price.validFrom && !price.validUntil && !price.customerGroup);
+        const singleRegularPrice = regularPrices[0]?.value;
+
+        return singleRangedPrice || singleRegularPrice;
     }
 
     public mapKlaviyoItemIdToDeleteItemRequest(klaviyoItemId: string): ItemDeletedRequest {

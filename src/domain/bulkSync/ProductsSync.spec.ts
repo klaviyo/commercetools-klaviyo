@@ -44,6 +44,52 @@ describe('syncAllProducts', () => {
         const mockVariant = mock<ProductVariant>();
         Object.defineProperty(mockProduct, 'id', { value: 'test-id' });
         Object.defineProperty(mockVariant, 'sku', { value: 'test-id' });
+        Object.defineProperty(mockVariant, 'prices', {
+            value: [
+                {
+                    id: '58cf4f29-f55b-40a2-9360-97a15ee0a609',
+                    value: {
+                        type: 'centPrecision',
+                        currencyCode: 'EUR',
+                        centAmount: 500,
+                        fractionDigits: 2,
+                    },
+                },
+                {
+                    id: '6c61ed1b-f2d7-47a6-b536-2cb8f7156019',
+                    value: {
+                        type: 'centPrecision',
+                        currencyCode: 'EUR',
+                        centAmount: 2000,
+                        fractionDigits: 2,
+                    },
+                    validUntil: '2023-05-11T04:00:00.000Z',
+                },
+                {
+                    id: 'fe328c80-9524-4232-a0d6-ab166df13b27',
+                    value: {
+                        type: 'centPrecision',
+                        currencyCode: 'EUR',
+                        centAmount: 500,
+                        fractionDigits: 2,
+                    },
+                    validFrom: '2023-05-11T04:00:00.000Z',
+                },
+                {
+                    id: '35bca0a3-d0f8-4431-8b2f-d4bb2635de73',
+                    value: {
+                        type: 'centPrecision',
+                        currencyCode: 'EUR',
+                        centAmount: 12200,
+                        fractionDigits: 2,
+                    },
+                    channel: {
+                        typeId: 'channel',
+                        id: '03c22295-79b0-4838-bc4c-9724133a27ce',
+                    },
+                },
+            ],
+        })
         Object.defineProperty(mockProduct, 'masterData', {
             value: {
                 current: {

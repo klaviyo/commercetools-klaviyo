@@ -49,6 +49,7 @@ describe('syncAllProducts', () => {
                                 published: true,
                                 title: 'Bag medium GUM black',
                                 url: 'https://example-store.com/products/gum-bag-medium-BS1900-black',
+                                price: 118.75,
                             },
                             relationships: {
                                 categories: {
