@@ -149,6 +149,7 @@ type KlaviyoCatalogVariant = {
     description?: string;
     sku?: string;
     inventory_quantity?: number;
+    inventory_policy?: 0 | 1 | 2;
     price?: number;
     url?: string;
     image_full_url?: string;

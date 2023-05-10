@@ -1,8 +1,9 @@
 import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
-import { Category, CategoryReference, Price, Product, ProductVariant, TypedMoney } from '@commercetools/platform-sdk';
+import { Category, CategoryReference, Price, Product, ProductVariant, ProductVariantAvailability, TypedMoney } from '@commercetools/platform-sdk';
 import { ProductMapper } from './ProductMapper';
 import { CurrencyService } from '../services/CurrencyService';
 import * as _ from 'lodash';
+import config from 'config';
 
 export class DefaultProductMapper implements ProductMapper {
     constructor(private readonly currencyService: CurrencyService) {}
@@ -18,6 +19,7 @@ export class DefaultProductMapper implements ProductMapper {
         const allProductCategories = product.masterData.current.categories.concat(
             product.masterData.current.categories.map((c) => (c.obj as Category).ancestors).flat(),
         );
+        const productPrice = product.masterData.current.masterVariant.prices ? this.getProductPriceByPriority(product.masterData.current.masterVariant.prices) : 0;
         return {
             data: {
                 type: 'catalog-item',
@@ -33,10 +35,11 @@ export class DefaultProductMapper implements ProductMapper {
                         : 'None',
                     url: productUrl,
                     image_full_url: productMasterVariantImages ? productMasterVariantImages[0]?.url : undefined,
-                    price: product.masterData.current.masterVariant.prices
-                        ? getTypedMoneyAsNumber(
-                              this.getProductPriceByPriority(product.masterData.current.masterVariant.prices),
-                          )
+                    price: productPrice
+                        ? this.currencyService.convert(
+                            productPrice.amount,
+                            productPrice.currency,
+                        )
                         : 0,
                 },
                 relationships: product.masterData.current.categories?.length
@@ -65,6 +68,7 @@ export class DefaultProductMapper implements ProductMapper {
             ? String(process.env.PRODUCT_URL_TEMPLATE).replace('{{productSlug}}', defaultProductSlug)
             : 'None';
         const variantImages = productVariant.images;
+        const variantPrice = productVariant.prices ? this.getProductPriceByPriority(productVariant.prices) : 0;
         return {
             data: {
                 type: 'catalog-variant',
@@ -81,9 +85,13 @@ export class DefaultProductMapper implements ProductMapper {
                     sku: !update ? productVariant.sku : undefined,
                     url: productUrl,
                     image_full_url: variantImages ? variantImages[0].url : undefined,
-                    inventory_quantity: productVariant.availability?.availableQuantity || 0,
-                    price: productVariant.prices
-                        ? getTypedMoneyAsNumber(this.getProductPriceByPriority(productVariant.prices))
+                    inventory_quantity: this.getProductInventoryByPriority(productVariant.availability),
+                    inventory_policy: 1,
+                    price: variantPrice
+                        ? this.currencyService.convert(
+                            variantPrice.amount,
+                            variantPrice.currency,
+                        )
                         : 0,
                 },
                 relationships: !update
@@ -177,7 +185,7 @@ export class DefaultProductMapper implements ProductMapper {
         };
     }
 
-    private getProductPriceByPriority(prices: Price[]): TypedMoney {
+    private getProductPriceByPriority(prices: Price[]): { amount: number, currency: string } {
         const currentDate = new Date().getTime();
         const rangedPrices = prices
             .filter((price) => price.validFrom || price.validUntil)
@@ -197,8 +205,30 @@ export class DefaultProductMapper implements ProductMapper {
         const singleRangedPrice = sortedRangedPrices[0]?.value;
         const regularPrices = prices.filter((price) => !price.validFrom && !price.validUntil && !price.customerGroup);
         const singleRegularPrice = regularPrices[0]?.value;
+        const chosenPrice: TypedMoney = singleRangedPrice || singleRegularPrice;
 
-        return singleRangedPrice || singleRegularPrice;
+        return {
+            amount: getTypedMoneyAsNumber(chosenPrice),
+            currency: chosenPrice.currencyCode,
+        };
+    }
+
+    public getProductInventoryByPriority(availability?: ProductVariantAvailability): number {
+        if (!availability) {
+            return 0;
+        }
+
+        if (config.has('product.inventory.useChannelInventory')) {
+            const productInventoryChannel = (config.get('product.inventory.useChannelInventory') as string);
+            if (productInventoryChannel && availability.channels) {
+                const channelAvailableQuantity = availability.channels[productInventoryChannel]?.availableQuantity;
+                if (channelAvailableQuantity) {
+                    return channelAvailableQuantity;
+                }
+            }
+        }
+
+        return availability?.availableQuantity || 0;
     }
 
     public mapKlaviyoItemIdToDeleteItemRequest(klaviyoItemId: string): ItemDeletedRequest {

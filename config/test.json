@@ -121,6 +121,9 @@
         "ProductUnpublished",
         "ResourceDeleted"
       ]
+    },
+    "inventory": {
+      "useChannelInventory": "03c22295-79b0-4838-bc4c-9724133a27ce"
     }
   }
 }

@@ -129,6 +129,7 @@ describe('syncAllProducts', () => {
                                 'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg',
                             integration_type: '$custom',
                             inventory_quantity: 0,
+                            inventory_policy: 1,
                             price: 118.75,
                             published: true,
                             sku: 'A0E2000000027DV',

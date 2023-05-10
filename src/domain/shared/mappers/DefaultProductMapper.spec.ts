@@ -22,18 +22,24 @@ describe('map CT product to Klaviyo product', () => {
         expect(klaviyoEvent).toMatchSnapshot();
     });
 
+    it('should map commercetools product variants to a klaviyo variants', () => {
+        const klaviyoEvent = productMapper.mapCtProductVariantToKlaviyoVariant(
+            ctGet1Product.results[0] as unknown as Product,
+            ctGet1Product.results[0].masterData.current.masterVariant as unknown as ProductVariant,
+        );
+        expect(klaviyoEvent).toMatchSnapshot();
+    });
+
     it('should map commercetools product variants prices by priority', () => {
         const realDate = global.Date;
-        const mockDate = new Date("2023-05-08T17:00:00.000Z");
+        const mockDate = new Date('2023-05-08T17:00:00.000Z');
 
-        const dateSpy = jest
-            .spyOn(global, 'Date')
-            .mockImplementation((...args) => {
-                if (args.length) {
-                    return new realDate(...args);
-                }
-                return mockDate;
-            });
+        const dateSpy = jest.spyOn(global, 'Date').mockImplementation((...args) => {
+            if (args.length) {
+                return new realDate(...args);
+            }
+            return mockDate;
+        });
 
         const klaviyoEvent = productMapper.mapCtProductVariantToKlaviyoVariant(
             ctGet1Product.results[0] as unknown as Product,
@@ -85,8 +91,33 @@ describe('map CT product to Klaviyo product', () => {
                 ],
             } as unknown as ProductVariant,
         );
-        
+
         dateSpy.mockRestore();
+        expect(klaviyoEvent).toMatchSnapshot();
+    });
+
+    it('should map variant inventory by channel to klaviyo variant inventory quantity', () => {
+        const klaviyoEvent = productMapper.mapCtProductVariantToKlaviyoVariant(
+            ctGet1Product.results[0] as unknown as Product,
+            {
+                ...ctGet1Product.results[0].masterData.current.masterVariant,
+                availability: {
+                    isOnStock: true,
+                    availableQuantity: 100,
+                    version: 1,
+                    id: 'f8690556-9cc1-481d-8017-0f28ba46aa6f',
+                    channels: {
+                        '03c22295-79b0-4838-bc4c-9724133a27ce': {
+                            isOnStock: true,
+                            availableQuantity: 55,
+                            version: 1,
+                            id: 'df743513-c74e-453e-8c4c-e414d77b8d85',
+                        },
+                    },
+                },
+            } as unknown as ProductVariant,
+        );
+
         expect(klaviyoEvent).toMatchSnapshot();
     });
 
