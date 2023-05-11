@@ -27,34 +27,9 @@
       ]
     },
     "properties": {
-      "include": [
-        "customerId",
-        "customerEmail",
-        "id",
-        "createdAt",
-        "lastModifiedAt",
-        "lineItems",
-        "customLineItems",
-        "totalPrice",
-        "orderState",
-        "version"
-      ],
-      "exclude": [
-        "paymentInfo",
-        "shippingMode",
-        "syncInfo",
-        "origin",
-        "refusedGifts",
-        "directDiscounts",
-        "discountCodes",
-        "transactionFee",
-        "createdBy"
-      ],
-      "map": {
-        "id": "orderId",
-        "lineItems": "items",
-        "customLineItems": "customItems"
-      }
+      "include": [],
+      "exclude": [],
+      "map": {}
     },
     "metrics": {
       "cancelledOrder": "Cancelled Order",
