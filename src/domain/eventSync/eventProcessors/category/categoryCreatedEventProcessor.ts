@@ -16,16 +16,8 @@ export class CategoryCreatedEventProcessor extends AbstractEventProcessor {
         const message = this.ctMessage as unknown as CategoryCreatedMessage;
         logger.info('Processing category created event');
 
-        let category: Category | undefined = undefined;
-        if ('category' in message) {
-            if (!message.category.ancestors.length) {
-                category = message.category;
-            }
-        }
-
-        if (!category || category?.ancestors?.length) {
-            category = (await this.context.ctCategoryService.getCategoryById((message as CategoryCreatedMessage).resource.id)) as Category;
-        }
+        // Always get category from CT to expanded ancestors are available
+        const category = (await this.context.ctCategoryService.getCategoryById((message as CategoryCreatedMessage).resource.id)) as Category;
 
         const body: CategoryRequest = this.context.categoryMapper.mapCtCategoryToKlaviyoCategory(category);
 

@@ -45,31 +45,6 @@ describe('categoryCreatedEventProcessor > isEventValid', () => {
 describe('categoryCreatedEventProcessor > generateKlaviyoEvents', () => {
     it('should generate the klaviyo event for a CategoryCreated message', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
-        Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'category' } }); //mock readonly property
-        Object.defineProperty(ctMessageMock, 'type', { value: 'CategoryCreated' }); //mock readonly property
-        const category = {
-                id: '123-123-123',
-                name: {
-                    en: "Test"
-                },
-                createdAt: '2023-01-27T15:00:00.000Z',
-                ancestors: [],
-        }
-        Object.defineProperty(ctMessageMock, 'category', { value: category }); //mock readonly property
-
-        const event = CategoryCreatedEventProcessor.instance(ctMessageMock, contextMock);
-
-        const klaviyoEvent = await event.generateKlaviyoEvents();
-
-        exp(klaviyoEvent).to.not.be.undefined;
-        exp(klaviyoEvent.length).to.eq(1);
-        expect(contextMock.categoryMapper.mapCtCategoryToKlaviyoCategory).toBeCalledTimes(1);
-        expect(contextMock.categoryMapper.mapCtCategoryToKlaviyoCategory).toBeCalledWith(category);
-        exp(klaviyoEvent[0].body.data.id).to.eq(mockedCategoryId)
-    });
-
-    it('should generate the klaviyo event when category is not in the message', async () => {
-        const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'category', id: '3456789' } }); //mock readonly property
         Object.defineProperty(ctMessageMock, 'type', { value: 'CategoryCreated' }); //mock readonly property
         contextMock.ctCategoryService.getCategoryById.mockImplementation(async (id) => sampleCategoryCreatedMessage.category);

@@ -1,5 +1,13 @@
 import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
-import { Category, CategoryReference, Price, Product, ProductVariant, ProductVariantAvailability, TypedMoney } from '@commercetools/platform-sdk';
+import {
+    Category,
+    CategoryReference,
+    Price,
+    Product,
+    ProductVariant,
+    ProductVariantAvailability,
+    TypedMoney,
+} from '@commercetools/platform-sdk';
 import { ProductMapper } from './ProductMapper';
 import { CurrencyService } from '../services/CurrencyService';
 import * as _ from 'lodash';
@@ -19,7 +27,9 @@ export class DefaultProductMapper implements ProductMapper {
         const allProductCategories = product.masterData.current.categories.concat(
             product.masterData.current.categories.map((c) => (c.obj as Category).ancestors).flat(),
         );
-        const productPrice = product.masterData.current.masterVariant.prices ? this.getProductPriceByPriority(product.masterData.current.masterVariant.prices) : 0;
+        const productPrice = product.masterData.current.masterVariant.prices
+            ? this.getProductPriceByPriority(product.masterData.current.masterVariant.prices)
+            : 0;
         return {
             data: {
                 type: 'catalog-item',
@@ -35,19 +45,12 @@ export class DefaultProductMapper implements ProductMapper {
                         : 'None',
                     url: productUrl,
                     image_full_url: productMasterVariantImages ? productMasterVariantImages[0]?.url : undefined,
-                    price: productPrice
-                        ? this.currencyService.convert(
-                            productPrice.amount,
-                            productPrice.currency,
-                        )
-                        : 0,
+                    price: productPrice ? this.currencyService.convert(productPrice.amount, productPrice.currency) : 0,
                 },
                 relationships: product.masterData.current.categories?.length
                     ? {
                           categories: {
-                              data: allProductCategories.map((category) =>
-                                  this.mapCtProductCategoryToKlaviyoItemCategory(category),
-                              ),
+                              data: this.mapCtCategoriesToKlaviyoRelationshipCategories(allProductCategories),
                           },
                       }
                     : undefined,
@@ -87,12 +90,7 @@ export class DefaultProductMapper implements ProductMapper {
                     image_full_url: variantImages ? variantImages[0].url : undefined,
                     inventory_quantity: this.getProductInventoryByPriority(productVariant.availability),
                     inventory_policy: 1,
-                    price: variantPrice
-                        ? this.currencyService.convert(
-                            variantPrice.amount,
-                            variantPrice.currency,
-                        )
-                        : 0,
+                    price: variantPrice ? this.currencyService.convert(variantPrice.amount, variantPrice.currency) : 0,
                 },
                 relationships: !update
                     ? {
@@ -171,11 +169,11 @@ export class DefaultProductMapper implements ProductMapper {
         };
     }
 
-    private mapCtProductCategoryToKlaviyoItemCategory(category: CategoryReference): KlaviyoRelationshipData {
-        return {
+    private mapCtCategoriesToKlaviyoRelationshipCategories(categories: CategoryReference[]): KlaviyoRelationshipData[] {
+        return Array.from(new Set(categories.map(category => category.id))).map(category => ({
             type: 'catalog-category',
-            id: `$custom:::$default:::${category.id}`,
-        };
+            id: `$custom:::$default:::${category}`,
+        }));
     }
 
     private mapCtProductToKlaviyoVariantItem(product: Product): KlaviyoRelationshipData {
@@ -185,7 +183,7 @@ export class DefaultProductMapper implements ProductMapper {
         };
     }
 
-    private getProductPriceByPriority(prices: Price[]): { amount: number, currency: string } {
+    private getProductPriceByPriority(prices: Price[]): { amount: number; currency: string } {
         const currentDate = new Date().getTime();
         const rangedPrices = prices
             .filter((price) => price.validFrom || price.validUntil)
@@ -219,7 +217,7 @@ export class DefaultProductMapper implements ProductMapper {
         }
 
         if (config.has('product.inventory.useChannelInventory')) {
-            const productInventoryChannel = (config.get('product.inventory.useChannelInventory') as string);
+            const productInventoryChannel = config.get('product.inventory.useChannelInventory') as string;
             if (productInventoryChannel && availability.channels) {
                 const channelAvailableQuantity = availability.channels[productInventoryChannel]?.availableQuantity;
                 if (channelAvailableQuantity) {

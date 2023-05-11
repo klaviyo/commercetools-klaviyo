@@ -22,7 +22,7 @@ describe('pubSub adapter category created message', () => {
         nock.cleanAll();
         jest.clearAllMocks();
         ctAuthNock();
-        ctGetCategoryByIdNock('3456789');
+        ctGetCategoryByIdNock(sampleCategoryCreatedMessage.category.id);
     });
 
     it('should return status 204 when the request is valid but ignored as message type is not supported', (done) => {
@@ -104,6 +104,13 @@ describe('pubSub event that produces 5xx error', () => {
         server.close(() => {
             done();
         });
+    });
+
+    beforeEach(() => {
+        nock.cleanAll();
+        jest.clearAllMocks();
+        ctAuthNock();
+        ctGetCategoryByIdNock(sampleCategoryCreatedMessage.category.id);
     });
 
     it('should not acknowledge the message to pub/sub and return status 500 when the request is invalid', (done) => {
