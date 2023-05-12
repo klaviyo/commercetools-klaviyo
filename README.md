@@ -1,7 +1,5 @@
 # klaviyo-ct-plugin
 
-![Deployment status](https://github.com/e2x/klaviyo-ct-plugin/actions/workflows/plugin-deploy.yml/badge.svg)
-
 The [Klaviyo](https://www.klaviyo.com/) plugin for [commercetools](https://commercetools.com/) is a Node.js application
 that provides the ability to sync commercetools data into Klaviyo.
 
