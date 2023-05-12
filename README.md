@@ -3,17 +3,31 @@
 ![Deployment status](https://github.com/e2x/klaviyo-ct-plugin/actions/workflows/plugin-deploy.yml/badge.svg)
 
 The [Klaviyo](https://www.klaviyo.com/) plugin for [commercetools](https://commercetools.com/) is a Node.js application
-that provides support to sync Commercetools data with Klaviyo.
+that provides the ability to sync commercetools data into Klaviyo.
 
-The plugin syncs data from commercetools in two different ways:
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- **Realtime data** - [Commercetools subscriptions](https://docs.commercetools.com/api/projects/subscriptions) are used
-  to sync asynchronously data into Klaviyo in response to an event (order creation, customer creation...) on
-  commercetools.
-- **Bulk import** - A set of API endpoints are provided to manually trigger the data synchronization into Klaviyo.
-  Typical use cases include the sync of old orders and customers into Klaviyo, or the synchronization of the product
-  catalogue. This is typically done when installing the plugin for the first time but can also be done periodically if
-  the data goes out of sync for any reason.
+- [Overview](#overview)
+- [Supported features](#supported-features)
+- [Plugin installation](#plugin-installation)
+- [How it works](#how-it-works)
+- [Plugin development and customization](#plugin-development-and-customization)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Overview
+
+The plugin acquires data from commercetools in two different ways:
+
+- **Realtime data** - events are received asynchronously via
+  commercetools [subscriptions](https://docs.commercetools.com/api/projects/subscriptions),
+  e.g. on order creation, customer creation, etc. On receipt of these events, relevant data is fetched (if necessary)
+  from commercetools and synced in to Klaviyo.
+- **Bulk import** - a set of API endpoints are provided to manually trigger the data sync into Klaviyo. Typical use
+  cases include the synchronization of the product catalogue or of historical customers and orders. This is typically
+  performed when installing the plugin for the first time but can also be done periodically if the data becomes out of
+  sync.
 
 ![Klaviyo CT Plugin architecture](./docs/img/arch_diagram.png "Klaviyo Commercetools Plugin Architecture")
 
@@ -39,7 +53,7 @@ Bulk data import:
 - Customers
 
 Check [data flow](docs/plugin-development-customization.md#data-flow) for all the details about the data exchanged
-between commercetools and klaviyo.
+between commercetools and Klaviyo.
 
 ## Plugin installation
 
@@ -47,19 +61,19 @@ See [plugin installation documentation](docs/plugin-installation.md)
 
 ## How it works
 
-See [how it works](docs/how-it-works.md) for the details on how the data is synced between commercetools and klaviyo.
+See [how it works](docs/how-it-works.md) for the details on how the data is synced between commercetools and Klaviyo.
 
 ## Plugin development and customization
-
-See [plugin development and customization documentation](docs/plugin-development-customization.md)
-
-## Final words
 
 The process of setting up commercetools can differ based on the specific implementation, and the integration needs may
 also vary in each scenario. Due to these variations, the plugin is distributed as an open source application to
 facilitate the integration of these systems. This way, individuals are able to freely download, host, and customize the
-solution according to their distinct business needs.
+solution according to their distinct business needs.  
+See [plugin development and customization documentation](docs/plugin-development-customization.md) for all the details
+on how to customize the plugin.
 
-## TODO
+## Contributing
 
-* list libraries that can be removed when adapter is not required
+We appreciate any and all contributions to this project! Before creating an issue or raising a PR, review our
+[Contributing guide](./docs/CONTRIBUTING.md). This guide reviews issue creation, prerequisites for pull requests, and
+more.

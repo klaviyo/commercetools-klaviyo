@@ -1,13 +1,17 @@
 # End-to-end tests
 
-End-to-end tests are written using [Postman](https://learning.postman.com/docs/writing-scripts/test-scripts/).  
-These tests must run in an environment where the plugin is installed correctly and communicates with a Commercetools project and a Klaviyo account.
-The end-to-end tests for realtime events use the Commercetools API to create/update data into commercetools and verify that the data was synced correctly into Klaviyo by using the Klaviyo API. These tests don't have direct access to the plugin. 
+End-to-end tests are written using [Postman](https://learning.postman.com/docs/writing-scripts/test-scripts/). These
+must be executed in an environment where the plugin is installed and configured to communicate with both a
+Commercetools project and a Klaviyo account.
+
+The end-to-end tests for realtime events use the Commercetools API to create/update data in commercetools and verify
+that the data is synced correctly into Klaviyo using the Klaviyo API. These tests do not have direct access to the
+plugin. 
 
 ## Tests structure
 
 All tests are grouped into a Postman collection (`klaviyo ct plugin e2e tests`).  
-Each test is made of different steps (API calls) that are grouped into folder (e.g. `customer created`).  
+Each test is made of different steps (API calls) that are grouped into folders (e.g. `customer created`).  
 Example:
 
 ```
@@ -24,16 +28,16 @@ klaviyo ct plugin e2e tests
     │   GET  Event in Klaviyo
 ```
 
-The tests collection is exported from postman and saved in the repository
+The test collection is exported from postman and saved in the repository
 at `src/test/e2e/postman/klaviyo-e2e-tests.postman_collection.json`
 
 ## Add/edit tests
 
 To edit the existing tests:
 
-- import in postman the test collection
+- import the test collection into postman
 - edit or add new tests
-- re-export the collection and override the json file in the repository
+- re-export the collection and overwrite the json file in the repository
 
 ### How to write tests with Postman
 
@@ -43,8 +47,8 @@ https://learning.postman.com/docs/writing-scripts/test-scripts/
 
 ## Test environment variables
 
-Test require api keys and other information to run. These sensible information cannot be saved in the repository and
-have to be manually added in postman.
+The tests require API keys and other information to run. This sensitive information cannot be saved in the repository
+and should be manually added in postman.
 
 - Create a new environment in postman with the following variables:
     - `ct_host` = `https://api.us-central1.gcp.commercetools.com`
@@ -64,8 +68,8 @@ To run a single test select the directory in postman and click on the `Run` butt
 ## Running test from CLI
 
 Test can be run using
-the [postman or newman CLI](https://learning.postman.com/docs/postman-cli/postman-cli-overview/).  
-The CLI can use an environment file exported from postman:
+the [postman or newman CLI](https://learning.postman.com/docs/postman-cli/postman-cli-overview/). The CLI can use an
+environment file exported from postman:
 
 ```shell
 newman run src/test/e2e/postman/klaviyo-e2e-tests.postman_collection.json -e src/test/e2e/postman/env.postman_environment.json

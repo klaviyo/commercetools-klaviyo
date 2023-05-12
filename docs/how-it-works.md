@@ -1,24 +1,26 @@
 # How it works
 
-Explain deduplication using CT id
+[//]: # (Explain deduplication using CT id)
 
 ## Realtime data sync
 
 ### Customer creation
 
-A new **customer** created in commercetools will cause a new **profile** created in klaviyo
-Trigger subscription message: CustomerCreated
+*Trigger*: **customer** created in commercetools  
+*Subscription*: `CustomerCreated` message  
+*Action*: [profile created](https://developers.klaviyo.com/en/reference/create_profile) in klaviyo
 
 #### Fields mapping
 
 | CT Customer                                                                   | Klaviyo Profile   |
 |-------------------------------------------------------------------------------|-------------------|
+| id                                                                            | external_id       |
+| email *                                                                       | email             |
 | firstName                                                                     | first_name        |
 | lastName                                                                      | last_name         |
 | title                                                                         | title             |
 | address.mobile *or* address.phone                                             | phone_number      |
 | companyName                                                                   | organisation      |
-| id                                                                            | external_id       |
 | address.apartment, address.building, address.streetNumber, address.streetName | location.address1 |
 | address.additionalStreetInfo, address.additionalAddressInfo                   | location.address2 |
 | address.city                                                                  | location.city     |
@@ -34,22 +36,118 @@ The commercetools `address` is selected using the following priority rules:
 3. first available `customer.addresses`
 
 To disable the customer creation synchronization the CT subscription `CustomerCreated` should not be created.
+If the CT message field `payloadNotIncluded` is set to true, the plugin will get the customer data using the
+commercetools API.
+
+&ast; Mandatory field, if not present the commercetools event is ignored.
 
 ### Customer update
 
-...
+*Trigger*: **customer** updated in commercetools  
+*Subscription*: `Customer > ResourceUpdated` message  
+*Action*: [profile created]((https://developers.klaviyo.com/en/reference/create_profile))
+or [profile updated](https://developers.klaviyo.com/en/reference/update_profile) in klaviyo.
+
+#### Fields mapping
+
+| CT Customer                                                                   | Klaviyo Profile   |
+|-------------------------------------------------------------------------------|-------------------|
+|                                                                               | id (1)            |
+| id                                                                            | external_id       |
+| firstName                                                                     | first_name        |
+| lastName                                                                      | last_name         |
+| title                                                                         | title             |
+| address.mobile *or* address.phone                                             | phone_number      |
+| companyName                                                                   | organisation      |
+| address.apartment, address.building, address.streetNumber, address.streetName | location.address1 |
+| address.additionalStreetInfo, address.additionalAddressInfo                   | location.address2 |
+| address.city                                                                  | location.city     |
+| address.country                                                               | location.country  |
+| address.region                                                                | location.region   |
+| address.zip                                                                   | location.zip      |
+| custom                                                                        | properties        |
+
+(1) In order to get the Klaviyo profile `id` used required to update the profile, the plugin queries the profile in
+Klaviyo by `external_id`. If the queried `profile` doesn't exist in Klaviyo then it is created.  
+To disable the customer update synchronization all the CT subscription on the resource type `Customer` should not be
+created.
 
 ### Order placed
 
-...
+*Trigger*: **order** created in commercetools  
+*Subscription*: `OrderCreated` or `OrderImported` or `OrderCustomerSet` message. Configurable with
+property `order.messages.created`  
+*Action*:
+
+* Placed Order [event created](https://developers.klaviyo.com/en/reference/create_event) in klaviyo. Metric name
+  configurable with property `order.metrics.placedOrder`
+* Ordered Product [event/s created](https://developers.klaviyo.com/en/reference/create_event) in klaviyo. Metric name
+  configurable with property `order.metrics.orderedProduct`
+
+#### Fields mapping
+
+##### Placed order event
+
+| CT Order                            | Klaviyo event           |
+|-------------------------------------|-------------------------|
+| `id`                                | `unique_id`             |
+| `createdAt`                         | `time`                  |
+| `totalPrice`                        | `value`                 |
+| `customerId`                        | profile.id              |
+| `customerEmail`                     | profile.email           |
+| *mapCTAddressToKlaviyoLocation* (1) | profile.*               |
+| *allowedProperties* (2)             | `properties.*`          |
+| *itemNames* (3)                     | `properties.ItemNames`  |
+| *productCategories* (4)             | `properties.Categories` |
+
+To disable the order placed synchronization the CT subscription `OrderCreated`, `OrderImported`, `OrderCustomerSet`
+should not be created.  
+If the CT message field `payloadNotIncluded` is set to true, the plugin will get the order data using the commercetools
+API.
+
+(1) the klaviyo profile location information are mapped from the `order.billingAddress` using the same logic of the
+Customer Created event
+(2) all the commercetools order properties are passed in the klaviyo event `properties` field. It is possible to define
+only the properties to include with the configuration property `order.properties.include`, the properties to exclude
+with `order.properties.exclude` and rename properties using `order.properties.map`.
+(3) Array of strings with the ordered product names. Includes `lineItems` and `customLineItems`
+(4) Array of strings with the product category names, including category ancestors.
+
+&ast; Mandatory field, if not present the commercetools event is ignored.
+
+##### Ordered product event
+
+An event is sent for each order line.
+
+| CT Order                            | Klaviyo event  |
+|-------------------------------------|----------------|
+| `lineItem.id`,                      | `unique_id`    |
+| `createdAt`                         | `time`         |
+| `lineItem.totalPrice`               | `value`        |
+| `customerId`                        | profile.id     |
+| `customerEmail`                     | profile.email  |
+| *mapCTAddressToKlaviyoLocation* (1) | profile.*      |
+| all lineItem properties             | `properties.*` |
 
 ### Order fulfilled
 
-...
+*Trigger*: **order** status updated in commercetools  
+*Subscription*: order `ResourceUpdated` message. Configurable with property `order.messages.changed`
+and `order.states.changed.fulfilledOrder`.  
+*Action*: Order fulfilled [event created](https://developers.klaviyo.com/en/reference/create_event) in klaviyo. Metric
+name configurable with properties `order.states.changed` and `order.metrics`
+
+#### Fields mapping
+
+The field mapping is the same as **Placed order event**.
 
 ### Customer cancelled
 
-...
+*Trigger*: **order** status updated in commercetools  
+*Subscription*: order `ResourceUpdated` message. Configurable with property `order.messages.changed`
+and `order.states.changed.cancelledOrder`.    
+*Action*: Order fulfilled [event created](https://developers.klaviyo.com/en/reference/create_event) in klaviyo. Metric
+name configurable with properties `order.states.changed` and `order.metrics`
 
 ### Customer refunded
 

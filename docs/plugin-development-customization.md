@@ -4,7 +4,7 @@
 
 Software required:
 
-* Node.js v18
+* Node.js >= v16
 * yarn
 
 Checkout the project and from the root run the following command to install the dependencies:
@@ -68,11 +68,11 @@ To write and run end-to-end tests check the [documentation](e2e-tests.md)
 
 #### Realtime events
 
-Realtime events are received via Commercetools subscriptions, processed and transformed into requests for the Klaviyo
+Realtime events are received via commercetools subscriptions, processed and transformed into requests for the Klaviyo
 APIs using a set of event processors that are saved at `src/domain/eventSync/eventProcessors`.  
-The following table shows the default Commercetools events handled by the plugin and how they are mapped into Klaviyo.
+The following table shows the default commercetools events handled by the plugin and how they are mapped into Klaviyo.
 
-| Commercetools event | Commercetools subscription event                              | Event processor                                     | Klaviyo result                                 | Klaviyo request                                                                                                                                              |
+| commercetools event | commercetools subscription event                              | Event processor                                     | Klaviyo result                                 | Klaviyo request                                                                                                                                              |
 |---------------------|---------------------------------------------------------------|-----------------------------------------------------|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Customer Created    | `CustomerCreated`                                             | `customer/customerCreatedEventProcessor.ts`         | Profile created                                | [Create Profile](https://developers.klaviyo.com/en/reference/create_profile) or [Profile update](https://developers.klaviyo.com/en/reference/update_profile) |
 | Customer Updated    | `ResourceUpdated` > `customer`                                | `customer/customerResourceUpdatedEventProcessor.ts` | Profile updated                                | [Update Profile](https://developers.klaviyo.com/en/reference/update_profile)                                                                                 |
@@ -112,55 +112,71 @@ The source code is organized in the following way:
     * real time events
         * event processors: process a commercetools subscription message and generate a JSON request for Klaviyo using
           the mappers. Event processors can be added/changed/removed. The list of event processors to be used is passed
-          to the `processEvent` method as input parameter. Also the related Commercetools subscription needs to be
+          to the `processEvent` method as input parameter. However, the related commercetools subscription needs to be
           configured in order to receive the expected message.
     * bulk import: to bulk import customers, products and orders
     * shared logic:
         * mappers: logic to convert a commercetools JSON object to a JSON request for Klaviyo APIs.
         * services: shared services
 
-### Configuration
-
-It is possible to change the default behaviour of the plugin by customising the default configuration.  
-The configuration files can be found in the `/config` directory.  
-The configuration can be different per environment (the env variable `NODE_ENV` is used to select the
-current environment), check the [node-config](https://github.com/node-config/node-config#readme) library for more info.
-
-#### Configuration options
-
-| Property                              | Default   | Description                                                                                                                                                                                                                                                      |
-|---------------------------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `order.states.changed.cancelledOrder` | Cancelled | The commercetools `order.orderState` value that triggers a [Cancelled Order](https://developers.klaviyo.com/en/docs/guide_to_integrating_a_platform_without_a_pre_built_klaviyo_integration#fulfilled-order-cancelled-order-and-refunded-order) event in klaviyo |
-| ....                                  | ...       | TODO                                                                                                                                                                                                                                                             |
-
 ### Dummy services
 
 Some functionalities are specific to the environment where the plugin is installed or different third party service can
 be used. For this reason we provided only the interface of the service with a sample implementation.
 
-| Service           | Sample implementation                           | Description                                                                                                                                                                                                                            |
-|-------------------|-------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `CurrencyService` | `src/domain/services/defaultCurrencyService.ts` | Order amounts can be available in different currencies. In order to have a meaningful representation of the data, all amounts should be converted in a single currency. This service should implement the logic to convert currencies. |
+| Service           | Sample implementation                         | Description                                                                                                                                                                                                                            |
+|-------------------|-----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `CurrencyService` | `src/domain/services/dummyCurrencyService.ts` | Order amounts can be available in different currencies. In order to have a meaningful representation of the data, all amounts should be converted in a single currency. This service should implement the logic to convert currencies. |
 
 ### Event processors
 
+The `processEvent` method accepts a list of event processors. The event processors is responsible to check if the
+message should be processed by the processor and to transform the commercetools message in a request for Klaviyo.
+
 #### Available event processors
 
-TODO
+The following event processors are provided by default:
+
+| Event processor                       | 
+|---------------------------------------|
+| CustomerCreatedEventProcessor         |
+| CustomerResourceUpdatedEventProcessor |
+| OrderCreatedEvent                     |
+| OrderStateChangedEvent                |
+| OrderRefundedEvent                    |
+| CategoryCreatedEventProcessor         |
+| CategoryResourceDeletedEventProcessor |
+| CategoryResourceUpdatedEventProcessor |
+| ProductResourceDeletedEventProcessor  |
+| ProductUnpublishedEventProcessor      |
 
 #### Creating a new event processors
 
-TODO
+To create a new event processor create a new class that implements the interface `AbstractEventProcessor`, then the new
+processor should be added to the list of processors passed in the `processEvent` method.
 
 ### Mappers
 
-TODO
+Event processors use mappers to convert a commercetools message to a Klaviyo message. The same mappers are used for
+realtime events and bulk import, this allows to have a consistent behaviour when data is passed to klaviyo.  
+Mappers can be found in `src/domain/shared/mappers`
+
+### Adapt plugin to different message queues
+
+The plugin supports out of the box GCP Pub/Sub, to use a different message queue (AWS Eventbridge, AWS SNS, Azure
+Service Bus...) the plugin needs some code change.  
+The existing GCP Pub/Sub queue adapter can be found in `src/infrastructure/driving/adapter/eventSync/pubsubAdapter.ts`,
+it is also provided an example for AWS SQS `src/infrastructure/driving/adapter/eventSync/sqsAdapter.ts`.
+Check your selected message queue documentation to learn how the message should be consumed (e.g. push/pull) and the
+format of the payload received.
+Once the code to get the message from the queue is ready call the `processEvent` method with the message payload,
+optionally the method accepts the list of eventProcessors that can be overridden to remove or add new event processors.
 
 ### Error handling
 
 #### Realtime events
 
-commercetools events are sent on the configured queue and consumed by the plugin.  
+The commercetools events are sent on the configured queue and consumed by the plugin.  
 The event is filtered, transformed and sent to klaviyo using the `processEvent` method.   
 The following outcomes are possible:
 
@@ -203,3 +219,7 @@ manager to store and retrieve the key.
 The bulk import of data into Klaviyo can be triggered via API calls. The API endpoints should be protected via
 authentication or only accessible in a private network.
 
+### Dependencies
+
+Some of the dependencies in `package.json` are specific to GCP, when using a different cloud provider those dependencies
+can be removed to reduce the bundle size, this will improve the start-up time when used in serverless environments.

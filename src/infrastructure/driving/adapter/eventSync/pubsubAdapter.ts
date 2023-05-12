@@ -48,7 +48,7 @@ export const pubsubAdapter: GenericAdapter = (): Promise<any> => {
     if (process.env.APP_TYPE && process.env.APP_TYPE != 'EVENT') {
         return Promise.resolve();
     }
-    const PORT = 6789;
+    const PORT = process.env.PUB_SUB_PORT || 6789;
     app.listen(PORT, () => logger.info(`klaviyo commercetools plugin pub/sub adapter, listening on port ${PORT}`));
     return Promise.resolve(app);
 };

@@ -1,8 +1,6 @@
 import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
-import { CustomerCreatedMessage, Customer } from '@commercetools/platform-sdk';
-import { getApiRoot } from '../../../../infrastructure/driven/commercetools/ctService';
-import { DefaultCtCustomerService } from '../../../../infrastructure/driven/commercetools/DefaultCtCustomerService';
+import { Customer, CustomerCreatedMessage } from '@commercetools/platform-sdk';
 
 export class CustomerCreatedEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {

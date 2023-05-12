@@ -12,7 +12,8 @@ a [destination](https://docs.commercetools.com/api/projects/subscriptions#destin
 Check the [commercetools documentation](https://docs.commercetools.com/api/projects/subscriptions#destination) for the
 supported queue technologies.  
 The plugin supports out-of-the-box *Google Cloud Pub/Sub*, if another message queue is used then view
-the [Adapt plugin to different message queues](./adapt-queue.md) section.
+the [Adapt plugin to different message queues](./plugin-development-customization.md#adapt-plugin-to-different-message-queues)
+section.
 It is recommended to configure also a Dead-letter queue (DLQ) and set alerts when a message is moved to the DLQ to
 handle error scenarios.
 
@@ -34,23 +35,20 @@ example on CloudRun.
 
 The real-time module requires all the following environment variables to start:
 
-| NAME             | VALUE                                                                                                                                                                                               | Example                                                                                                                                      |
-|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| CT_API_URL       | *commercetools API url*                                                                                                                                                                             | `https://api.us-central1.gcp.commercetools.com`                                                                                              |
-| CT_AUTH_URL      | *commercetools AUTH url*                                                                                                                                                                            | `https://auth.us-central1.gcp.commercetools.com`                                                                                             |
-| CT_PROJECT_ID    | *commercetools project ID*                                                                                                                                                                          | `my-project-prod`                                                                                                                            |
-| CT_SCOPE         | *commercetools API client scopes. The following scopes are required for the realtime event plugin:* <br /> `view_orders` `view_published_products` `view_products` `view_customers` `view_payments` | `view_orders:project-key view_published_products:project-key view_products:project-key view_customers:project-key view_payments:project-key` |
-| KLAVIYO_AUTH_KEY | *Klaviyo private api KEY*                                                                                                                                                                           | `pk_1234567890`                                                                                                                              |
-| CT_API_CLIENT    | *Commercetools API client id and secret*                                                                                                                                                            | `{"clientId":"the-ct-client-id","secret":"the-ct-client-secret"}`                                                                            |
-| APP_TYPE         | `EVENT`                                                                                                                                                                                             | this variable is used to NOT start the bulk import API server                                                                                |
+| NAME             | VALUE                                                                                                                                                                                               | Required | Example                                                                                                                                      |
+|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| CT_API_URL       | *commercetools API url*                                                                                                                                                                             | Yes      | `https://api.us-central1.gcp.commercetools.com`                                                                                              |
+| CT_AUTH_URL      | *commercetools AUTH url*                                                                                                                                                                            | Yes      | `https://auth.us-central1.gcp.commercetools.com`                                                                                             |
+| CT_PROJECT_ID    | *commercetools project ID*                                                                                                                                                                          | Yes      | `my-project-prod`                                                                                                                            |
+| CT_SCOPE         | *commercetools API client scopes. The following scopes are required for the realtime event plugin:* <br /> `view_orders` `view_published_products` `view_products` `view_customers` `view_payments` | Yes      | `view_orders:project-key view_published_products:project-key view_products:project-key view_customers:project-key view_payments:project-key` |
+| KLAVIYO_AUTH_KEY | *Klaviyo private api KEY*                                                                                                                                                                           | Yes      | `pk_1234567890`                                                                                                                              |
+| CT_API_CLIENT    | *commercetools API client id and secret*                                                                                                                                                            | Yes      | `{"clientId":"the-ct-client-id","secret":"the-ct-client-secret"}`                                                                            |
+| APP_TYPE         | `EVENT`                                                                                                                                                                                             | No       | Used to NOT start the bulk import API server                                                                                                 |
+| PUB_SUB_PORT     | 6789                                                                                                                                                                                                | No       | To change the default (`6789`) server port for the pubSub push endpoint                                                                      |
 
 [//]: # (| KLAVIYO_COMPANY_ID | *Klaviyo public api KEY*                                                                                                                                                                                                         | `C4VV2d `                                                                                                                                                                           |)
 
-### GCP example
-
-TODO add link to sample implementation using terraform and GCP
-
-## Commercetools project requirements
+## commercetools project requirements
 
 The following commercetools resources are required for the real-time module to operate with the default configuration:
 
@@ -102,5 +100,5 @@ It is also possible to create subscriptions in commercetools using Terraform, in
 found an example.
 
 > **_NOTE:_** The *customer updated* and *category updated* events use the commercetools `ResourceUpdated` notification
-> type, to
-> disable these events the plugin source code needs to be updated.
+> type, to disable these events all customer and category subscription should not be enabled or the plugin source code
+> should to be updated.

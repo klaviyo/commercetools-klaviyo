@@ -24,9 +24,9 @@ const bree = new Bree({
             },
         },
     ],
-    workerMessageHandler: (workerMessage) => {
+    workerMessageHandler: async (workerMessage) => {
         if (workerMessage.message === 'done') {
-            bree.remove(workerMessage.name);
+            await bree.remove(workerMessage.name);
         }
     },
 });
@@ -278,7 +278,7 @@ export const bulkSyncApiAdapter: GenericAdapter = (): Promise<any> => {
     if (process.env.APP_TYPE && process.env.APP_TYPE != 'BULK_IMPORT') {
         return Promise.resolve();
     }
-    const PORT = 6779;
+    const PORT = process.env.BULK_IMPORT_PORT || 6779;
     bulkSyncApp.listen(PORT, () => logger.info(`klaviyo commercetools plugin bulk sync, listening on port ${PORT}`));
     return Promise.resolve(app);
 };

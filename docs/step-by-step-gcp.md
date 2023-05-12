@@ -1,4 +1,4 @@
-# Infrastructure
+# Step-by-step installation on Google Cloud Platform
 
 This section details how to configure a cloud environment to run the plugin, configure klaviyo, commercetools and import
 tests data.  
@@ -13,14 +13,14 @@ On premise providers can be used to host the plugin but still one of the previou
 messages from commercetools via subscriptions and forward the messages to the plugin.
 
 Each cloud provider provides different services and various combination are possible to host the plugin and connect
-commeretools subscriptions.
+commercetools subscriptions.
 
-| Cloud Provider | Commercetools subscriptions | Plugin deployment | Other                                                                                          |
-|----------------|-----------------------------|-------------------|------------------------------------------------------------------------------------------------|
-| GCP            | pub/sub                     | Cloud Run         | <ul><li>GCP Artifact Repository</li><li>GCP API Gateway</li><li>CI/CD Github Actions</li></ul> |
-| GCP            | pub/sub                     | Cloud Functions   |                                                                                                |
-| AWS            | SQS                         | Lambda            |                                                                                                |
-| AWS            | EventBridge                 | Fargate           |                                                                                                |
+| Cloud Provider | commercetools subscriptions | Plugin deployment | Other                                                                                              |
+|----------------|-----------------------------|-------------------|----------------------------------------------------------------------------------------------------|
+| **GCP**        | **pub/sub**                 | **Cloud Run**     | **<ul><li>GCP Artifact Repository</li><li>GCP API Gateway</li><li>CI/CD Github Actions</li></ul>** |
+| GCP            | pub/sub                     | Cloud Functions   |                                                                                                    |
+| AWS            | SQS                         | Lambda            |                                                                                                    |
+| AWS            | EventBridge                 | Fargate           |                                                                                                    |
 
 In the next steps we detail a sample configuration that uses the first option: GCP, Cloud Run and GitHub actions.
 
@@ -30,7 +30,7 @@ In the next steps we detail a sample configuration that uses the first option: G
 
 The setup and configuration of a new environment for the klaviyo commercetools plugin require some manual steps:
 
-* Commercetools project creation and API client for terraform
+* commercetools project creation and API client for terraform
 * Creation of the klaviyo accounts and API keys
 * Google Cloud project
 * Configuration of GitHub for running pipelines
@@ -39,7 +39,7 @@ The rest of the configuration of the environment (creation of the commercetools 
 repositories...) can be done using terraform scripts.
 The terraform scripts are available in `/infrastructure`
 
-### Commercetools
+### commercetools
 
 The initial creation of the commercetools projects (if not already existing) and the API client for terraform must be
 done manually.  
@@ -65,9 +65,9 @@ In this sample implementation a single GCP project is created `klaviyo-ct-plugin
 by namespace (each
 environment specific resource is prefixed with the environment name `dev` or `prod`).
 The plugin is built into a docker image and deployed on [GCP Cloud Run](https://cloud.google.com/run).
-Commercetools subscriptions are configured via Terraform and communicate to the plugin using a
+The commercetools subscriptions are configured via Terraform and communicate to the plugin using a
 single [GCP pub/sub](https://cloud.google.com/pubsub) topic.
-To create a new project if not already existing, run the bootstrap-gcp scripts to setup a new project in GCP (you need
+To create a new project if not already existing, run the bootstrap-gcp scripts to set-up a new project in GCP (you need
 project creation rights)
 
 ```shell
@@ -202,9 +202,9 @@ gcloud auth application-default login
 OR authenticate with service account key
 
 ```shell
-gcloud auth activate-service-account terraform@klaviyo-ct-plugin.iam.gserviceaccount.com --key-file=/Users/roberto.losanno/work/klaviyo/gcp/klaviyo-ct-plugin-a5c9b42d8e43.json --project=klaviyo-ct-plugin    
+gcloud auth activate-service-account terraform@klaviyo-ct-plugin.iam.gserviceaccount.com --key-file=path-to-you-service-acccount-key.json --project=klaviyo-ct-plugin    
 
-#export GOOGLE_APPLICATION_CREDENTIALS=~/path-to-you-service-acccount-key.json
+export GOOGLE_APPLICATION_CREDENTIALS=~/path-to-you-service-acccount-key.json
 ```
 
 ```shell
