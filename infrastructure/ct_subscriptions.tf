@@ -11,6 +11,16 @@ locals {
       queue_ref         = google_pubsub_topic.commercetools
     },
     {
+      key               = "${var.gcp_environment_namespace}-gcp-inventory-entry"
+      type              = "GoogleCloudPubSub"
+      projectId         = var.gcp_project_id
+      topic             = "${var.gcp_environment_namespace}-commercetools-topic"
+      resource_type_ids = ["inventory-entry"]
+      resource_type_id  = "inventory-entry"
+      types             = ["InventoryEntryCreated"]
+      queue_ref         = google_pubsub_topic.commercetools
+    },
+    {
       key               = "${var.gcp_environment_namespace}-gcp-category-created"
       type              = "GoogleCloudPubSub"
       projectId         = var.gcp_project_id
