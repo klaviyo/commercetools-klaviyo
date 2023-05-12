@@ -30,6 +30,74 @@ describe('map CT product to Klaviyo product', () => {
         expect(klaviyoEvent).toMatchSnapshot();
     });
 
+    it('should map commercetools inventory entry to a klaviyo variant updated request', () => {
+        const klaviyoEvent = productMapper.mapCtInventoryEntryToKlaviyoVariant(
+            {
+                id: 'df743513-c74e-453e-8c4c-e414d77b8d85',
+                version: 1,
+                createdAt: '2023-05-09T15:00:47.410Z',
+                lastModifiedAt: '2023-05-09T15:00:47.410Z',
+                lastModifiedBy: {},
+                createdBy: {},
+                sku: 'EXPROD1',
+                quantityOnStock: 55,
+                availableQuantity: 55,
+            },
+            {
+                id: '$custom:::$default:::EXPROD1',
+            } as any,
+        );
+        expect(klaviyoEvent).toMatchSnapshot();
+    });
+
+    it('should map commercetools inventory entry with supply channel to a klaviyo variant updated request', () => {
+        const klaviyoEvent = productMapper.mapCtInventoryEntryToKlaviyoVariant(
+            {
+                id: 'df743513-c74e-453e-8c4c-e414d77b8d85',
+                version: 1,
+                createdAt: '2023-05-09T15:00:47.410Z',
+                lastModifiedAt: '2023-05-09T15:00:47.410Z',
+                lastModifiedBy: {},
+                createdBy: {},
+                sku: 'EXPROD1',
+                supplyChannel: {
+                    typeId: 'channel',
+                    id: '03c22295-79b0-4838-bc4c-9724133a27ce',
+                },
+                quantityOnStock: 120,
+                availableQuantity: 120,
+            },
+            {
+                id: '$custom:::$default:::EXPROD1',
+            } as any,
+        );
+        expect(klaviyoEvent).toMatchSnapshot();
+    });
+
+    it('should map commercetools inventory entry for variant with invalid supply channel and set undefined inventory_quantity', () => {
+        const klaviyoEvent = productMapper.mapCtInventoryEntryToKlaviyoVariant(
+            {
+                id: 'df743513-c74e-453e-8c4c-e414d77b8d85',
+                version: 1,
+                createdAt: '2023-05-09T15:00:47.410Z',
+                lastModifiedAt: '2023-05-09T15:00:47.410Z',
+                lastModifiedBy: {},
+                createdBy: {},
+                sku: 'EXPROD1',
+                supplyChannel: {
+                    typeId: 'channel',
+                    id: 'this-channel-is-not-configured',
+                },
+                quantityOnStock: 55,
+                availableQuantity: 55,
+            },
+            {
+                id: '$custom:::$default:::EXPROD1',
+            } as any,
+        );
+        expect(klaviyoEvent).toMatchSnapshot();
+    });
+
     it('should map commercetools product variants prices by priority', () => {
         const realDate = global.Date;
         const mockDate = new Date('2023-05-08T17:00:00.000Z');

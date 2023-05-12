@@ -32,6 +32,8 @@ export class KlaviyoSdkService extends KlaviyoService {
                 return Catalogs.deleteCatalogCategory(event.body.data.id);
             case 'categoryUpdated':
                 return Catalogs.updateCatalogCategory(event.body, event.body.data?.id);
+            case 'variantUpdated':
+                return Catalogs.updateCatalogVariant(event.body, event.body.data?.id);
             case 'itemDeleted':
                 return this.deleteCatalogItemWithVariants(
                     event.body.data.id,

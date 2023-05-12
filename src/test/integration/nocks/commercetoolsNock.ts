@@ -74,9 +74,11 @@ export const ctGetOrderByIdNock = (orderId: string, status = 200) => {
             version: 24,
             createdAt: '2023-01-27T15:00:00.000Z',
             lastModifiedAt: '2023-01-27T15:00:00.000Z',
-            lineItems: [{
-                ...ctGet2Orders.results[0].lineItems[0],
-            }],
+            lineItems: [
+                {
+                    ...ctGet2Orders.results[0].lineItems[0],
+                },
+            ],
             customLineItems: [],
             totalPrice: { type: 'centPrecision', centAmount: 1300, currencyCode: 'USD', fractionDigits: 2 },
             shipping: [],
@@ -164,9 +166,11 @@ export const ctGetOrderByPaymentIdNock = (paymentId: string, responseStatusCode 
                     },
                     orderState: 'Open',
                     returnInfo: [],
-                    lineItems: [{
-                        ...ctGet2Orders.results[0].lineItems[0],
-                    }],
+                    lineItems: [
+                        {
+                            ...ctGet2Orders.results[0].lineItems[0],
+                        },
+                    ],
                     customLineItems: [],
                     shippingMode: '',
                     shipping: [],
@@ -278,7 +282,7 @@ export const getAllProducts = (responseBody = {}) => {
         .query({
             limit: '20',
             withTotal: 'false',
-            sort:'id%20asc',
+            sort: 'id%20asc',
             expand: 'masterData.current.categories[*].ancestors[*]',
             where: 'masterData(published = true)',
         })
@@ -292,9 +296,31 @@ export const getProductsByIdRange = (ids: string[], responseBody = {}) => {
         .query({
             limit: '20',
             withTotal: 'false',
-            sort:'id asc',
+            sort: 'id asc',
             expand: 'masterData.current.categories[*].ancestors[*]',
             where: `id in ("${ids.join('","')}")`,
         })
         .reply(200, responseBody, []);
+};
+
+export const ctGetInventoryEntryByIdNock = (inventoryId: string, supplyChannelId?: string, status = 200) => {
+    const responseBody: any = {
+        id: inventoryId,
+        version: 1,
+        createdAt: '2023-05-09T15:00:47.410Z',
+        lastModifiedAt: '2023-05-09T15:00:47.410Z',
+        sku: 'EXPROD1',
+        quantityOnStock: 100,
+        availableQuantity: 100,
+    };
+    if (supplyChannelId) {
+        responseBody.supplyChannel = {
+            typeId: 'channel',
+            id: supplyChannelId,
+        };
+    }
+    return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
+        .persist()
+        .get(`/klaviyo-dev/inventory/${inventoryId}`)
+        .reply(status, responseBody);
 };

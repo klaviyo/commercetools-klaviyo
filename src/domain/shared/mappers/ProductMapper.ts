@@ -1,4 +1,4 @@
-import { Product, ProductVariant } from '@commercetools/platform-sdk';
+import { InventoryEntry, Product, ProductVariant } from '@commercetools/platform-sdk';
 
 export interface ProductMapper {
     mapCtProductToKlaviyoItem(product: Product, update?: boolean): ItemRequest;
@@ -14,4 +14,5 @@ export interface ProductMapper {
         type: string,
     ): ItemVariantJobRequest;
     mapKlaviyoItemIdToDeleteItemRequest(klaviyoItemId: string): ItemDeletedRequest;
+    mapCtInventoryEntryToKlaviyoVariant(inventory: InventoryEntry, klaviyoVariant: ItemVariantType): ItemVariantRequest;
 }

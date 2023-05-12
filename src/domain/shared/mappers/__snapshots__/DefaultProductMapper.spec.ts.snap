@@ -227,6 +227,48 @@ exports[`map CT product to Klaviyo product should map a commercetools product wi
 }
 `;
 
+exports[`map CT product to Klaviyo product should map commercetools inventory entry for variant with invalid supply channel and set undefined inventory_quantity 1`] = `
+{
+  "data": {
+    "attributes": {
+      "inventory_policy": 1,
+      "inventory_quantity": undefined,
+      "published": true,
+    },
+    "id": "$custom:::$default:::EXPROD1",
+    "type": "catalog-variant",
+  },
+}
+`;
+
+exports[`map CT product to Klaviyo product should map commercetools inventory entry to a klaviyo variant updated request 1`] = `
+{
+  "data": {
+    "attributes": {
+      "inventory_policy": 1,
+      "inventory_quantity": 55,
+      "published": true,
+    },
+    "id": "$custom:::$default:::EXPROD1",
+    "type": "catalog-variant",
+  },
+}
+`;
+
+exports[`map CT product to Klaviyo product should map commercetools inventory entry with supply channel to a klaviyo variant updated request 1`] = `
+{
+  "data": {
+    "attributes": {
+      "inventory_policy": 1,
+      "inventory_quantity": 120,
+      "published": true,
+    },
+    "id": "$custom:::$default:::EXPROD1",
+    "type": "catalog-variant",
+  },
+}
+`;
+
 exports[`map CT product to Klaviyo product should map commercetools product variants prices by priority 1`] = `
 {
   "data": {

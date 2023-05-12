@@ -1,7 +1,8 @@
-import { Product } from '@commercetools/platform-sdk';
+import { InventoryEntry, Product } from '@commercetools/platform-sdk';
 import logger from '../../../utils/log';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 import { CtProductService } from './CtProductService';
+import { StatusError } from '../../../types/errors/StatusError';
 
 export type PaginatedProductResults = {
     data: Product[];
@@ -48,6 +49,20 @@ export class DefaultCtProductService implements CtProductService {
         } catch (error) {
             logger.error(error);
             throw error;
+        }
+    };
+
+    getInventoryEntryById = async (inventoryEntryId: string): Promise<InventoryEntry> => {
+        logger.info(`Getting inventory entry in commercetools with id ${inventoryEntryId}`);
+
+        try {
+            return (await this.ctApiRoot.inventory().withId({ ID: inventoryEntryId }).get().execute()).body;
+        } catch (error: any) {
+            logger.error(`Error getting inventory entry in CT with id ${inventoryEntryId}, status: ${error.statusCode}`, error);
+            throw new StatusError(
+                error.statusCode,
+                `CT get inventory api returns failed with status code ${error.statusCode}, msg: ${error.message}`,
+            );
         }
     };
 }

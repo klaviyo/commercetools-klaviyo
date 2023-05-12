@@ -2,6 +2,7 @@ import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number'
 import {
     Category,
     CategoryReference,
+    InventoryEntry,
     Price,
     Product,
     ProductVariant,
@@ -12,6 +13,7 @@ import { ProductMapper } from './ProductMapper';
 import { CurrencyService } from '../services/CurrencyService';
 import * as _ from 'lodash';
 import config from 'config';
+import logger from '../../../utils/log';
 
 export class DefaultProductMapper implements ProductMapper {
     constructor(private readonly currencyService: CurrencyService) {}
@@ -72,6 +74,7 @@ export class DefaultProductMapper implements ProductMapper {
             : 'None';
         const variantImages = productVariant.images;
         const variantPrice = productVariant.prices ? this.getProductPriceByPriority(productVariant.prices) : 0;
+        const variantInventoryQuantity = this.getProductInventoryByPriority(productVariant.availability);
         return {
             data: {
                 type: 'catalog-variant',
@@ -88,7 +91,7 @@ export class DefaultProductMapper implements ProductMapper {
                     sku: !update ? productVariant.sku : undefined,
                     url: productUrl,
                     image_full_url: variantImages ? variantImages[0].url : undefined,
-                    inventory_quantity: this.getProductInventoryByPriority(productVariant.availability),
+                    inventory_quantity: variantInventoryQuantity ?? 0,
                     inventory_policy: 1,
                     price: variantPrice ? this.currencyService.convert(variantPrice.amount, variantPrice.currency) : 0,
                 },
@@ -170,7 +173,7 @@ export class DefaultProductMapper implements ProductMapper {
     }
 
     private mapCtCategoriesToKlaviyoRelationshipCategories(categories: CategoryReference[]): KlaviyoRelationshipData[] {
-        return Array.from(new Set(categories.map(category => category.id))).map(category => ({
+        return Array.from(new Set(categories.map((category) => category.id))).map((category) => ({
             type: 'catalog-category',
             id: `$custom:::$default:::${category}`,
         }));
@@ -211,18 +214,38 @@ export class DefaultProductMapper implements ProductMapper {
         };
     }
 
-    public getProductInventoryByPriority(availability?: ProductVariantAvailability): number {
+    public getProductInventoryByPriority(availability?: ProductVariantAvailability | InventoryEntry): number | null {
         if (!availability) {
             return 0;
         }
 
         if (config.has('product.inventory.useChannelInventory')) {
             const productInventoryChannel = config.get('product.inventory.useChannelInventory') as string;
-            if (productInventoryChannel && availability.channels) {
-                const channelAvailableQuantity = availability.channels[productInventoryChannel]?.availableQuantity;
-                if (channelAvailableQuantity) {
-                    return channelAvailableQuantity;
+            const variantAvailabilityChannels = (availability as ProductVariantAvailability).channels;
+            const inventoryEntryChannel = (availability as InventoryEntry).supplyChannel;
+            if (productInventoryChannel && (variantAvailabilityChannels || inventoryEntryChannel)) {
+                const variantChannelAvailableQuantity = variantAvailabilityChannels
+                    ? variantAvailabilityChannels[productInventoryChannel]?.availableQuantity
+                    : undefined;
+                const inventoryChannelAvailableQuantity = inventoryEntryChannel?.id === productInventoryChannel
+                    ? availability.availableQuantity
+                    : undefined;
+                if (variantChannelAvailableQuantity) {
+                    return variantChannelAvailableQuantity;
                 }
+
+                if (inventoryChannelAvailableQuantity) {
+                    return inventoryChannelAvailableQuantity;
+                }
+                else {
+                    if (!variantAvailabilityChannels) {
+                        return null;
+                    }
+                }
+            }
+            // Prevents bulk sync and inventory update events from stepping on each other
+            else if (!productInventoryChannel && inventoryEntryChannel) {
+                return null;
             }
         }
 
@@ -233,6 +256,24 @@ export class DefaultProductMapper implements ProductMapper {
         return {
             data: {
                 id: klaviyoItemId,
+            },
+        };
+    }
+
+    public mapCtInventoryEntryToKlaviyoVariant(
+        inventory: InventoryEntry,
+        klaviyoVariant: ItemVariantType,
+    ): ItemVariantRequest {
+        const inventoryEntryQuantity = this.getProductInventoryByPriority(inventory);
+        return {
+            data: {
+                type: 'catalog-variant',
+                id: klaviyoVariant.id,
+                attributes: {
+                    inventory_policy: 1,
+                    inventory_quantity: inventoryEntryQuantity !== null ? inventoryEntryQuantity : undefined,
+                    published: true,
+                },
             },
         };
     }

@@ -3,7 +3,7 @@ import chaiHttp from 'chai-http';
 import { app } from '../../../infrastructure/driving/adapter/eventSync/pubsubAdapter';
 import { sampleCategoryCreatedMessage, sampleCategoryResourceUpdatedMessage } from '../../testData/ctCategoryMessages';
 import http from 'http';
-import { ctAuthNock, ctGetCategoryByIdNock, ctGetCustomerNock } from '../nocks/commercetoolsNock';
+import { ctAuthNock, ctGetCategoryByIdNock } from '../nocks/commercetoolsNock';
 import { klaviyoCreateCategoryNock, klaviyoGetCategoriesNock, klaviyoPatchCategoryNock } from '../nocks/KlaviyoCategoryNock';
 import nock from 'nock';
 

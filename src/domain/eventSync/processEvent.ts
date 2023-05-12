@@ -28,6 +28,7 @@ import { DefaultCtProductService } from '../../infrastructure/driven/commercetoo
 import { DefaultCtCategoryService } from '../../infrastructure/driven/commercetools/DefaultCtCategoryService';
 import { DefaultCtPaymentService } from '../../infrastructure/driven/commercetools/DefaultCtPaymentService';
 import { DefaultCtOrderService } from '../../infrastructure/driven/commercetools/DefaultCtOrderService';
+import { InventoryResourceUpdatedEventProcessor } from './eventProcessors/inventory/inventoryResourceUpdatedEventProcessor';
 
 const context: Context = {
     klaviyoService: new KlaviyoSdkService(),
@@ -55,6 +56,7 @@ const defaultProcessors: (typeof AbstractEventProcessor)[] = [
     CategoryResourceUpdatedEventProcessor,
     ProductResourceDeletedEventProcessor,
     ProductUnpublishedEventProcessor,
+    InventoryResourceUpdatedEventProcessor,
 ];
 
 // class CTEventsProcessor {

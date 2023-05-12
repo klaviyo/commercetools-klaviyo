@@ -34,7 +34,7 @@ contextMock.categoryMapper.mapCtCategoryToKlaviyoCategory.mockImplementation(
     (category, klaviyoCategoryId) => categoryRequestMock,
 );
 
-describe('CustomerResourceUpdatedEventProcessor > isEventValid', () => {
+describe('CategoryResourceUpdatedEventProcessor > isEventValid', () => {
     it('should return valid when the category event has all the required fields', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'category' } });
@@ -50,7 +50,7 @@ describe('CustomerResourceUpdatedEventProcessor > isEventValid', () => {
         ${'invalid'}  | ${'ResourceUpdated'}
         ${'category'} | ${'invalid'}
     `(
-        'should return invalid when is not a valid customer ResourceUpdated message',
+        'should return invalid when is not a valid category ResourceUpdated message',
         ({ resource, notificationType }) => {
             const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
             Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: resource } });

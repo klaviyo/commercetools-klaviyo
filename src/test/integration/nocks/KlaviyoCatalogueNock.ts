@@ -59,3 +59,15 @@ export const klaviyoDeleteItemNock = (id: string, responseCode = 204) => {
         .delete(`/api/catalog-items/${id}/`, undefined)
         .reply(responseCode);
 };
+
+export const klaviyoUpdateVariantNock = (id: string, body: any, responseCode = 200) => {
+    return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
+        .patch(`/api/catalog-variants/${id}/`, body)
+        .reply(responseCode);
+};
+
+export const klaviyoGetCatalogueVariantsWithoutItemNock = (responseCode = 200, responseBody = {}) => {
+    return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
+        .get(`/api/catalog-variants/?filter=any%28ids%2C%5B%22%24custom%3A%3A%3A%24default%3A%3A%3AA0E200000002E49%22%5D%29`)
+        .reply(responseCode, responseBody);
+};
