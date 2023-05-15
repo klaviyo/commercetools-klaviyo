@@ -120,6 +120,9 @@
       "deleted": [
         "ProductUnpublished",
         "ResourceDeleted"
+      ],
+      "published": [
+        "ProductPublished"
       ]
     },
     "inventory": {

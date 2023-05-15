@@ -4,6 +4,7 @@ import { Client, ConfigWrapper, Events, Profiles, Catalogs } from 'klaviyo-api';
 import * as dotenv from 'dotenv';
 import { delaySeconds } from '../../../utils/delay-seconds';
 import { StatusError } from '../../../types/errors/StatusError';
+import { isRateLimited, isRejected } from '../../../utils/promise';
 
 dotenv.config();
 
@@ -35,9 +36,11 @@ export class KlaviyoSdkService extends KlaviyoService {
             case 'variantUpdated':
                 return Catalogs.updateCatalogVariant(event.body, event.body.data?.id);
             case 'itemDeleted':
-                return this.deleteCatalogItemWithVariants(
-                    event.body.data.id,
-                );
+                return this.deleteCatalogItemWithVariants(event.body.data.id);
+            case 'itemCreated':
+                return this.createUpdateItem(event.body as ItemRequest, 'itemCreated');
+            case 'itemUpdated':
+                return this.createUpdateItem(event.body as ItemRequest, 'itemUpdated');
             default:
                 throw new Error(`Unsupported event type ${event.type}`);
         }
@@ -99,7 +102,8 @@ export class KlaviyoSdkService extends KlaviyoService {
                     logger.info(
                         `Invalid phone number when ${
                             create ? 'creating' : 'updating'
-                        } profile. Retrying after removing phone number from profile...`, JSON.parse(e?.response?.error?.text)
+                        } profile. Retrying after removing phone number from profile...`,
+                        JSON.parse(e?.response?.error?.text),
                     );
                     const modifiedBody: any = {
                         data: {
@@ -157,6 +161,37 @@ export class KlaviyoSdkService extends KlaviyoService {
                     message: `Item with itemId ${itemId} does not exist in Klaviyo. Failed to delete, ignoring.`,
                 };
             }
+            throw e;
+        }
+    }
+
+    private async createUpdateItem(body: ItemRequest, type: string) {
+        try {
+            let baseItemRequest;
+            const { variantJobRequests, ...itemBody } = body;
+            if (type === 'itemCreated') {
+                baseItemRequest = await Catalogs.createCatalogItem(itemBody);
+            } else if (type === 'itemUpdated') {
+                baseItemRequest = await Catalogs.updateCatalogItem(itemBody, itemBody.data?.id);
+            }
+
+            const variantPromises = await Promise.allSettled(
+                (variantJobRequests as any).map(async (r: KlaviyoEvent) => await this.sendJobRequestToKlaviyo(r)),
+            );
+
+            const rejectedPromises = variantPromises.filter((p) => isRejected(p) && !isRateLimited(p));
+            if (rejectedPromises.length) {
+                rejectedPromises.forEach((rejected: any) => logger.error('Error syncing event with klaviyo', rejected));
+            }
+
+            return baseItemRequest;
+        } catch (e: any) {
+            logger.error(
+                `Error ${type === 'itemCreated' ? 'creating' : 'updating'} item in Klaviyo. Response code ${
+                    e.status
+                }, ${e.message}`,
+                e,
+            );
             throw e;
         }
     }
@@ -286,13 +321,19 @@ export class KlaviyoSdkService extends KlaviyoService {
     }
 
     public async getKlaviyoPaginatedCategories(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCategory>> {
-        logger.info(`Getting categories in Klaviyo ${nextPageCursor ? 'with pagination cursor: ' + nextPageCursor : ''}`);
+        logger.info(
+            `Getting categories in Klaviyo ${nextPageCursor ? 'with pagination cursor: ' + nextPageCursor : ''}`,
+        );
         try {
             const categories = await Catalogs.getCatalogCategories({ pageCursor: nextPageCursor });
             logger.debug('Categories response', categories);
             return categories.body;
         } catch (e) {
-            logger.error(`Error getting categories in Klaviyo ${nextPageCursor ? 'with pagination cursor: ' + nextPageCursor : ''}`);
+            logger.error(
+                `Error getting categories in Klaviyo ${
+                    nextPageCursor ? 'with pagination cursor: ' + nextPageCursor : ''
+                }`,
+            );
             throw e;
         }
     }
@@ -304,7 +345,25 @@ export class KlaviyoSdkService extends KlaviyoService {
             logger.debug('Items response', categories);
             return categories.body;
         } catch (e) {
-            logger.error(`Error getting items in Klaviyo ${nextPageCursor ? 'with pagination cursor: ' + nextPageCursor : ''}`);
+            logger.error(
+                `Error getting items in Klaviyo ${nextPageCursor ? 'with pagination cursor: ' + nextPageCursor : ''}`,
+            );
+            throw e;
+        }
+    }
+
+    public async getKlaviyoItemByExternalId(externalId: string): Promise<ItemType | undefined> {
+        logger.info(`Getting item in Klaviyo with externalId ${externalId}`);
+        try {
+            const itemId = `$custom:::$default:::${externalId}`;
+            const item = await Catalogs.getCatalogItem(itemId, {});
+            logger.debug('Item response', item);
+            return item.body.data;
+        } catch (e: any) {
+            if (e.status === 404) {
+                return undefined;
+            }
+            logger.error(`Error getting item in Klaviyo with externalId ${externalId}`);
             throw e;
         }
     }

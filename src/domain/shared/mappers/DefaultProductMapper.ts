@@ -13,7 +13,6 @@ import { ProductMapper } from './ProductMapper';
 import { CurrencyService } from '../services/CurrencyService';
 import * as _ from 'lodash';
 import config from 'config';
-import logger from '../../../utils/log';
 
 export class DefaultProductMapper implements ProductMapper {
     constructor(private readonly currencyService: CurrencyService) {}

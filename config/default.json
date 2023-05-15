@@ -90,6 +90,9 @@
     "messages": {
       "deleted": [
         "ProductUnpublished"
+      ],
+      "published": [
+        "ProductPublished"
       ]
     },
     "inventory": {

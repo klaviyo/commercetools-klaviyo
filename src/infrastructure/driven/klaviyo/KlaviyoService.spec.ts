@@ -46,6 +46,10 @@ describe('Klaviyo abstract service', () => {
         getKlaviyoPaginatedItems(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCatalogItem>> {
             return Promise.resolve(mock<KlaviyoQueryResult<KlaviyoCatalogItem>>());
         }
+
+        getKlaviyoItemByExternalId(externalId: string): Promise<ItemType | undefined> {
+            return Promise.resolve(mock<ItemType>());
+        }
     }
 
     test('should log all the rateLimit headers when they are available', async () => {

@@ -17,7 +17,7 @@ locals {
       topic             = "${var.gcp_environment_namespace}-commercetools-topic"
       resource_type_ids = ["inventory-entry"]
       resource_type_id  = "inventory-entry"
-      types             = ["InventoryEntryCreated"]
+      types             = []
       queue_ref         = google_pubsub_topic.commercetools
     },
     {

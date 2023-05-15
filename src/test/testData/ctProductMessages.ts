@@ -1,5 +1,8 @@
 import {
-	ProductCreatedMessage, ProductUnpublishedMessage, ResourceDeletedDeliveryPayload,
+	ProductCreatedMessage,
+	ProductPublishedMessage,
+	ProductUnpublishedMessage,
+	ResourceDeletedDeliveryPayload,
 	ResourceUpdatedDeliveryPayload,
 } from '@commercetools/platform-sdk';
 
@@ -137,6 +140,146 @@ export const sampleProductUnpublishedMessage: ProductUnpublishedMessage = {
 	},
 	resourceVersion: 1,
 	type: 'ProductUnpublished',
+	resourceUserProvidedIdentifiers: {},
+	createdAt: '2023-03-16T15:01:26.922Z',
+	lastModifiedAt: '2023-03-16T15:01:26.922Z',
+};
+
+export const sampleProductPublishedMessage: ProductPublishedMessage = {
+	id: '38898b94-0070-490d-9c31-22f517a42452',
+	version: 1,
+	sequenceNumber: 1,
+	resource: {
+		typeId: 'product',
+		id: 'd5d463ef-8701-4823-9413-4dd6032cf581',
+	},
+	removedImageUrls: [],
+	scope: 'All',
+	productProjection: {
+		id: 'd5d463ef-8701-4823-9413-4dd6032cf581',
+		version: 50,
+		productType: {
+			typeId: 'product-type',
+			id: '8e65f6af-c86f-448a-bc22-e61c72738793',
+		},
+		name: {
+			en: 'Small AC/DC Relay',
+		},
+		description: {
+			en: 'Ideal for small electronics projects',
+		},
+		categories: [
+			{
+				typeId: 'category',
+				id: '35b5d524-3dae-41bc-9116-806cdb82f78b',
+			},
+		],
+		categoryOrderHints: {},
+		slug: {
+			en: 'example-product',
+		},
+		masterVariant: {
+			id: 1,
+			sku: 'EXPROD1',
+			prices: [
+				{
+					id: '58cf4f29-f55b-40a2-9360-97a15ee0a609',
+					value: {
+						type: 'centPrecision',
+						currencyCode: 'EUR',
+						centAmount: 500,
+						fractionDigits: 2,
+					},
+				},
+				{
+					id: '6c61ed1b-f2d7-47a6-b536-2cb8f7156019',
+					value: {
+						type: 'centPrecision',
+						currencyCode: 'EUR',
+						centAmount: 2000,
+						fractionDigits: 2,
+					},
+					validUntil: '2023-05-11T04:00:00.000Z',
+				},
+				{
+					id: 'fe328c80-9524-4232-a0d6-ab166df13b27',
+					value: {
+						type: 'centPrecision',
+						currencyCode: 'EUR',
+						centAmount: 500,
+						fractionDigits: 2,
+					},
+					validFrom: '2023-05-11T04:00:00.000Z',
+				},
+				{
+					id: '35bca0a3-d0f8-4431-8b2f-d4bb2635de73',
+					value: {
+						type: 'centPrecision',
+						currencyCode: 'EUR',
+						centAmount: 12200,
+						fractionDigits: 2,
+					},
+					key: 'amst-test-key',
+					channel: {
+						typeId: 'channel',
+						id: '03c22295-79b0-4838-bc4c-9724133a27ce',
+					},
+				},
+			],
+			images: [
+				{
+					url: 'https://af8624530ae38a966e54-c4324683759a12aace9336b874361505.ssl.cf1.rackcdn.com/relay-5meY_-gN.jpg',
+					dimensions: {
+						w: 225,
+						h: 225,
+					},
+				},
+			],
+			attributes: [
+				{
+					name: 'baseId',
+					value: 'EXPROD1',
+				},
+				{
+					name: 'color',
+					value: {
+						key: 'blue',
+						label: {
+							de: 'blau',
+							it: 'blu',
+							en: 'blue',
+						},
+					},
+				},
+				{
+					name: 'seasonNew',
+					value: 'new',
+				},
+			],
+			assets: [],
+			availability: {
+				isOnStock: true,
+				availableQuantity: 107,
+				channels: {
+					'03c22295-79b0-4838-bc4c-9724133a27ce': {
+						isOnStock: true,
+						availableQuantity: 60,
+						version: 6,
+						id: 'df743513-c74e-453e-8c4c-e414d77b8d85',
+					},
+				},
+			},
+		},
+		variants: [],
+		searchKeywords: {},
+		hasStagedChanges: false,
+		published: true,
+		priceMode: 'Embedded',
+		createdAt: '2023-05-05T00:23:06.770Z',
+		lastModifiedAt: '2023-05-12T15:11:36.519Z',
+	},
+	resourceVersion: 1,
+	type: 'ProductPublished',
 	resourceUserProvidedIdentifiers: {},
 	createdAt: '2023-03-16T15:01:26.922Z',
 	lastModifiedAt: '2023-03-16T15:01:26.922Z',

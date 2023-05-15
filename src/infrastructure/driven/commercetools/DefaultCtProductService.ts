@@ -52,6 +52,24 @@ export class DefaultCtProductService implements CtProductService {
         }
     };
 
+    getProductById = async (productId: string): Promise<Product> => {
+        logger.info(`Getting product in commercetools with id ${productId}`);
+
+        try {
+            return (await this.ctApiRoot.products().withId({ ID: productId }).get({
+                queryArgs: {
+                    expand: 'masterData.current.categories[*].ancestors[*]',
+                },
+            }).execute()).body;
+        } catch (error: any) {
+            logger.error(`Error getting product in CT with id ${productId}, status: ${error.statusCode}`, error);
+            throw new StatusError(
+                error.statusCode,
+                `CT get product api returns failed with status code ${error.statusCode}, msg: ${error.message}`,
+            );
+        }
+    };
+
     getInventoryEntryById = async (inventoryEntryId: string): Promise<InventoryEntry> => {
         logger.info(`Getting inventory entry in commercetools with id ${inventoryEntryId}`);
 

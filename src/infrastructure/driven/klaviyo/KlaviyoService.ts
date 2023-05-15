@@ -62,4 +62,6 @@ export abstract class KlaviyoService {
     abstract getKlaviyoPaginatedCategories(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCategory>>;
 
     abstract getKlaviyoPaginatedItems(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCatalogItem>>;
+
+    abstract getKlaviyoItemByExternalId(externalId: string): Promise<ItemType | undefined>;
 }

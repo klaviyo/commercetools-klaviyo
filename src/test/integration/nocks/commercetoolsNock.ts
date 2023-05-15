@@ -324,3 +324,11 @@ export const ctGetInventoryEntryByIdNock = (inventoryId: string, supplyChannelId
         .get(`/klaviyo-dev/inventory/${inventoryId}`)
         .reply(status, responseBody);
 };
+
+export const ctGetProductByIdNock = (productId: string, responseBody = {}, status = 200) => {
+    return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
+        .persist()
+        .get(`/klaviyo-dev/products/${productId}`)
+        .query({ expand: 'masterData.current.categories[*].ancestors[*]' })
+        .reply(status, responseBody);
+};

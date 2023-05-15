@@ -48,9 +48,9 @@ export const klaviyoGetCatalogueItemsNock = (responseCode = 200, responseBody = 
         .reply(responseCode, responseBody);
 };
 
-export const klaviyoGetCatalogueVariantsNock = (responseCode = 200, responseBody = {}) => {
+export const klaviyoGetCatalogueVariantsNock = (responseCode = 200, responseBody = {}, id = 'cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b') => {
     return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
-        .get(`/api/catalog-items/%24custom%3A%3A%3A%24default%3A%3A%3Acb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b/variants/?fields%5Bcatalog-variant%5D=id`)
+        .get(`/api/catalog-items/%24custom%3A%3A%3A%24default%3A%3A%3A${id}/variants/?fields%5Bcatalog-variant%5D=id`)
         .reply(responseCode, responseBody);
 };
 
@@ -58,6 +58,12 @@ export const klaviyoDeleteItemNock = (id: string, responseCode = 204) => {
     return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
         .delete(`/api/catalog-items/${id}/`, undefined)
         .reply(responseCode);
+};
+
+export const klaviyoGetItemNock = (id: string, responseCode = 204, responseBody = {}) => {
+    return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
+        .get(`/api/catalog-items/${id}/`)
+        .reply(responseCode, responseBody);
 };
 
 export const klaviyoUpdateVariantNock = (id: string, body: any, responseCode = 200) => {
@@ -70,4 +76,10 @@ export const klaviyoGetCatalogueVariantsWithoutItemNock = (responseCode = 200, r
     return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
         .get(`/api/catalog-variants/?filter=any%28ids%2C%5B%22%24custom%3A%3A%3A%24default%3A%3A%3AA0E200000002E49%22%5D%29`)
         .reply(responseCode, responseBody);
+};
+
+export const klaviyoUpdateItemNock = (id: string, body: any, responseCode = 200) => {
+    return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
+        .patch(`/api/catalog-items/${id}/`, body)
+        .reply(responseCode);
 };

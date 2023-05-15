@@ -28,7 +28,6 @@ export class InventoryResourceUpdatedEventProcessor extends AbstractEventProcess
                 body: this.context.productMapper.mapCtInventoryEntryToKlaviyoVariant(inventory, klaviyoVariant),
                 type: 'variantUpdated',
             };
-            console.log(klaviyoEvent.body)
             if ((klaviyoEvent.body as ItemVariantRequest).data.attributes.inventory_quantity === undefined) {
                 logger.info(
                     `The supply channel from inventory ${message.resource.id} is not configured to be used by variant ${

@@ -100,6 +100,7 @@ type CategoryDeletedRequest = {
 
 type ItemRequest = {
     data: ItemType;
+    variantJobRequests?: KlaviyoEvent[];
 };
 
 type ItemType = {
