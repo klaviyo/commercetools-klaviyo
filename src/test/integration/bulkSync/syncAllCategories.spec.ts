@@ -32,7 +32,7 @@ describe('syncAllCategories', () => {
                 catalog_type: '$default',
                 external_id: '84595235-0e65-4c0c-b44c-9566aeea8017',
                 integration_type: '$custom',
-                name: 'Frauen',
+                name: 'Women',
             },
         });
         const nockKlaviyoEvent2 = klaviyoCreateCategoryNock({
@@ -41,7 +41,7 @@ describe('syncAllCategories', () => {
                 catalog_type: '$default',
                 external_id: '74c1627f-d004-4278-bc61-29a43fba907d',
                 integration_type: '$custom',
-                name: 'Neu',
+                name: 'New',
             },
         });
 

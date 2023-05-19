@@ -1,18 +1,22 @@
-import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
 import {
     Category,
     CategoryReference,
     InventoryEntry,
-    Price,
     Product,
     ProductVariant,
     ProductVariantAvailability,
-    TypedMoney,
 } from '@commercetools/platform-sdk';
 import { ProductMapper } from './ProductMapper';
 import { CurrencyService } from '../services/CurrencyService';
-import * as _ from 'lodash';
 import config from 'config';
+import {
+    getLocalizedStringAsText,
+    getAdditionalLocalizedStringsAsJson,
+    getPreferredCurrencyFromEnv,
+    getProductPriceByPriority,
+    getAdditionalPricesAsJson,
+    getAdditionalCurrenciesAsJson,
+} from '../../../utils/locale-currency-utils';
 
 export class DefaultProductMapper implements ProductMapper {
     constructor(private readonly currencyService: CurrencyService) {}
@@ -20,7 +24,7 @@ export class DefaultProductMapper implements ProductMapper {
         const productName = product.masterData.current.name;
         const productDescription = product.masterData.current.description;
         const productSlug = product.masterData.current.slug;
-        const defaultProductSlug = productSlug[Object.keys(productSlug)[0]] || '';
+        const defaultProductSlug = getLocalizedStringAsText(productSlug);
         const productUrl = process.env.PRODUCT_URL_TEMPLATE
             ? String(process.env.PRODUCT_URL_TEMPLATE).replace('{{productSlug}}', defaultProductSlug)
             : 'None';
@@ -29,7 +33,7 @@ export class DefaultProductMapper implements ProductMapper {
             product.masterData.current.categories.map((c) => (c.obj as Category).ancestors).flat(),
         );
         const productPrice = product.masterData.current.masterVariant.prices
-            ? this.getProductPriceByPriority(product.masterData.current.masterVariant.prices)
+            ? getProductPriceByPriority(product.masterData.current.masterVariant.prices, getPreferredCurrencyFromEnv())
             : 0;
         return {
             data: {
@@ -40,13 +44,49 @@ export class DefaultProductMapper implements ProductMapper {
                     integration_type: !update ? '$custom' : undefined,
                     catalog_type: !update ? '$default' : undefined,
                     external_id: !update ? product.id : undefined,
-                    title: productName[Object.keys(productName || {})[0]],
-                    description: productDescription
-                        ? productDescription[Object.keys(productDescription || {})[0]]
-                        : 'None',
+                    title: getLocalizedStringAsText(productName),
+                    description: productDescription ? getLocalizedStringAsText(productDescription) : '',
                     url: productUrl,
                     image_full_url: productMasterVariantImages ? productMasterVariantImages[0]?.url : undefined,
                     price: productPrice ? this.currencyService.convert(productPrice.amount, productPrice.currency) : 0,
+                    custom_metadata: {
+                        title_json: JSON.stringify(
+                            getAdditionalLocalizedStringsAsJson([
+                                {
+                                    property: 'title',
+                                    data: productName,
+                                },
+                            ]),
+                        ),
+                        slug_json: JSON.stringify(
+                            getAdditionalLocalizedStringsAsJson([
+                                {
+                                    property: 'slug',
+                                    data: productSlug,
+                                },
+                            ]),
+                        ),
+                        price_json: product.masterData.current.masterVariant.prices
+                            ? JSON.stringify(
+                                  getAdditionalPricesAsJson([
+                                      {
+                                          property: 'price',
+                                          data: product.masterData.current.masterVariant.prices,
+                                      },
+                                  ]),
+                              )
+                            : undefined,
+                        currency_json: product.masterData.current.masterVariant.prices
+                            ? JSON.stringify(
+                                  getAdditionalCurrenciesAsJson([
+                                      {
+                                          property: 'currency',
+                                          data: product.masterData.current.masterVariant.prices,
+                                      },
+                                  ]),
+                              )
+                            : undefined,
+                    },
                 },
                 relationships: product.masterData.current.categories?.length
                     ? {
@@ -67,12 +107,14 @@ export class DefaultProductMapper implements ProductMapper {
         const productName = product.masterData.current.name;
         const productDescription = product.masterData.current.description;
         const productSlug = product.masterData.current.slug;
-        const defaultProductSlug = productSlug[Object.keys(productSlug)[0]] || '';
+        const defaultProductSlug = getLocalizedStringAsText(productSlug);
         const productUrl = process.env.PRODUCT_URL_TEMPLATE
             ? String(process.env.PRODUCT_URL_TEMPLATE).replace('{{productSlug}}', defaultProductSlug)
             : 'None';
         const variantImages = productVariant.images;
-        const variantPrice = productVariant.prices ? this.getProductPriceByPriority(productVariant.prices) : 0;
+        const variantPrice = productVariant.prices
+            ? getProductPriceByPriority(productVariant.prices, getPreferredCurrencyFromEnv())
+            : 0;
         const variantInventoryQuantity = this.getProductInventoryByPriority(productVariant.availability);
         return {
             data: {
@@ -83,16 +125,52 @@ export class DefaultProductMapper implements ProductMapper {
                     integration_type: !update ? '$custom' : undefined,
                     catalog_type: !update ? '$default' : undefined,
                     external_id: !update ? productVariant.sku : undefined,
-                    title: `${productName[Object.keys(productName || {})[0]]} | Variant: ${productVariant.sku}`,
-                    description: productDescription
-                        ? productDescription[Object.keys(productDescription || {})[0]]
-                        : 'None',
+                    title: getLocalizedStringAsText(productName),
+                    description: productDescription ? getLocalizedStringAsText(productDescription) : '',
                     sku: !update ? productVariant.sku : undefined,
                     url: productUrl,
                     image_full_url: variantImages ? variantImages[0].url : undefined,
                     inventory_quantity: variantInventoryQuantity ?? 0,
                     inventory_policy: 1,
                     price: variantPrice ? this.currencyService.convert(variantPrice.amount, variantPrice.currency) : 0,
+                    custom_metadata: {
+                        title_json: JSON.stringify(
+                            getAdditionalLocalizedStringsAsJson([
+                                {
+                                    property: 'title',
+                                    data: productName,
+                                },
+                            ]),
+                        ),
+                        slug_json: JSON.stringify(
+                            getAdditionalLocalizedStringsAsJson([
+                                {
+                                    property: 'slug',
+                                    data: productSlug,
+                                },
+                            ]),
+                        ),
+                        price_json: productVariant.prices
+                            ? JSON.stringify(
+                                  getAdditionalPricesAsJson([
+                                      {
+                                          property: 'price',
+                                          data: productVariant.prices,
+                                      },
+                                  ]),
+                              )
+                            : undefined,
+                        currency_json: productVariant.prices
+                            ? JSON.stringify(
+                                  getAdditionalCurrenciesAsJson([
+                                      {
+                                          property: 'currency',
+                                          data: productVariant.prices,
+                                      },
+                                  ]),
+                              )
+                            : undefined,
+                    },
                 },
                 relationships: !update
                     ? {
@@ -185,34 +263,6 @@ export class DefaultProductMapper implements ProductMapper {
         };
     }
 
-    private getProductPriceByPriority(prices: Price[]): { amount: number; currency: string } {
-        const currentDate = new Date().getTime();
-        const rangedPrices = prices
-            .filter((price) => price.validFrom || price.validUntil)
-            .map((price) => {
-                return {
-                    ...price,
-                    validFrom: price.validFrom ? new Date(price.validFrom).getTime() : currentDate,
-                    validUntil: price.validUntil ? new Date(price.validUntil).getTime() : 'N/A',
-                };
-            })
-            .filter(
-                (price) =>
-                    price.validFrom <= currentDate &&
-                    (price.validUntil !== 'N/A' ? (price.validUntil as number) >= currentDate : true),
-            );
-        const sortedRangedPrices = _.orderBy(rangedPrices, ['validFrom', 'validUntil'], ['asc', 'asc']);
-        const singleRangedPrice = sortedRangedPrices[0]?.value;
-        const regularPrices = prices.filter((price) => !price.validFrom && !price.validUntil && !price.customerGroup);
-        const singleRegularPrice = regularPrices[0]?.value;
-        const chosenPrice: TypedMoney = singleRangedPrice || singleRegularPrice;
-
-        return {
-            amount: getTypedMoneyAsNumber(chosenPrice),
-            currency: chosenPrice.currencyCode,
-        };
-    }
-
     public getProductInventoryByPriority(availability?: ProductVariantAvailability | InventoryEntry): number | null {
         if (!availability) {
             return 0;
@@ -226,17 +276,15 @@ export class DefaultProductMapper implements ProductMapper {
                 const variantChannelAvailableQuantity = variantAvailabilityChannels
                     ? variantAvailabilityChannels[productInventoryChannel]?.availableQuantity
                     : undefined;
-                const inventoryChannelAvailableQuantity = inventoryEntryChannel?.id === productInventoryChannel
-                    ? availability.availableQuantity
-                    : undefined;
+                const inventoryChannelAvailableQuantity =
+                    inventoryEntryChannel?.id === productInventoryChannel ? availability.availableQuantity : undefined;
                 if (variantChannelAvailableQuantity) {
                     return variantChannelAvailableQuantity;
                 }
 
                 if (inventoryChannelAvailableQuantity) {
                     return inventoryChannelAvailableQuantity;
-                }
-                else {
+                } else {
                     if (!variantAvailabilityChannels) {
                         return null;
                     }

@@ -1,5 +1,6 @@
-import { Category, LocalizedString } from '@commercetools/platform-sdk';
+import { Category } from '@commercetools/platform-sdk';
 import { CategoryMapper } from './CategoryMapper';
+import { getLocalizedStringAsText } from '../../../utils/locale-currency-utils';
 
 export class DefaultCategoryMapper implements CategoryMapper {
     public mapCtCategoryToKlaviyoCategory(category: Category, klaviyoCategoryId?: string): CategoryRequest {
@@ -19,14 +20,9 @@ export class DefaultCategoryMapper implements CategoryMapper {
 
     private getCategoryNameWithAncestors(category: Category): string {
         const categoryNames = category.ancestors
-            .map((ancestor) => this.getCategoryNameFromLocalizedString((ancestor.obj as Category).name))
-            .concat(this.getCategoryNameFromLocalizedString(category.name));
+            .map((ancestor) => getLocalizedStringAsText((ancestor.obj as Category).name))
+            .concat(getLocalizedStringAsText(category.name));
         return categoryNames.join(' > ');
-    }
-
-    // Additional method for custom logic to handle locales when needed.
-    private getCategoryNameFromLocalizedString(categoryName: LocalizedString): string {
-        return categoryName[Object.keys(categoryName)[0]];
     }
 
     public mapKlaviyoCategoryIdToDeleteCategoryRequest(klaviyoCategoryId: string): CategoryDeletedRequest {

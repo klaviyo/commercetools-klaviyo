@@ -1,11 +1,12 @@
 import { getCustomerProfileFromOrder } from '../../../utils/get-customer-profile-from-order';
 import { getTypedMoneyAsNumber } from '../../../utils/get-typed-money-as-number';
 import { mapAllowedProperties } from '../../../utils/property-mapper';
-import { Category, CategoryReference, LineItem, LocalizedString, Order, Product } from '@commercetools/platform-sdk';
+import { Category, CategoryReference, LineItem, Order, Product } from '@commercetools/platform-sdk';
 import { OrderMapper } from './OrderMapper';
 import config from 'config';
 import { CurrencyService } from '../services/CurrencyService';
 import { CustomerMapper } from './CustomerMapper';
+import { getLocalizedStringAsText } from '../../../utils/locale-currency-utils';
 
 export class DefaultOrderMapper implements OrderMapper {
     constructor(private readonly currencyService: CurrencyService, private readonly customerMapper: CustomerMapper) {}
@@ -110,18 +111,18 @@ export class DefaultOrderMapper implements OrderMapper {
     }
 
     private mapOrderLineItemsToItemNames(order: Order): string[] {
-        const lineItemNames = order.lineItems.map((item) => this.getNameFromLocalizedString(item.name));
+        const lineItemNames = order.lineItems.map((item) => getLocalizedStringAsText(item.name));
         const customLineItemNames =
-            order.customLineItems?.map((item) => this.getNameFromLocalizedString(item.name)) || [];
+            order.customLineItems?.map((item) => getLocalizedStringAsText(item.name)) || [];
         return Array.from(new Set(lineItemNames.concat(customLineItemNames)));
     }
 
     private getCategoryNamesFromProduct(categories: CategoryReference[]): string[] {
         const categoryNames = categories.map((category) => {
             const categoryAncestorNames = (category.obj as Category).ancestors.map((ancestor) =>
-                this.getNameFromLocalizedString((ancestor.obj as Category).name),
+                getLocalizedStringAsText((ancestor.obj as Category).name),
             );
-            const categoryName = this.getNameFromLocalizedString((category.obj as Category).name);
+            const categoryName = getLocalizedStringAsText((category.obj as Category).name);
             const discreteCategoryNames = categoryAncestorNames.concat(categoryName);
             return discreteCategoryNames.map((name, index) => {
                 const ancestorNames = [];
@@ -136,10 +137,5 @@ export class DefaultOrderMapper implements OrderMapper {
         // Useful for certain cases where you have a common main category such as:
         // Women > Pants > Jeans and Women > Seasonal Fashion > Fall
         return Array.from(new Set(categoryNames.flat()));
-    }
-
-    // Additional method for custom logic to handle locales when needed.
-    private getNameFromLocalizedString(itemName: LocalizedString): string {
-        return itemName[Object.keys(itemName)[0]];
     }
 }

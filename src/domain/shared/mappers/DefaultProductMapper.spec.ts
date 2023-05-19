@@ -30,6 +30,43 @@ describe('map CT product to Klaviyo product', () => {
         expect(klaviyoEvent).toMatchSnapshot();
     });
 
+    it('should map secondary locales to appropiate custom_metadata properties', () => {
+        const customProduct = {
+            ...ctGet1Product.results[0],
+            masterData: {
+                ...ctGet1Product.results[0].masterData,
+                current: {
+                    ...ctGet1Product.results[0].masterData.current,
+                    name: {
+                        'en-US': 'Product Name',
+                        'en-GB': 'British Product Name',
+                        de: 'German Product Name',
+                    },
+                    slug: {
+                        'en-US': 'product-name',
+                        'en-GB': 'british-product-name',
+                        de: 'german-product-name',
+                    },
+                    description: {
+                        'en-US': 'Product Description',
+                        'en-GB': 'British Product Description',
+                        de: 'German Product Description',
+                    },
+                },
+            },
+        } as unknown as Product;
+
+        const klaviyoEvent1 = productMapper.mapCtProductToKlaviyoItem(customProduct);
+
+        const klaviyoEvent2 = productMapper.mapCtProductVariantToKlaviyoVariant(
+            customProduct,
+            ctGet1Product.results[0].masterData.current.masterVariant as unknown as ProductVariant,
+        );
+
+        expect(klaviyoEvent1).toMatchSnapshot();
+        expect(klaviyoEvent2).toMatchSnapshot();
+    });
+
     it('should map commercetools inventory entry to a klaviyo variant updated request', () => {
         const klaviyoEvent = productMapper.mapCtInventoryEntryToKlaviyoVariant(
             {

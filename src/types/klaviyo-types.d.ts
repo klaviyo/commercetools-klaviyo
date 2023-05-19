@@ -121,6 +121,7 @@ type KlaviyoCatalogItem = {
     image_full_url?: string;
     published: boolean;
     price?: number;
+    custom_metadata?: any;
 };
 
 type ItemVariantRequest = {
@@ -155,6 +156,7 @@ type KlaviyoCatalogVariant = {
     url?: string;
     image_full_url?: string;
     published: boolean;
+    custom_metadata?: any;
 };
 
 type KlaviyoRelationships = {

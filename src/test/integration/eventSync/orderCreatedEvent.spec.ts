@@ -90,7 +90,7 @@ describe('pubSub adapter order created message', () => {
                 properties: {
                     ...ctGet2Orders.results[0].lineItems[0],
                 },
-                time: '2023-01-27T15:00:00.000Z',
+                time: '2023-01-27T15:00:01.000Z',
                 unique_id: 'dd853ebf-b35d-454e-9c6c-703479df6cbd',
                 value: 406.25,
             },
@@ -180,7 +180,7 @@ describe('pubSub adapter order created message', () => {
                 properties: {
                     ...ctGet2Orders.results[0].lineItems[0],
                 },
-                time: '2023-01-27T15:00:00.000Z',
+                time: '2023-01-27T15:00:01.000Z',
                 unique_id: 'dd853ebf-b35d-454e-9c6c-703479df6cbd',
                 value: 406.25,
             },
@@ -300,7 +300,7 @@ describe('pubSub event that produces 5xx error', () => {
                     properties: {
                         ...ctGet2Orders.results[0].lineItems[0],
                     },
-                    time: '2023-01-27T15:00:00.000Z',
+                    time: '2023-01-27T15:00:01.000Z',
                     unique_id: 'dd853ebf-b35d-454e-9c6c-703479df6cbd',
                     value: 406.25,
                 },

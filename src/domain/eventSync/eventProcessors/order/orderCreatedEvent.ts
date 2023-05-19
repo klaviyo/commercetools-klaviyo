@@ -63,9 +63,11 @@ export class OrderCreatedEvent extends AbstractEventProcessor {
     }
 
     private getProductOrderedEventsFromOrder(events: KlaviyoEvent[], order: Order) {
+        const eventTime: Date = new Date(order.createdAt);
+        eventTime.setSeconds(eventTime.getSeconds() + 1);
         order?.lineItems?.forEach((lineItem) => {
             events.push({
-                body: this.context.orderMapper.mapOrderLineToProductOrderedEvent(lineItem, order),
+                body: this.context.orderMapper.mapOrderLineToProductOrderedEvent(lineItem, order, eventTime.toISOString()),
                 type: 'event',
             });
         });

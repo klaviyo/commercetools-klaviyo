@@ -100,6 +100,14 @@ describe('pubSub adapter product published message', () => {
                         published: true,
                         title: 'Small AC/DC Relay',
                         url: 'https://example-store.com/products/example-product',
+                        custom_metadata: {
+                            title_json: '{"title_en":"Small AC/DC Relay"}',
+                            slug_json: '{"slug_en":"example-product"}',
+                            price_json:
+                                '{"price_EUR":5,"price_AD":5,"price_AT":5,"price_AX":5,"price_BE":5,"price_BL":5,"price_CP":5,"price_CY":5,"price_DE":5,"price_EA":5,"price_EE":5,"price_ES":5,"price_EU":5,"price_FI":5,"price_FR":5,"price_FX":5,"price_GF":5,"price_GP":5,"price_GR":5,"price_IC":5,"price_IE":5,"price_IT":5,"price_LT":5,"price_LU":5,"price_LV":5,"price_MC":5,"price_ME":5,"price_MF":5,"price_MQ":5,"price_MT":5,"price_NL":5,"price_PM":5,"price_PT":5,"price_RE":5,"price_SI":5,"price_SK":5,"price_SM":5,"price_TF":5,"price_VA":5,"price_XK":5,"price_YT":5,"price_ZW":5}',
+                            currency_json:
+                                '{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR"}',
+                        },
                     },
                     relationships: {
                         categories: {
@@ -133,8 +141,16 @@ describe('pubSub adapter product published message', () => {
                                 price: 5,
                                 published: true,
                                 sku: 'EXPROD1',
-                                title: 'Small AC/DC Relay | Variant: EXPROD1',
+                                title: 'Small AC/DC Relay',
                                 url: 'https://example-store.com/products/example-product',
+                                custom_metadata: {
+                                    title_json: '{"title_en":"Small AC/DC Relay"}',
+                                    slug_json: '{"slug_en":"example-product"}',
+                                    price_json:
+                                        '{"price_EUR":5,"price_AD":5,"price_AT":5,"price_AX":5,"price_BE":5,"price_BL":5,"price_CP":5,"price_CY":5,"price_DE":5,"price_EA":5,"price_EE":5,"price_ES":5,"price_EU":5,"price_FI":5,"price_FR":5,"price_FX":5,"price_GF":5,"price_GP":5,"price_GR":5,"price_IC":5,"price_IE":5,"price_IT":5,"price_LT":5,"price_LU":5,"price_LV":5,"price_MC":5,"price_ME":5,"price_MF":5,"price_MQ":5,"price_MT":5,"price_NL":5,"price_PM":5,"price_PT":5,"price_RE":5,"price_SI":5,"price_SK":5,"price_SM":5,"price_TF":5,"price_VA":5,"price_XK":5,"price_YT":5,"price_ZW":5}',
+                                    currency_json:
+                                        '{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR"}',
+                                },
                             },
                             relationships: {
                                 items: {
@@ -344,7 +360,7 @@ describe('pubSub event that produces 5xx error', () => {
                                 price: 5,
                                 published: true,
                                 sku: 'EXPROD1',
-                                title: 'Small AC/DC Relay | Variant: EXPROD1',
+                                title: 'Small AC/DC Relay',
                                 url: 'https://example-store.com/products/example-product',
                             },
                             relationships: {
