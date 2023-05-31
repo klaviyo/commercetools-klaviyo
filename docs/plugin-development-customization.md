@@ -82,6 +82,8 @@ The following table shows the default commercetools events handled by the plugin
 | Category Created    | `CategoryCreated`                                             | `category/categoryCreatedEventProcessor.ts`         | Category created                               | [Create Category](https://developers.klaviyo.com/en/reference/create_catalog_category)                                                                       |
 | Category Updated    | `ResourceUpdated` > `category`                                | `category/categoryResourceUpdatedEventProcessor.ts` | Category updated                               | [Update Category](https://developers.klaviyo.com/en/reference/update_catalog_category)                                                                       |
 | Category Deleted    | `ResourceDeleted` > `category`                                | `category/categoryResourceDeletedEventProcessor.ts` | Category deleted                               | [Delete Category](https://developers.klaviyo.com/en/reference/delete_catalog_category)                                                                       |
+| Product Deleted     | `ProductUnpublished` > `product`               | `product/productUnpublishedEventProcessor.ts` | Product unpublished                               | [Delete Product](https://developers.klaviyo.com/en/reference/delete_catalog_product)                                                                       |
+| Product Created/Updated     | `ProductPublished` > `product`                 | `product/productPublishedEventProcessor.ts`   | Product published                                 | [Create Product](https://developers.klaviyo.com/en/reference/create_catalog_product) / [Create Product](https://developers.klaviyo.com/en/reference/create_catalog_product) / Spawn Create Variants Job](https://developers.klaviyo.com/en/reference/spawn_create_variants_job) / [Spawn Update Variants Job](https://developers.klaviyo.com/en/reference/spawn_update_variants_job) |
 
 #### Bulk import
 
@@ -149,6 +151,8 @@ The following event processors are provided by default:
 | CategoryResourceUpdatedEventProcessor |
 | ProductResourceDeletedEventProcessor  |
 | ProductUnpublishedEventProcessor      |
+| ProductPublishedEventProcessor        |
+| InventoryResourceUpdatedEventProcessor|
 
 #### Creating a new event processors
 
