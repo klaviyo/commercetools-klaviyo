@@ -156,82 +156,97 @@ The field mapping is the same as **Placed order event**.
 ### Order refunded
 
 *Trigger*: **payment** transaction (with Refund type) related to an order changes state in commercetools  
-*Subscription*: payment `TransactionAdded` or `TransactionStateChanged` message. Configurable with property `payment.messages.transactionAdded`/`payment.messages.transactionChanged` and `payment.states.validTransactionStates`.    
+*Subscription*: payment `TransactionAdded` or `TransactionStateChanged` message. Configurable with
+property `payment.messages.transactionAdded`/`payment.messages.transactionChanged`
+and `payment.states.validTransactionStates`.    
 *Action*: Order refunded [event created](https://developers.klaviyo.com/en/reference/create_event) in klaviyo. Metric
 name configurable with property `order.metrics`
 
 ### Category created
 
-| CT Category                         | Klaviyo Category                      |
-|-------------------------------------|---------------------------------------|
-| `id`                                | `external_id`/`id`                    |
-| `name`                              | `name`                                |
-| *getCategoryNameWithAncestors*  (1) | `name` (for subcategories)            |
+| CT Category                         | Klaviyo Category           |
+|-------------------------------------|----------------------------|
+| `id`                                | `external_id`/`id`         |
+| `name`                              | `name`                     |
+| *getCategoryNameWithAncestors*  (1) | `name` (for subcategories) |
 
 To disable the category created synchronization the CT subscription `CategoryCreated` should not be created.
 
-(1) Category ancestors are checked when applicable to concatenate/format category names into a breadcrumb structure. E. g.: `Women > Pants > Jeans`.
+(1) Category ancestors are checked when applicable to concatenate/format category names into a breadcrumb structure. E.
+g.: `Women > Pants > Jeans`.
 
 ### Category updated
 
-| CT Category                         | Klaviyo Category                      |
-|-------------------------------------|---------------------------------------|
-| `id`                                | `external_id`/`id`                    |
-| `name`                              | `name`                                |
-| *getCategoryNameWithAncestors*  (1) | `name` (for subcategories)            |
+| CT Category                         | Klaviyo Category           |
+|-------------------------------------|----------------------------|
+| `id`                                | `external_id`/`id`         |
+| `name`                              | `name`                     |
+| *getCategoryNameWithAncestors*  (1) | `name` (for subcategories) |
 
-To disable the category updated synchronization, CT subscriptions should not be created for categories (`ResourceUpdated` message, always enabled when a category subscription exists).
+To disable the category updated synchronization, CT subscriptions should not be created for
+categories (`ResourceUpdated` message, always enabled when a category subscription exists).
 
-(1) Category ancestors are checked when applicable to concatenate/format category names into a breadcrumb structure. E. g.: `Women > Pants > Jeans`.
+(1) Category ancestors are checked when applicable to concatenate/format category names into a breadcrumb structure. E.
+g.: `Women > Pants > Jeans`.
 
 ### Category deleted
 
-| CT Category                         | Klaviyo Category                      |
-|-------------------------------------|---------------------------------------|
-| `id`                                | `id`                                  |
+| CT Category | Klaviyo Category |
+|-------------|------------------|
+| `id`        | `id`             |
 
-To disable the category deleted synchronization, CT subscriptions should not be created for categories (`ResourceDeleted` message, always enabled when a category subscription exists).
+To disable the category deleted synchronization, CT subscriptions should not be created for
+categories (`ResourceDeleted` message, always enabled when a category subscription exists).
 
 ### Product deleted
 
-| CT Product                          | Klaviyo Item                          |
-|-------------------------------------|---------------------------------------|
-| `id`                                | `id`                                  |
+| CT Product | Klaviyo Item |
+|------------|--------------|
+| `id`       | `id`         |
 
-To disable the product deleted synchronization, CT subscriptions should not be created for products (`ResourceDeleted` message, always enabled when a product subscription exists).
+To disable the product deleted synchronization, CT subscriptions should not be created for products (`ResourceDeleted`
+message, always enabled when a product subscription exists).
 
 ### Product published
 
-| CT Product                                                             |  Klaviyo Item                  |
-|------------------------------------------------------------------------|--------------------------------|
-| `id`                                                                   | `external_id`                  |
-| *getLocalizedStringAsText(publishedProduct.name)*                      | `title`                        |
-| *getLocalizedStringAsText(publishedProduct.description)*  (1)          | `description`                  |
-| *getLocalizedStringAsText(publishedProduct.slug)*   (2)                | `url`                          |
-| productName.masterVariant.images[0].url                                | `image_full_url`               |
-| *getProductPriceByPriority(publishedProduct.masterVariant.prices)*     | `price`                        |
-| *getAdditionalLocalizedStringsAsJson(publishedProduct.name)*           | customMetadata.title_json      |
-| *getAdditionalLocalizedStringsAsJson(publishedProduct.slug)*           | customMetadata.slug_json       |
-| *getAdditionalPricesAsJson(publishedProduct.masterVariant.prices)*     | customMetadata.price_json      |
-| *getAdditionalCurrenciesAsJson(publishedProduct.masterVariant.prices)* | customMetadata.currency_json   |
+| CT Product                                                             | Klaviyo Item                 |
+|------------------------------------------------------------------------|------------------------------|
+| `id`                                                                   | `external_id`                |
+| *getLocalizedStringAsText(publishedProduct.name)*                      | `title`                      |
+| *getLocalizedStringAsText(publishedProduct.description)*  (1)          | `description`                |
+| *getLocalizedStringAsText(publishedProduct.slug)*   (2)                | `url`                        |
+| productName.masterVariant.images[0].url                                | `image_full_url`             |
+| *getProductPriceByPriority(publishedProduct.masterVariant.prices)*     | `price`                      |
+| *getAdditionalLocalizedStringsAsJson(publishedProduct.name)*           | customMetadata.title_json    |
+| *getAdditionalLocalizedStringsAsJson(publishedProduct.slug)*           | customMetadata.slug_json     |
+| *getAdditionalPricesAsJson(publishedProduct.masterVariant.prices)*     | customMetadata.price_json    |
+| *getAdditionalCurrenciesAsJson(publishedProduct.masterVariant.prices)* | customMetadata.currency_json |
 
-| CT Variant                                                             |  Klaviyo Item                  |
-|------------------------------------------------------------------------|--------------------------------|
-| `sku`                                                                  | `sku`/`external_id`            |
-| *getLocalizedStringAsText(publishedProduct.name)*                      | `title`                        |
-| *getLocalizedStringAsText(publishedProduct.description)*  (1)          | `description`                  |
-| *getLocalizedStringAsText(publishedProduct.slug)*   (2)                | `url`                          |
-| variant.images[0].url                                                  | `image_full_url`               |
-| *getProductPriceByPriority(variant.prices)*                            | `price`                        |
-| *getAdditionalLocalizedStringsAsJson(publishedProduct.name)*           | customMetadata.title_json      |
-| *getAdditionalLocalizedStringsAsJson(publishedProduct.slug)*           | customMetadata.slug_json       |
-| *getAdditionalPricesAsJson(variant.prices)*                            | customMetadata.price_json      |
-| *getAdditionalCurrenciesAsJson(variant.prices)*                        | customMetadata.currency_json   |
+| CT Variant                                                    | Klaviyo Item                 |
+|---------------------------------------------------------------|------------------------------|
+| `sku`                                                         | `sku`/`external_id`          |
+| *getLocalizedStringAsText(publishedProduct.name)*             | `title`                      |
+| *getLocalizedStringAsText(publishedProduct.description)*  (1) | `description`                |
+| *getLocalizedStringAsText(publishedProduct.slug)*   (2)       | `url`                        |
+| variant.images[0].url                                         | `image_full_url`             |
+| *getProductInventoryByPriority(productVariant.availability)*  | `inventory_quantity`         |
+| *getProductPriceByPriority(variant.prices)*                   | `price`                      |
+| *getAdditionalLocalizedStringsAsJson(publishedProduct.name)*  | customMetadata.title_json    |
+| *getAdditionalLocalizedStringsAsJson(publishedProduct.slug)*  | customMetadata.slug_json     |
+| *getAdditionalPricesAsJson(variant.prices)*                   | customMetadata.price_json    |
+| *getAdditionalCurrenciesAsJson(variant.prices)*               | customMetadata.currency_json |
 
-*publishedProduct* always references the current, published set of properties for a product (`product.masterData.current` in commercetools).
-*getLocalizedStringAsText* returns the right string based on preferred locale set in environment variables (e.g., `en-US`, or `en` used in this case as a fallback). Otherwise, returns the first string found.
-*getProductPriceByPriority* returns the matching price, based on date validity or otherwise first price found (excluding channel/customer groups). Filters by preferred currency if set in evironment variables.
-*getAdditional_Something_AsJson* takes a prefix and input data to return an object with properties like `title_en:"some value"`. Useful to get additional strings/prices/currencies besides the default set in base properties.
+*publishedProduct* always references the current, published set of properties for a
+product (`product.masterData.current` in commercetools).
+*getLocalizedStringAsText* returns the right string based on preferred locale set in environment variables (
+e.g., `en-US`, or `en` used in this case as a fallback). Otherwise, returns the first string found.
+*getProductPriceByPriority* returns the matching price, based on date validity or otherwise first price found (excluding
+channel/customer groups). Filters by preferred currency if set in environment variables.
+*getProductPriceByPriority* returns the product inventory quantity, uses the channel specific inventory value if
+configured in the property `product.inventory.useChannelInventory`
+*getAdditional_Something_AsJson* takes a prefix and input data to return an object with properties
+like `title_en:"some value"`. Useful to get additional strings/prices/currencies besides the default set in base
+properties.
 
 (1) Only if a description is available, otherwise "None".
 (2) Only if `PRODUCT_URL_TEMPLATE` is set in environment variables, otherwise "None".
