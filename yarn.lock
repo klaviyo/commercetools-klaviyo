@@ -372,10 +372,18 @@
     "@commercetools/sdk-middleware-http" "^7.0.0"
     "@commercetools/sdk-middleware-logger" "^3.0.0"
 
-"@commercetools/sdk-client-v2@^2.1.5", "@commercetools/sdk-client-v2@^2.1.6":
+"@commercetools/sdk-client-v2@^2.1.6":
   version "2.1.6"
   resolved "https://registry.yarnpkg.com/@commercetools/sdk-client-v2/-/sdk-client-v2-2.1.6.tgz#c67e1fbc308549c994232113f77745326b99462b"
   integrity sha512-nxXHqu/24nANW8YLcq+7bHhFfK2l10HQjyTL7rhUywok93G+3ZfT6W52dM66k3ZPxIzb1cVrv3tn8cQAAQ7E4A==
+  dependencies:
+    buffer "^6.0.3"
+    node-fetch "^2.6.1"
+
+"@commercetools/sdk-client-v2@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@commercetools/sdk-client-v2/-/sdk-client-v2-2.2.0.tgz#3b4aa34f4257dc795349847e2fdb561dd95cbb97"
+  integrity sha512-/j/hINnuh3gdBeMrHUvuSZo+8nkckCHK3Nu6m3/ZkUqVkamRheU5ve/DlALvYpjs2XS2BdWTs1+Wsyyz1+x6iQ==
   dependencies:
     buffer "^6.0.3"
     node-fetch "^2.6.1"
