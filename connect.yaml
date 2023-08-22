@@ -1,6 +1,6 @@
 deployAs:
   - name: plugin
-    applicationType: service
+    applicationType: event
     endpoint: realtime
     configuration:
       securedConfiguration:
