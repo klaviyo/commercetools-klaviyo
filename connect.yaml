@@ -1,0 +1,27 @@
+deployAs:
+  - name: plugin
+    applicationType: service
+    endpoint: realtime
+    configuration:
+      securedConfiguration:
+        - key: KLAVIYO_AUTH_KEY
+          description: Klaviyo API key for requests
+        - key: CT_API_CLIENT
+          description: JSON Object with CT API Client ID and Secret for requests
+      standardConfiguration:
+        - key: CT_API_URL
+          description: Commercetools API URL
+        - key: CT_AUTH_URL
+          description: Commercetools Auth URL
+        - key: CT_PROJECT_ID
+          description: Commercetools Project ID
+        - key: CT_SCOPES
+          description: Scopes for your Commercetools Client ID
+        - key: PRODUCT_URL_TEMPLATE
+          description: String to use as base for product URLs
+        - key: PREFERRED_LOCALE
+          description: Preferred locale to use when selecting some localized strings
+        - key: APP_TYPE
+          description: Run RealtimeSync (EVENT)
+        - key: PUB_SUB_PORT
+          description: Port to use for the application (8080 required for Connect)
