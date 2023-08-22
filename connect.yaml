@@ -25,3 +25,5 @@ deployAs:
           description: Run RealtimeSync (EVENT)
         - key: PUB_SUB_PORT
           description: Port to use for the application (8080 required for Connect)
+        - key: PUB_SUB_MODE
+          description: When running under Connect, always set to CT_CONNECT to skip base64 processing
