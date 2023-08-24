@@ -22,8 +22,10 @@ deployAs:
         - key: PREFERRED_LOCALE
           description: Preferred locale to use when selecting some localized strings
         - key: APP_TYPE
-          description: Run RealtimeSync (EVENT)
+          description: Only EVENT (Realtime Events) is currently supported
         - key: PUB_SUB_PORT
           description: Port to use for the application (8080 required for Connect)
         - key: PUB_SUB_MODE
           description: When running under Connect, always set to CT_CONNECT to skip base64 processing
+        - key: NODE_CONFIG
+          description: Provide a stringified and escaped JSON here to override all plugin configurations
