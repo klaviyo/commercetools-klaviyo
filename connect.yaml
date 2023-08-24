@@ -1,7 +1,7 @@
 deployAs:
   - name: plugin
     applicationType: event
-    endpoint: realtime
+    endpoint: /realtime
     configuration:
       securedConfiguration:
         - key: KLAVIYO_AUTH_KEY
