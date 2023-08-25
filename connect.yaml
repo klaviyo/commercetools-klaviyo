@@ -2,6 +2,9 @@ deployAs:
   - name: plugin
     applicationType: event
     endpoint: /
+    scripts:
+      postDeploy: npm install && npm run build && npm run post-deploy
+      preUndeploy: npm install && npm run build && npm run pre-undeploy
     configuration:
       securedConfiguration:
         - key: KLAVIYO_AUTH_KEY

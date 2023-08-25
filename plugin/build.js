@@ -20,6 +20,7 @@ const options = {
 
 build(options).then(() => {
     buildJobs();
+    buildConnectScripts();
 }).catch((err) => {
     process.stderr.write(err.stderr);
     process.exit(1);
@@ -35,6 +36,26 @@ function buildJobs() {
         minify: true,
         bundle: true,
         outdir: 'dist/jobs',
+        platform: 'node',
+        target: ['esnext'],
+        sourcemap: true,
+    };
+
+    build(jobsOptions).catch((err) => {
+        process.stderr.write(err.stderr);
+        process.exit(1);
+    });
+}
+
+function buildConnectScripts() {
+    const jobsOptions = {
+        // logLevel: "info",
+        // declaration: true,
+        entryPoints: glob.sync('./scripts/*.ts'),
+        // minify: process.env.NODE_ENV === 'production',
+        minify: false,
+        bundle: true,
+        outdir: 'dist/scripts',
         platform: 'node',
         target: ['esnext'],
         sourcemap: true,

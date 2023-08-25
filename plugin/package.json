@@ -23,7 +23,9 @@
     "test": "jest --forceExit",
     "test:watch": "npm test -- --watch",
     "ts-types": " tsc --emitDeclarationOnly --outDir dist",
-    "prepare": "cd .. && husky install plugin/.husky"
+    "prepare": "cd .. && husky install plugin/.husky",
+    "connector:post-deploy": "cd dist && node scripts/post-deploy.js",
+    "connector:pre-undeploy": "cd dist && node scripts/pre-undeploy.js"
   },
   "devDependencies": {
     "@commercetools/platform-sdk": "^4.7.0",
