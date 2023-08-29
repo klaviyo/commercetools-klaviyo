@@ -47,6 +47,7 @@ app.post('/', async (req, res) => {
                 break;
         }
     } catch (e) {
+        logger.error('Unknown PubSub adapter error:', e);
         res.status(500).send();
     }
 });

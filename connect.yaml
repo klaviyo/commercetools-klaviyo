@@ -3,8 +3,8 @@ deployAs:
     applicationType: event
     endpoint: /
     scripts:
-      postDeploy: npm install && npm run build && npm run post-deploy
-      preUndeploy: npm install && npm run build && npm run pre-undeploy
+      postDeploy: npm install && npm run build && npm run connector:post-deploy
+      preUndeploy: npm install && npm run build && npm run connector:pre-undeploy
     configuration:
       securedConfiguration:
         - key: KLAVIYO_AUTH_KEY
@@ -28,7 +28,5 @@ deployAs:
           description: Only EVENT (Realtime Events) is currently supported
         - key: PUB_SUB_PORT
           description: Port to use for the application (8080 required for Connect)
-        - key: PUB_SUB_MODE
-          description: When running under Connect, always set to CT_CONNECT to skip base64 processing
         - key: NODE_CONFIG
           description: Provide a stringified and escaped JSON here to override all plugin configurations
