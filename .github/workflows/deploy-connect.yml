@@ -9,6 +9,8 @@ on:
         description: Deploy to connect environment
         required: true
         options:
+          - connect_dev
+          - connect_prod
           - dev
           - prod
       connector_key:
