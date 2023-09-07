@@ -1,0 +1,138 @@
+name: 'CT Connect deployments'
+description: 'Deploys a docker image to cloud run'
+
+inputs:
+  tag:
+    description: 'Tag to deploy'
+    required: true
+  ct_api_url:
+    description: 'commercetools api url'
+    required: true
+  ct_connect_url:
+    description: 'commercetools connect api url'
+    required: true
+  ct_auth_url:
+    description: 'commercetools auth url'
+    required: true
+  ct_project_id:
+    description: 'commercetools project id'
+    required: true
+  ct_api_client_id:
+    description: 'commercetools API client id'
+    required: true
+  ct_api_client_secret:
+    description: 'commercetools API client secret'
+    required: true
+  ct_scopes:
+    description: 'commercetools API client scopes'
+    required: true
+  klaviyo_auth_key:
+    description: 'Klaviyo auth key'
+    required: true
+  connect_env:
+    description: 'environment used for deployment'
+    required: true
+  connector_key:
+    description: 'commercetools ConnectorStaged key (also used as deployment prefix)'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Obtain Authorization token from commercetools
+      id: ct_auth
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{ inputs.ct_auth_url }}/oauth/token?grant_type=client_credentials
+        method: POST
+        username: ${{ inputs.ct_api_client_id }}
+        password: ${{ inputs.ct_api_client_secret }}
+    - name: Get current ConnectorStaged
+      id: ct_get_connector
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{ inputs.ct_connect_url }}/connectors/drafts/key=${{ inputs.connector_key }}
+        method: GET
+        headers: '{"Authorization": "Bearer ${{ fromJSON(steps.ct_auth.outputs.output).data.access_token }}"}'
+    - name: Update ConnectorStaged Tag
+      id: ct_update_connector_tag
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{ inputs.ct_connect_url }}/connectors/drafts/key=${{ inputs.connector_key }}
+        method: POST
+        headers: '{"Authorization": "Bearer ${{ fromJSON(steps.ct_auth.outputs.output).data.access_token }}"}'
+        payload: '{"version":${{ fromJSON(steps.ct_get_connector.outputs.output).data.version }},"actions":[{"action":"setRepository","url":"git@github.com:${{ github.repository }}.git","tag":"${{ inputs.tag }}"}]}'
+    - name: Get ConnectorStaged after tag update
+      id: ct_get_connector_after_tag_update
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{ inputs.ct_connect_url }}/connectors/drafts/key=${{ inputs.connector_key }}
+        method: GET
+        headers: '{"Authorization": "Bearer ${{ fromJSON(steps.ct_auth.outputs.output).data.access_token }}"}'
+    - name: Request ConnectorStaged Previewable access
+      id: ct_update_connector_previewable
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{ inputs.ct_connect_url }}/connectors/drafts/key=${{ inputs.connector_key }}
+        method: POST
+        headers: '{"Authorization": "Bearer ${{ fromJSON(steps.ct_auth.outputs.output).data.access_token }}"}'
+        payload: '{"version":${{ fromJSON(steps.ct_get_connector_after_tag_update.outputs.output).data.version }},"actions":[{"action":"updatePreviewable"}]}'
+    - name: Check ConnectorStaged Previewable access state
+      id: ct_check_connector_previewable
+      uses: ./.github/actions/poll-endpoint
+      with:
+        url: ${{ inputs.ct_connect_url }}/connectors/drafts/key=${{ inputs.connector_key }}
+        method: GET
+        authorization: 'Bearer ${{ fromJSON(steps.ct_auth.outputs.output).data.access_token }}'
+        expectStatus: 200
+        expectBodyRegexgex: \"isPreviewable\":\"true\"
+        timeout: 900000
+        interval: 180000
+    - name: Check existing Deployment
+      id: ct_get_connector_before_deployment
+      uses: satak/webrequest-action@master
+      continue-on-error: true
+      with:
+        url: ${{ inputs.ct_connect_url }}/${{ inputs.ct_project_id }}/deployments/key=${{ inputs.connector_key }}-testing-${{ inputs.connect_env }}
+        method: GET
+        headers: '{"Authorization": "Bearer ${{ fromJSON(steps.ct_auth.outputs.output).data.access_token }}"}'
+    - name: Undeploy Connector
+      id: ct_delete_connector_before_deployment
+      if: steps.ct_get_connector_before_deployment.outcome == 'success'
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{ inputs.ct_connect_url }}/${{ inputs.ct_project_id }}/deployments/key=${{ inputs.connector_key }}-testing-${{ inputs.connect_env }}
+        method: DELETE
+        headers: '{"Authorization": "Bearer ${{ fromJSON(steps.ct_auth.outputs.output).data.access_token }}"}'
+    - name: Wait for Connector to be Undeployed
+      id: ct_check_connector_deployment_status
+      if: steps.ct_delete_connector_before_deployment.outcome == 'success'
+      uses: ./.github/actions/poll-endpoint
+      with:
+        url: ${{ inputs.ct_connect_url }}/${{ inputs.ct_project_id }}/deployments/key=${{ inputs.connector_key }}-testing-${{ inputs.connect_env }}
+        method: GET
+        authorization: 'Bearer ${{ fromJSON(steps.ct_auth.outputs.output).data.access_token }}'
+        expectStatus: 404
+        timeout: 900000
+        interval: 180000
+    - name: Deploy Connector with new tag
+      id: ct_deploy_connector
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{ inputs.ct_connect_url }}/${{ inputs.ct_project_id }}/deployments 
+        method: POST
+        headers: '{"Authorization": "Bearer ${{ fromJSON(steps.ct_auth.outputs.output).data.access_token }}"}'
+        payload: '{"key":"${{ inputs.connector_key }}-testing-${{ inputs.connect_env }}","connector":{"key":"${{ inputs.connector_key }}","version":${{ fromJSON(steps.ct_check_connector_previewable.outputs.response).version }},"staged":${{ fromJSON(steps.ct_check_connector_previewable.outputs.response).isPreviewable || false }}},"region":"us-central1.gcp","configurations":[{"applicationName":"plugin","standardConfiguration":[{"key":"CT_API_URL","value":"${{ inputs.ct_api_url }}"},{"key":"CT_AUTH_URL","value":"${{ inputs.ct_auth_url }}"},{"key":"CT_PROJECT_ID","value":"${{ inputs.ct_project_id }}"},{"key":"CT_SCOPES","value":"${{ inputs.ct_scopes }}"},{"key":"PRODUCT_URL_TEMPLATE","value":"https://example-store.com/products/{{productSlug}}"},{"key":"PREFERRED_LOCALE","value":"en-GB"},{"key":"APP_TYPE","value":"EVENT"},{"key":"PUB_SUB_PORT","value":"8080"}],"securedConfiguration":[{"key":"CT_API_CLIENT","value":"{\"clientId\":\"${{ inputs.ct_api_client_id }}\", \"secret\":\"${{ inputs.ct_api_client_secret }}\"}"},{"key":"KLAVIYO_AUTH_KEY","value":"${{ inputs.klaviyo_auth_key }}"}]}]}'
+    - name: Check Connector deployment status
+      id: ct_check_connector_deployment_status
+      uses: ./.github/actions/poll-endpoint
+      with:
+        url: ${{ inputs.ct_connect_url }}/${{ inputs.ct_project_id }}/deployments/key=${{ inputs.connector_key }}-testing-${{ inputs.connect_env }}
+        method: GET
+        authorization: 'Bearer ${{ fromJSON(steps.ct_auth.outputs.output).data.access_token }}'
+        expectStatus: 200
+        expectBodyRegexgex: \"status\":\"Deployed\"
+        timeout: 1260000
+        interval: 180000

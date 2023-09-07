@@ -2,12 +2,12 @@ name: Build and and test plugin
 on:
   pull_request:
     paths-ignore:
-      - 'infrastructure/**'
+      - 'plugin/infrastructure/**'
   push:
     branches:
       - main
     paths:
-      - '!infrastructure/**'
+      - '!plugin/infrastructure/**'
 jobs:
   plugin:
     name: 'Build and test'
@@ -24,9 +24,13 @@ jobs:
         with:
           node-version: 18.x
           cache: yarn
+          cache-dependency-path: ./plugin/yarn.lock
       - name: Dependencies install
+        working-directory: ./plugin
         run: yarn install --frozen-lockfile
       - name: Linting
+        working-directory: ./plugin
         run: yarn lint
       - name: Test
+        working-directory: ./plugin
         run: yarn test

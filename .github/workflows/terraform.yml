@@ -3,7 +3,7 @@ name: "Infrastructure pipeline"
 on:
   pull_request:
     paths:
-      - 'infrastructure/**'
+      - 'plugin/infrastructure/**'
       - '.github/workflows/terraform.yml'
       - '.github/actions/terraform/**'
 jobs:

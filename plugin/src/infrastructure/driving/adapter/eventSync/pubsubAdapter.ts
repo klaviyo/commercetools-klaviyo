@@ -15,16 +15,23 @@ app.post('/', async (req, res) => {
         res.status(400).send(`Bad Request: ${msg}`);
         return;
     }
-    if (!req.body.message) {
-        const msg = 'invalid Pub/Sub message format';
-        console.error(`error: ${msg}`);
-        res.status(400).send(`Bad Request: ${msg}`);
-        return;
+
+    let payload;
+    if (process.env.PUB_SUB_MODE !== 'CT_CONNECT') {
+        if (!req.body.message) {
+            const msg = 'invalid Pub/Sub message format';
+            console.error(`error: ${msg}`);
+            res.status(400).send(`Bad Request: ${msg}`);
+            return;
+        }
+
+        const pubSubMessage = req.body.message;
+
+        payload = pubSubMessage.data ? JSON.parse(Buffer.from(pubSubMessage.data, 'base64').toString()) : null;
+    } else {
+        payload = req.body;
     }
 
-    const pubSubMessage = req.body.message;
-
-    const payload = pubSubMessage.data ? JSON.parse(Buffer.from(pubSubMessage.data, 'base64').toString()) : null;
     logger.info('Starting event processing...');
     try {
         const result = await processEvent(payload as MessageDeliveryPayload, new KlaviyoSdkService());
@@ -40,6 +47,7 @@ app.post('/', async (req, res) => {
                 break;
         }
     } catch (e) {
+        logger.error('Unknown PubSub adapter error:', e);
         res.status(500).send();
     }
 });

@@ -38,29 +38,29 @@ runs:
       run: terraform fmt -check
       shell: bash
       continue-on-error: true
-      working-directory: ./infrastructure
+      working-directory: ./plugin/infrastructure
     - name: tfsec
       uses: aquasecurity/tfsec-action@v1.0.3
       with:
-        working_directory: ./infrastructure
+        working-directory: ./plugin/infrastructure
     - name:
         Terraform Init
       id: init
       run: terraform init
       shell: bash
-      working-directory: ./infrastructure
+      working-directory: ./plugin/infrastructure
     - name:
         Terraform select workspace
       id: workspace
       run: terraform workspace select ${{ inputs.tf_environment }} || terraform workspace new ${{ inputs.tf_environment }}
       shell: bash
-      working-directory: ./infrastructure
+      working-directory: ./plugin/infrastructure
     - name:
         Terraform Validate
       id: validate
       run: terraform validate -no-color
       shell: bash
-      working-directory: ./infrastructure
+      working-directory: ./plugin/infrastructure
     - name:
         Terraform Plan
       id: plan
@@ -68,7 +68,7 @@ runs:
       run: terraform plan -no-color -input=false -var-file=environments/${{ inputs.tf_environment }}.tfvars
       shell: bash
       continue-on-error: true
-      working-directory: ./infrastructure
+      working-directory: ./plugin/infrastructure
       env:
         TF_VAR_ct_client_id: ${{ inputs.ct_tf_client_id }}
         TF_VAR_ct_secret: ${{ inputs.ct_tf_secret }}
@@ -136,12 +136,12 @@ runs:
       if: steps.plan.outcome == 'failure'
       run: exit 1
       shell: bash
-      working-directory: ./infrastructure
+      working-directory: ./plugin/infrastructure
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main'
       run: terraform apply -auto-approve -input=false -var-file=environments/${{ inputs.tf_environment }}.tfvars
       shell: bash
-      working-directory: ./infrastructure
+      working-directory: ./plugin/infrastructure
       env:
         TF_VAR_ct_client_id: ${{ inputs.ct_tf_client_id }}
         TF_VAR_ct_secret: ${{ inputs.ct_tf_secret }}

@@ -31,6 +31,7 @@ runs:
       with:
         node-version: 18.x
         cache: yarn
+        cache-dependency-path: ./plugin/yarn.lock
     - name: Install newman
       run: |
         yarn global add newman newman-reporter-htmlextra
@@ -49,10 +50,10 @@ runs:
           --env-var "project-key=${{ inputs.ct_project_id }}" \
           --env-var "customer-key=testcustomer"
       shell: bash
-      working-directory: ./src/test/e2e/postman
+      working-directory: ./plugin/src/test/e2e/postman
     - name: Upload test results
       uses: actions/upload-artifact@v3
       if: always()
       with:
         name: E2E-reports
-        path: src/test/e2e/postman/newman
+        path: plugin/src/test/e2e/postman/newman

@@ -9,6 +9,8 @@ on:
         options:
           - dev
           - prod
+          - connect_dev
+          - connect_prod
 jobs:
   e2e-tests:
     name: 'Running E2E tests'

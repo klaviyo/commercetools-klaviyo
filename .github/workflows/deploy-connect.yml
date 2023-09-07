@@ -1,0 +1,41 @@
+name: Deploy plugin to CT Connect
+on:
+  push:
+    tags: ['v[0-9].[0-9]+.[0-9]+']
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Deploy to connect environment
+        required: true
+        options:
+          - dev
+          - prod
+      connector_key:
+        type: string
+        description: ConnectorStaged key (also used for deployment)
+        required: true
+        default: commercetools-klaviyo
+
+jobs:
+  deploy-connect:
+    name: 'Deploying plugin to Connect'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Deploy to Connect
+        uses: ./.github/actions/connect
+        with:
+          tag: ${{ github.ref_name }}
+          ct_api_client_id: ${{ secrets.CT_CLIENT_ID }}
+          ct_api_client_secret: ${{ secrets.CT_CLIENT_SECRET }}
+          ct_api_url: ${{ vars.CT_API_URL }}
+          ct_auth_url: ${{ vars.CT_AUTH_URL }}
+          ct_project_id: ${{ vars.CT_PROJECT_ID }}
+          ct_scopes: ${{ vars.CT_SCOPES }}
+          ct_connect_url: ${{ vars.CT_CONNECT_API_URL }}
+          klaviyo_auth_key: ${{ secrets.KLAVIYO_AUTH_KEY }}
+          connect_env: ${{ github.event_name == 'push' && 'dev' || github.event.inputs.environment }}
+          connector_key: ${{ github.event_name == 'push' && 'commercetools-klaviyo' || github.event.inputs.connector_key }}
