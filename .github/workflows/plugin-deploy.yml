@@ -46,7 +46,7 @@ jobs:
           password: ${{ secrets.GCP_CREDENTIALS }}
       - name: Build image from docker file
         run: |-
-          docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}" ./
+          docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}" ./plugin/
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
