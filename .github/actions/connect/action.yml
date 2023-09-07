@@ -126,7 +126,7 @@ runs:
         headers: '{"Authorization": "Bearer ${{ fromJSON(steps.ct_auth.outputs.output).data.access_token }}"}'
         payload: '{"key":"${{ inputs.connector_key }}-testing-${{ inputs.connect_env }}","connector":{"key":"${{ inputs.connector_key }}","version":${{ fromJSON(steps.ct_check_connector_previewable.outputs.response).version }},"staged":${{ fromJSON(steps.ct_check_connector_previewable.outputs.response).isPreviewable || false }}},"region":"us-central1.gcp","configurations":[{"applicationName":"plugin","standardConfiguration":[{"key":"CT_API_URL","value":"${{ inputs.ct_api_url }}"},{"key":"CT_AUTH_URL","value":"${{ inputs.ct_auth_url }}"},{"key":"CT_PROJECT_ID","value":"${{ inputs.ct_project_id }}"},{"key":"CT_SCOPES","value":"${{ inputs.ct_scopes }}"},{"key":"PRODUCT_URL_TEMPLATE","value":"https://example-store.com/products/{{productSlug}}"},{"key":"PREFERRED_LOCALE","value":"en-GB"},{"key":"APP_TYPE","value":"EVENT"},{"key":"PUB_SUB_PORT","value":"8080"}],"securedConfiguration":[{"key":"CT_API_CLIENT","value":"{\"clientId\":\"${{ inputs.ct_api_client_id }}\", \"secret\":\"${{ inputs.ct_api_client_secret }}\"}"},{"key":"KLAVIYO_AUTH_KEY","value":"${{ inputs.klaviyo_auth_key }}"}]}]}'
     - name: Check Connector deployment status
-      id: ct_check_connector_deployment_status
+      id: ct_check_connector_deployment_status_final
       uses: ./.github/actions/poll-endpoint
       with:
         url: ${{ inputs.ct_connect_url }}/${{ inputs.ct_project_id }}/deployments/key=${{ inputs.connector_key }}-testing-${{ inputs.connect_env }}
