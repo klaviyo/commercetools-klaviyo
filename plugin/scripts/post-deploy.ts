@@ -5,6 +5,8 @@ import logger from '../src/utils/log';
 
 const ctApiRoot: ByProjectKeyRequestBuilder = getApiRoot();
 
+const connect_env = process.env.CONNECT_ENV || 'connect_dev';
+
 const subscriptions = [
 	{
 		resource: 'product',
@@ -44,19 +46,20 @@ const run = async () => {
 
 const configureSubscriptions = async () => {
 	let ctSubscriptions: Subscription[] = (await ctApiRoot.subscriptions().get().execute()).body.results;
-	ctSubscriptions = ctSubscriptions.filter((sub) => sub.key.includes('connect-'));
+	ctSubscriptions = ctSubscriptions.filter((sub) => sub.key.includes(`connect-${connect_env}`));
 	const ctSubscriptionKeys = ctSubscriptions.map((sub) => sub.key);
 
 	subscriptions.forEach(async (sub) => {
-		const subscriptionExists = ctSubscriptionKeys.includes(`connect-${sub.resource}`);
+		const subscriptionExists = ctSubscriptionKeys.includes(`connect-${connect_env}-${sub.resource}`);
 		try {
 			if (subscriptionExists) {
 				await ctApiRoot
 					.subscriptions()
-					.withKey({ key: `connect-${sub.resource}` })
+					.withKey({ key: `connect-${connect_env}-${sub.resource}` })
 					.post({
 						body: {
-							version: ctSubscriptions.find((s) => s.key === `connect-${sub.resource}`).version,
+							version: ctSubscriptions.find((s) => s.key === `connect-${connect_env}-${sub.resource}`)
+								.version,
 							actions: [
 								{
 									action: 'setMessages',
@@ -92,7 +95,7 @@ const configureSubscriptions = async () => {
 					.subscriptions()
 					.post({
 						body: {
-							key: `connect-${sub.resource}`,
+							key: `connect-${connect_env}-${sub.resource}`,
 							destination: {
 								type: 'GoogleCloudPubSub',
 								topic: process.env.CONNECT_GCP_TOPIC_NAME,

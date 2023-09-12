@@ -2913,7 +2913,7 @@ function main() {
             const method = ((_a = getInput("method")) === null || _a === void 0 ? void 0 : _a.toUpperCase()) || "GET";
             const authorization = getInput("authorization");
             const expectBody = getInput("expectBody");
-            const expectBodyRegex = getInput("expectBodyRegexgex");
+            const expectBodyRegex = getInput("expectBodyRegex");
             const expectStatus = getInputNumber("expectStatus", 200);
             const timeout = getInputNumber("timeout", 60000);
             const interval = getInputNumber("interval", 1000);

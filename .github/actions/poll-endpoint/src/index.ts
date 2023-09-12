@@ -25,7 +25,7 @@ async function main() {
     const method = getInput("method")?.toUpperCase() || "GET";
     const authorization = getInput("authorization");
     const expectBody = getInput("expectBody");
-    const expectBodyRegex = getInput("expectBodyRegexgex");
+    const expectBodyRegex = getInput("expectBodyRegex");
     const expectStatus = getInputNumber("expectStatus", 200);
     const timeout = getInputNumber("timeout", 60000);
     const interval = getInputNumber("interval", 1000);

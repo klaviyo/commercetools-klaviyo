@@ -1,0 +1,69 @@
+name: 'Deploy Connector'
+description: 'Try to deploy Connector with new tag'
+
+inputs:
+  version:
+    description: 'ConnectorStaged version to reference'
+    required: true
+  access_token:
+    description: 'commercetools access token'
+    required: true
+  is_previewable:
+    description: 'If ConnectorStaged is using previewable access'
+    required: true
+  ct_api_url:
+    description: 'commercetools api url'
+    required: true
+  ct_connect_url:
+    description: 'commercetools connect api url'
+    required: true
+  ct_auth_url:
+    description: 'commercetools auth url'
+    required: true
+  ct_project_id:
+    description: 'commercetools project id'
+    required: true
+  ct_api_client_id:
+    description: 'commercetools API client id'
+    required: true
+  ct_api_client_secret:
+    description: 'commercetools API client secret'
+    required: true
+  ct_scopes:
+    description: 'commercetools API client scopes'
+    required: true
+  klaviyo_auth_key:
+    description: 'Klaviyo auth key'
+    required: true
+  connect_env:
+    description: 'environment used for deployment'
+    required: true
+  connector_key:
+    description: 'commercetools ConnectorStaged key (also used as deployment prefix)'
+    required: true
+  node_config:
+    description: 'Stringified and escaped JSON to override all plugin configurations'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Deploy Connector with new tag
+      id: ct_deploy_connector
+      uses: ./.github/actions/webrequest-action
+      with:
+        url: ${{ inputs.ct_connect_url }}/${{ inputs.ct_project_id }}/deployments 
+        method: POST
+        headers: '{"Authorization": "Bearer ${{ inputs.access_token }}"}'
+        payload: '{"key":"${{ inputs.connector_key }}-testing-${{ inputs.connect_env }}","connector":{"key":"${{ inputs.connector_key }}","version":${{ inputs.version }},"staged":${{ inputs.is_previewable == ''true'' }}},"region":"us-central1.gcp","configurations":[{"applicationName":"plugin","standardConfiguration":[{"key":"CT_API_URL","value":"${{ inputs.ct_api_url }}"},{"key":"CT_AUTH_URL","value":"${{ inputs.ct_auth_url }}"},{"key":"CT_PROJECT_ID","value":"${{ inputs.ct_project_id }}"},{"key":"CT_SCOPES","value":"${{ inputs.ct_scopes }}"},{"key":"PRODUCT_URL_TEMPLATE","value":"https://example-store.com/products/{{productSlug}}"},{"key":"PREFERRED_LOCALE","value":"en-GB"},{"key":"APP_TYPE","value":"EVENT"},{"key":"PUB_SUB_PORT","value":"8080"},{"key":"NODE_CONFIG","value":"${{ inputs.node_config }}"},{"key":"CONNECT_ENV","value":"${{ inputs.connect_env }}"}],"securedConfiguration":[{"key":"CT_API_CLIENT","value":"{\"clientId\":\"${{ inputs.ct_api_client_id }}\", \"secret\":\"${{ inputs.ct_api_client_secret }}\"}"},{"key":"KLAVIYO_AUTH_KEY","value":"${{ inputs.klaviyo_auth_key }}"}]}]}'
+    - name: Check Connector deployment status
+      id: ct_check_connector_deployment_status_final
+      uses: ./.github/actions/poll-endpoint
+      with:
+        url: ${{ inputs.ct_connect_url }}/${{ inputs.ct_project_id }}/deployments/key=${{ inputs.connector_key }}-testing-${{ inputs.connect_env }}
+        method: GET
+        authorization: 'Bearer ${{ inputs.access_token }}'
+        expectStatus: 200
+        expectBodyRegex: \"status\":\"Deployed\"
+        timeout: 1260000
+        interval: 180000

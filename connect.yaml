@@ -30,3 +30,5 @@ deployAs:
           description: Port to use for the application (8080 required for Connect)
         - key: NODE_CONFIG
           description: Provide a stringified and escaped JSON here to override all plugin configurations
+        - key: CONNECT_ENV
+          description: String from GitHub Actions or other source to identify environment (used in deploy/undeploy scripts) 

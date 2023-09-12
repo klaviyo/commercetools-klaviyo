@@ -5,13 +5,15 @@ import logger from '../src/utils/log';
 
 const ctApiRoot: ByProjectKeyRequestBuilder = getApiRoot();
 
+const connect_env = process.env.CONNECT_ENV || 'connect_dev';
+
 const run = async () => {
 	await deleteSubscriptions();
 };
 
 const deleteSubscriptions = async () => {
 	let ctSubscriptions: Subscription[] = (await ctApiRoot.subscriptions().get().execute()).body.results;
-	ctSubscriptions = ctSubscriptions.filter((sub) => sub.key.includes('connect-'));
+	ctSubscriptions = ctSubscriptions.filter((sub) => sub.key.includes(`connect-${connect_env}`));
 
 	ctSubscriptions.forEach(async (sub) => {
 		try {

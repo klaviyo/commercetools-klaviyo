@@ -17,7 +17,9 @@ app.post('/', async (req, res) => {
     }
 
     let payload;
-    if (process.env.PUB_SUB_MODE !== 'CT_CONNECT') {
+    if (process.env.SKIP_BASE64_DECODE) {
+        payload = req.body;
+    } else {
         if (!req.body.message) {
             const msg = 'invalid Pub/Sub message format';
             console.error(`error: ${msg}`);
@@ -28,8 +30,6 @@ app.post('/', async (req, res) => {
         const pubSubMessage = req.body.message;
 
         payload = pubSubMessage.data ? JSON.parse(Buffer.from(pubSubMessage.data, 'base64').toString()) : null;
-    } else {
-        payload = req.body;
     }
 
     logger.info('Starting event processing...');
