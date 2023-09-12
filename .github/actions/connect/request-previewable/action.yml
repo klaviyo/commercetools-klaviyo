@@ -14,6 +14,10 @@ inputs:
   connector_key:
     description: 'commercetools ConnectorStaged key (also used as deployment prefix)'
     required: true
+outputs:
+  response:
+    description: 'Connector after previewable access is granted'
+    value: ${{ steps.ct_check_connector_previewable.outputs.response }}
 
 runs:
   using: "composite"

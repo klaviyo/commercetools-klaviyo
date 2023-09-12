@@ -11,6 +11,10 @@ inputs:
   ct_api_client_secret:
     description: 'commercetools API client secret'
     required: true
+outputs:
+  output:
+    description: 'Authentication response'
+    value: ${{ steps.ct_auth.outputs.output }}
 
 runs:
   using: "composite"
