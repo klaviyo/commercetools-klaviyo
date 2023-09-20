@@ -7,11 +7,22 @@ Software required:
 * Node.js >= v16
 * yarn
 
-Checkout the project and from the root run the following command to install the dependencies:
+Checkout the project and from the `plugin` directory run the following command to install the dependencies:
 
 ```shell
-yarn
+yarn install
 ```
+
+Then, create an environment (`.env`) file. You can use `.env.test` as a template for most of the available variables. The main variables to populate are `KLAVIYO_AUTH_KEY` and `CT_API_CLIENT`. For other variables and their purpose, take a look at [how to run realtime sync](./how_to_run_realtime.md) or [how to run bulk import](./how_to_run_bulk_import.md).
+After this, you can run:
+
+```shell
+yarn run start-ts
+```
+
+This will start both realtime sync and bulk import processes in different ports. To know how to interact with them, check their respective documentation pages:
+- [Realtime sync](./how_to_run_realtime.md)
+- [Bulk import](./how_to_run_bulk_import.md)
 
 ## Tests
 

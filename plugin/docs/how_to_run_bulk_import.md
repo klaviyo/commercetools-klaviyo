@@ -13,6 +13,7 @@ orders and product information.
     - [CPU allocation](#cpu-allocation)
   - [Environment variables](#environment-variables)
 - [GCP example](#gcp-example)
+- [Available endpoints](#available-endpoints)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -44,9 +45,9 @@ Possible solutions are:
 #### CPU allocation
 
 Some serverless technologies (e.g. Cloud Run) by default allocate CPU only during request processing. The bulk import
-APIs once called, accept the request and return immediately the HTTP response 202, the import process then runs in
-background. In this case the service CPU needs to be allocated all the time to avoid that the background import process
-is killed.
+APIs once called, accepts the request and returns immediately the HTTP response 202, the import process then runs in
+background. In this case the service CPU needs to be allocated all the time to prevent the background import process
+from being killed.
 
 ### Environment variables
 
@@ -65,3 +66,16 @@ The bulk data import module requires all the following environment variables to 
 | PRODUCT_URL_TEMPLATE         | `https://example-store.com/products/{{productSlug}}`                                                                                                                                                                                                                    | No       | Set the template used for product URLs in Klaviyo, references frontend URLs (`productSlug` will be replaced by the product slug set in commercetools)  
 | PREFERRED_LOCALE         | *your preferred locale for certain localized strings*                                                                                                                                                                                                                   | No       | Set your (optional) preferred locale to be used when getting string from LocalizedString properties, like product/category names for the Klaviyo catalogue
 | PREFERRED_CURRENCY         | *your preferred currency for certain price object arrays*                                                                                                                                                                                                                   | No       | Set your (optional) preferred currency to be used when getting prices from products, for Klaviyo catalogue items and custom_metadata
+
+## Available endpoints
+
+| Endpoint             | Purpose                                            | Notes                                                              |
+|----------------------|----------------------------------------------------|--------------------------------------------------------------------|
+| `/sync/customers`    | Imports all existing customers into Klaviyo        |                                                                    |
+| `/sync/orders`       | Imports all applicable orders as Klaviyo events for each customer   | Has a very high rate-limit, unlikely to cause issues                                                  |
+| `/sync/categories`   | Imports all categories into Klaviyo Catalog           | Uses basic catalog endpoints from Klaviyo, might rate limit with high category counts   |
+| `/sync/products`     | Imports all published products into Klaviyo Catalog   | Uses job-based catalog endpoints from Klaviyo, should hold with large datasets          |
+
+For `/sync/categories` and `/sync/products` there's an option to send the `"deleteAll": true` and `"confirmDeletetion": "products"` (or `"categories"`), to trigger a complete deletion of these resources from the Klaviyo Catalog. Keep in mind this **DOES NOT** differentiate between data that came from the plugin and data that might have been imported/created from another source. This is why both properties are required in body to start the process.
+
+Additionally, all endpoints shown above support adding `/stop` to the URL to cancel the process. This only stops the process, any modifications will not be reverted and any import tasks still running on Klaviyo servers will still complete.

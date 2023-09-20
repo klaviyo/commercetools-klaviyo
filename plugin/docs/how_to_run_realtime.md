@@ -44,8 +44,8 @@ The real-time module requires all the following environment variables to start:
 | KLAVIYO_AUTH_KEY | *Klaviyo private api KEY*                                                                                                                                                                           | Yes      | `pk_1234567890`                                                                                                                              |
 | CT_API_CLIENT    | *commercetools API client id and secret*                                                                                                                                                            | Yes      | `{"clientId":"the-ct-client-id","secret":"the-ct-client-secret"}`                                                                            |
 | APP_TYPE         | `EVENT`                                                                                                                                                                                             | No       | Used to NOT start the bulk import API server                                                                                                 |
-| PUB_SUB_PORT     | 6789                                                                                                                                                                                                | No       | To change the default (`6789`) server port for the pubSub push endpoint                                                                      |
-
+| PUB_SUB_PORT     | 6789                                                                                                                                                                                                | No       | To change the default (`6789`) server port for the Pub/Sub push endpoint                                                                      |
+| SKIP_BASE64_ENCODING   | *any truthy value*                    | No       | Used to skip base64 decode and JSON parsing for realtime sync messages (allows passing PlatformFormat message directly in body)     
 [//]: # (| KLAVIYO_COMPANY_ID | *Klaviyo public api KEY*                                                                                                                                                                                                         | `C4VV2d `                                                                                                                                                                           |)
 
 ## commercetools project requirements
@@ -96,9 +96,37 @@ The subscription destination should reference the message queue, see the [Messag
 section.  
 If the synchronization of one or more events is not required then the corresponding subscription should not be
 created.  
-It is also possible to create subscriptions in commercetools using Terraform, in the `/infrastructure` directory can be
-found an example.
+It is also possible to create subscriptions in commercetools using Terraform, an example can be found in the `/infrastructure` directory.
 
 > **_NOTE:_** The *customer updated* and *category updated* events use the commercetools `ResourceUpdated` notification
 > type, to disable these events all customer and category subscription should not be enabled or the plugin source code
 > should to be updated.
+
+## Sending messages to real-time sync manually (for local testing)
+
+This component expects messages to be received as a [commercetools PlatformFormat payload](https://docs.commercetools.com/api/projects/subscriptions#delivery-payload-for-the-platformformat). For some examples, check the `plugin/src/test/testData` directory.
+
+At the same time, additional transformations might be needed depending on which adapter is used. For example, the GCP Pub/Sub adapter would receive the following body:
+
+```json
+{
+  "message": {
+    "data": "encoded PlatformFormat payload"
+  }
+}
+```
+
+Where `encoded PlatformFormat payload` is the previously mentioned payload, passed through `JSON.stringify()` (or equivalent) and then `base64` encoded. For example:
+
+```json
+{
+  "message": {
+    "data": "eyJ2ZXJzaW9uIjo2LCJwcm9qZWN0S2V5Ijoia2xhdml5by1kZXYiLCJyZX(...)"
+  }
+}
+```
+
+> **_NOTE:_** after using `JSON.stringify()` or similar, make sure to remove any single quotes (`'`) at the beginning/end
+> of the output, before doing base64 encoding. Curly braces (`{ }`) should be the first/last characters of the string.
+
+Additionally, for convenience when testing with the GCP Pub/Sub adapter, a PlatformFormat payload can be sent directly as the request body when testing locally, by setting any value for the `SKIP_BASE64_ENCODING` environment variable.
