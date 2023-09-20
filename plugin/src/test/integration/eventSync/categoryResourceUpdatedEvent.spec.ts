@@ -4,26 +4,34 @@ import { app } from '../../../infrastructure/driving/adapter/eventSync/pubsubAda
 import { sampleCategoryCreatedMessage, sampleCategoryResourceUpdatedMessage } from '../../testData/ctCategoryMessages';
 import http from 'http';
 import { ctAuthNock, ctGetCategoryByIdNock } from '../nocks/commercetoolsNock';
-import { klaviyoCreateCategoryNock, klaviyoGetCategoriesNock, klaviyoPatchCategoryNock } from '../nocks/KlaviyoCategoryNock';
+import {
+    klaviyoCreateCategoryNock,
+    klaviyoGetCategoriesNock,
+    klaviyoPatchCategoryNock,
+} from '../nocks/KlaviyoCategoryNock';
 import nock from 'nock';
+import config from 'config';
 
 chai.use(chaiHttp);
 
 describe('pubSub adapter category resource updated message', () => {
+    const getConfig = jest.spyOn(config, 'get');
     let server: http.Server;
     beforeAll(() => {
         server = app.listen(0);
     });
 
-  afterAll((done) => {
-    server.close(() => {
-      done();
+    afterAll((done) => {
+        jest.clearAllMocks();
+        server.close(() => {
+            done();
+        });
     });
-  });
 
     beforeEach(() => {
         jest.clearAllMocks();
         nock.cleanAll();
+        getConfig.mockImplementation(() => []);
     });
 
     it('should update the category in klaviyo and return status code 204 when a category resource updated message is received from CT', (done) => {
@@ -31,7 +39,6 @@ describe('pubSub adapter category resource updated message', () => {
         const getCustomerNock = ctGetCategoryByIdNock(sampleCategoryResourceUpdatedMessage.resource.id, 200);
         const getKlaviyoGetCategoriesNock = klaviyoGetCategoriesNock();
         const getKlaviyoPatchCategoryNock = klaviyoPatchCategoryNock();
-
         chai.request(server)
             .post('/')
             .send({ message: { data: Buffer.from(JSON.stringify(sampleCategoryResourceUpdatedMessage)) } })
@@ -67,7 +74,7 @@ describe('pubSub adapter category resource updated message', () => {
     });
 
     it('should return status code 204 and create the category in klaviyo', (done) => {
-		const authNock = ctAuthNock();
+        const authNock = ctAuthNock();
         const getCategoryByIdNock = ctGetCategoryByIdNock(sampleCategoryResourceUpdatedMessage.resource.id);
         const getKlaviyoGetCategoriesNock = klaviyoGetCategoriesNock(200, true);
         const getKlaviyoCreateCategoryNock = klaviyoCreateCategoryNock({
@@ -97,7 +104,7 @@ describe('pubSub adapter category resource updated message', () => {
     });
 
     it('should return status code 202 when the get profile from Klaviyo fails with status code 400', (done) => {
-		const authNock = ctAuthNock();
+        const authNock = ctAuthNock();
         const getCategoryNock = ctGetCategoryByIdNock(sampleCategoryResourceUpdatedMessage.resource.id);
         const getKlaviyoGetCategoriesNock = klaviyoGetCategoriesNock(400);
 
@@ -115,7 +122,7 @@ describe('pubSub adapter category resource updated message', () => {
     });
 
     it('should return status code 500 when fails to get the profile in Klaviyo with a 5xx error', (done) => {
-		const authNock = ctAuthNock();
+        const authNock = ctAuthNock();
         const getCustomerNock = ctGetCategoryByIdNock(sampleCategoryResourceUpdatedMessage.resource.id);
         const getKlaviyoGetCategoriesNock = klaviyoGetCategoriesNock(500);
         const getKlaviyoPatchCategoryNock = klaviyoPatchCategoryNock();

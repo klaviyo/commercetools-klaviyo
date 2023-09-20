@@ -4,7 +4,11 @@ import { ResourceUpdatedDeliveryPayload } from '@commercetools/platform-sdk';
 
 export class CustomerResourceUpdatedEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
-        return this.ctMessage.notificationType === 'ResourceUpdated' && this.ctMessage.resource.typeId === 'customer';
+        return (
+            this.ctMessage.notificationType === 'ResourceUpdated' &&
+            this.ctMessage.resource.typeId === 'customer' &&
+            !this.isEventDisabled(CustomerResourceUpdatedEventProcessor.name)
+        );
     }
 
     async generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {

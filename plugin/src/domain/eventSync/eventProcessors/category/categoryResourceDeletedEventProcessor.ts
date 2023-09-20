@@ -4,7 +4,11 @@ import { ResourceDeletedDeliveryPayload } from '@commercetools/platform-sdk';
 
 export class CategoryResourceDeletedEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
-        return this.ctMessage.notificationType === 'ResourceDeleted' && this.ctMessage.resource.typeId === 'category';
+        return (
+            this.ctMessage.notificationType === 'ResourceDeleted' &&
+            this.ctMessage.resource.typeId === 'category' &&
+            !this.isEventDisabled(CategoryResourceDeletedEventProcessor.name)
+        );
     }
 
     async generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {

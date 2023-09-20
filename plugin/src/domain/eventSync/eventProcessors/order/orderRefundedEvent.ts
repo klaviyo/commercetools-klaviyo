@@ -18,7 +18,8 @@ export class OrderRefundedEvent extends AbstractEventProcessor {
         return (
             message.resource.typeId === 'payment' &&
             this.isValidMessageType(message.type) &&
-            this.hasExpectedMessageProperties(message)
+            this.hasExpectedMessageProperties(message) &&
+            !this.isEventDisabled(OrderRefundedEvent.name)
         );
     }
 

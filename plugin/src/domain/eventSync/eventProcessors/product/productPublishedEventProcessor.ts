@@ -6,7 +6,11 @@ import config from 'config';
 export class ProductPublishedEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
         const message = this.ctMessage as unknown as ProductPublishedMessage;
-        return message.resource.typeId === 'product' && this.isValidMessageType(message.type);
+        return (
+            message.resource.typeId === 'product' &&
+            this.isValidMessageType(message.type) &&
+            !this.isEventDisabled(ProductPublishedEventProcessor.name)
+        );
     }
 
     async generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {
@@ -41,8 +45,7 @@ export class ProductPublishedEventProcessor extends AbstractEventProcessor {
     }
 
     private generateProductVariantsJobRequestForKlaviyo = async (product: Product): Promise<KlaviyoEvent[]> => {
-        const combinedVariants = [product.masterData.current.masterVariant]
-            .concat(product.masterData.current.variants);
+        const combinedVariants = [product.masterData.current.masterVariant].concat(product.masterData.current.variants);
         const ctProductVariants = combinedVariants
             .map((v) => v.sku || '')
             .filter((v) => v)

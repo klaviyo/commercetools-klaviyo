@@ -6,7 +6,11 @@ import config from 'config';
 export class ProductUnpublishedEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
         const message = this.ctMessage as unknown as ProductUnpublishedMessage;
-        return message.resource.typeId === 'product' && this.isValidMessageType(message.type);
+        return (
+            message.resource.typeId === 'product' &&
+            this.isValidMessageType(message.type) &&
+            !this.isEventDisabled(ProductUnpublishedEventProcessor.name)
+        );
     }
 
     async generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {

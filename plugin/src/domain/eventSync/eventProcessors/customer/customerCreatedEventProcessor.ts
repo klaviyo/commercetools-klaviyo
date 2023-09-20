@@ -9,7 +9,8 @@ export class CustomerCreatedEventProcessor extends AbstractEventProcessor {
             customerCreatedMessage.resource.typeId === 'customer' &&
             customerCreatedMessage.type === 'CustomerCreated' &&
             !!customerCreatedMessage.customer &&
-            !!customerCreatedMessage.customer.email
+            !!customerCreatedMessage.customer.email &&
+            !this.isEventDisabled(CustomerCreatedEventProcessor.name)
         );
     }
 

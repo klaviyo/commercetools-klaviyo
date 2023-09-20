@@ -7,7 +7,8 @@ export class InventoryResourceUpdatedEventProcessor extends AbstractEventProcess
         return (
             this.ctMessage.notificationType === 'ResourceUpdated' &&
             this.ctMessage.resource.typeId === 'inventory-entry' &&
-            !!this.ctMessage.resourceUserProvidedIdentifiers?.sku
+            !!this.ctMessage.resourceUserProvidedIdentifiers?.sku &&
+            !this.isEventDisabled(InventoryResourceUpdatedEventProcessor.name)
         );
     }
 

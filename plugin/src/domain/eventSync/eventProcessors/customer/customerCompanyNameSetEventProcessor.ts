@@ -5,7 +5,11 @@ import { CustomerCompanyNameSetMessage } from '@commercetools/platform-sdk/dist/
 export class CustomerCompanyNameSetEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
         const message = this.ctMessage as unknown as CustomerCompanyNameSetMessage;
-        return message.resource.typeId === 'customer' && message.type === 'CustomerCompanyNameSet';
+        return (
+            message.resource.typeId === 'customer' &&
+            message.type === 'CustomerCompanyNameSet' &&
+            !this.isEventDisabled(CustomerCompanyNameSetEventProcessor.name)
+        );
     }
 
     generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {

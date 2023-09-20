@@ -1,6 +1,6 @@
 import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
-import { CategoryCreatedMessage, Category } from '@commercetools/platform-sdk'
+import { CategoryCreatedMessage, Category } from '@commercetools/platform-sdk';
 import config from 'config';
 
 export class CategoryCreatedEventProcessor extends AbstractEventProcessor {
@@ -8,7 +8,8 @@ export class CategoryCreatedEventProcessor extends AbstractEventProcessor {
         const message = this.ctMessage as unknown as CategoryCreatedMessage;
         return (
             message.resource.typeId === 'category' &&
-            this.isValidMessageType(message.type)
+            this.isValidMessageType(message.type) &&
+            !this.isEventDisabled(CategoryCreatedEventProcessor.name)
         );
     }
 
@@ -17,7 +18,9 @@ export class CategoryCreatedEventProcessor extends AbstractEventProcessor {
         logger.info('Processing category created event');
 
         // Always get category from CT to expanded ancestors are available
-        const category = (await this.context.ctCategoryService.getCategoryById((message as CategoryCreatedMessage).resource.id)) as Category;
+        const category = (await this.context.ctCategoryService.getCategoryById(
+            (message as CategoryCreatedMessage).resource.id,
+        )) as Category;
 
         const body: CategoryRequest = this.context.categoryMapper.mapCtCategoryToKlaviyoCategory(category);
 
@@ -28,7 +31,8 @@ export class CategoryCreatedEventProcessor extends AbstractEventProcessor {
 
     private isValidMessageType(type: string): boolean {
         return Boolean(
-            config.has('category.messages.created') && (config.get('category.messages.created') as string[])?.includes(type),
+            config.has('category.messages.created') &&
+                (config.get('category.messages.created') as string[])?.includes(type),
         );
     }
 }

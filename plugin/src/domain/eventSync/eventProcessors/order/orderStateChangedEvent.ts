@@ -11,7 +11,8 @@ export class OrderStateChangedEvent extends AbstractEventProcessor {
         return (
             orderStateChangedMessage.resource.typeId === 'order' &&
             this.isValidMessageType(orderStateChangedMessage.type) &&
-            this.isValidState(orderStateChangedMessage.orderState)
+            this.isValidState(orderStateChangedMessage.orderState) &&
+            !this.isEventDisabled(OrderStateChangedEvent.name)
         );
     }
 

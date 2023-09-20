@@ -19,7 +19,8 @@ export class OrderCreatedEvent extends AbstractEventProcessor {
             this.isValidMessageType(
                 (message as unknown as MessageDeliveryPayload).payloadNotIncluded?.payloadType || message.type,
             ) &&
-            this.hasExpectedMessageProperties(message)
+            this.hasExpectedMessageProperties(message) &&
+            !this.isEventDisabled(OrderCreatedEvent.name)
         );
     }
 
@@ -67,7 +68,11 @@ export class OrderCreatedEvent extends AbstractEventProcessor {
         eventTime.setSeconds(eventTime.getSeconds() + 1);
         order?.lineItems?.forEach((lineItem) => {
             events.push({
-                body: this.context.orderMapper.mapOrderLineToProductOrderedEvent(lineItem, order, eventTime.toISOString()),
+                body: this.context.orderMapper.mapOrderLineToProductOrderedEvent(
+                    lineItem,
+                    order,
+                    eventTime.toISOString(),
+                ),
                 type: 'event',
             });
         });

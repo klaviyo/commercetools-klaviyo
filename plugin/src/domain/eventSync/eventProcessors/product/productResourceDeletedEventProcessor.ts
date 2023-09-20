@@ -5,7 +5,11 @@ import config from 'config';
 
 export class ProductResourceDeletedEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
-        return this.ctMessage.resource.typeId === 'product' && this.isValidMessageType(this.ctMessage.notificationType);
+        return (
+            this.ctMessage.resource.typeId === 'product' &&
+            this.isValidMessageType(this.ctMessage.notificationType) &&
+            !this.isEventDisabled(ProductResourceDeletedEventProcessor.name)
+        );
     }
 
     async generateKlaviyoEvents(): Promise<KlaviyoEvent[]> {

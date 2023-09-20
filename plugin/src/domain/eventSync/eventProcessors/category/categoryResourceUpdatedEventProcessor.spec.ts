@@ -5,15 +5,16 @@ import { CategoryResourceUpdatedEventProcessor } from './categoryResourceUpdated
 import { getSampleCustomerResourceUpdatedMessage } from '../../../../test/testData/ctCustomerMessages';
 import { Context } from '../../../../types/klaviyo-context';
 import { sampleCategoryCreatedMessage } from '../../../../test/testData/ctCategoryMessages';
+import config from 'config';
 
 const ctCategoryServiceMock = {
     getCategoryById: jest.fn(),
-}
+};
 
 jest.mock('../../../../infrastructure/driven/commercetools/DefaultCtCategoryService', () => ({
-    DefaultCtCategoryService: function() {
+    DefaultCtCategoryService: function () {
         return ctCategoryServiceMock;
-    }
+    },
 }));
 jest.mock('../../../../infrastructure/driven/klaviyo/KlaviyoService');
 
@@ -35,6 +36,21 @@ contextMock.categoryMapper.mapCtCategoryToKlaviyoCategory.mockImplementation(
 );
 
 describe('CategoryResourceUpdatedEventProcessor > isEventValid', () => {
+    const getConfig = jest.spyOn(config, 'get');
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should return invalid when event is configured to be disabled', async () => {
+        const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
+        Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'category' } });
+        Object.defineProperty(ctMessageMock, 'notificationType', { value: 'ResourceUpdated' });
+        getConfig.mockImplementationOnce(() => ['CategoryResourceUpdated']);
+        const event = CategoryResourceUpdatedEventProcessor.instance(ctMessageMock, contextMock);
+        exp(event.isEventValid()).to.be.false;
+    });
+
     it('should return valid when the category event has all the required fields', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', { value: { typeId: 'category' } });
@@ -42,6 +58,7 @@ describe('CategoryResourceUpdatedEventProcessor > isEventValid', () => {
 
         const event = CategoryResourceUpdatedEventProcessor.instance(ctMessageMock, contextMock);
 
+        getConfig.mockImplementationOnce(() => []);
         exp(event.isEventValid()).to.be.true;
     });
 
@@ -58,6 +75,7 @@ describe('CategoryResourceUpdatedEventProcessor > isEventValid', () => {
 
             const event = CategoryResourceUpdatedEventProcessor.instance(ctMessageMock, contextMock);
 
+            getConfig.mockImplementationOnce(() => []);
             exp(event.isEventValid()).to.be.false;
         },
     );
@@ -68,7 +86,9 @@ describe('CategoryResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
         const message = inputMessage as unknown as MessageDeliveryPayload;
         const event = CategoryResourceUpdatedEventProcessor.instance(message, contextMock);
-        contextMock.ctCategoryService.getCategoryById.mockImplementation(async (id) => sampleCategoryCreatedMessage.category);
+        contextMock.ctCategoryService.getCategoryById.mockImplementation(
+            async (id) => sampleCategoryCreatedMessage.category,
+        );
         contextMock.klaviyoService.getKlaviyoCategoryByExternalId.mockResolvedValue({
             attributes: {
                 external_id: 'someId',
@@ -85,7 +105,10 @@ describe('CategoryResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
         expect(contextMock.categoryMapper.mapCtCategoryToKlaviyoCategory).toBeCalledTimes(1);
-        expect(contextMock.categoryMapper.mapCtCategoryToKlaviyoCategory).toBeCalledWith(sampleCategoryCreatedMessage.category, 'someId');
+        expect(contextMock.categoryMapper.mapCtCategoryToKlaviyoCategory).toBeCalledWith(
+            sampleCategoryCreatedMessage.category,
+            'someId',
+        );
         exp(klaviyoEvent[0].body.data.id).to.eq('someId');
     });
 
@@ -93,7 +116,9 @@ describe('CategoryResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
         const inputMessage = getSampleCustomerResourceUpdatedMessage();
         const message = inputMessage as unknown as MessageDeliveryPayload;
         const event = CategoryResourceUpdatedEventProcessor.instance(message, contextMock);
-        contextMock.ctCategoryService.getCategoryById.mockImplementation(async (id) => sampleCategoryCreatedMessage.category);
+        contextMock.ctCategoryService.getCategoryById.mockImplementation(
+            async (id) => sampleCategoryCreatedMessage.category,
+        );
         contextMock.klaviyoService.getKlaviyoCategoryByExternalId.mockResolvedValue(undefined);
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
@@ -101,7 +126,9 @@ describe('CategoryResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
         expect(contextMock.categoryMapper.mapCtCategoryToKlaviyoCategory).toBeCalledTimes(1);
-        expect(contextMock.categoryMapper.mapCtCategoryToKlaviyoCategory).toBeCalledWith(sampleCategoryCreatedMessage.category);
+        expect(contextMock.categoryMapper.mapCtCategoryToKlaviyoCategory).toBeCalledWith(
+            sampleCategoryCreatedMessage.category,
+        );
         exp(klaviyoEvent[0].body.data.id).to.eq('someId');
     });
 });
