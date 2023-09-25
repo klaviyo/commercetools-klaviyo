@@ -5,7 +5,9 @@ import { Customer, CustomerCreatedMessage } from '@commercetools/platform-sdk';
 export class CustomerCreatedEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
         const customerCreatedMessage = this.ctMessage as unknown as CustomerCreatedMessage;
-        console.log(`Name of the current processor - ${CustomerCreatedEventProcessor.name}`);
+        console.log(
+            `CustomerCreatedEventProcessor - Name of the current processor - ${CustomerCreatedEventProcessor.name}`,
+        );
         console.log(
             `CustomerCreatedEventProcessor - Is event valid - ${
                 customerCreatedMessage.resource.typeId === 'customer' &&
