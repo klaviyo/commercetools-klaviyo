@@ -9,6 +9,9 @@ export class CustomerCreatedEventProcessor extends AbstractEventProcessor {
             `CustomerCreatedEventProcessor - Name of the current processor - ${CustomerCreatedEventProcessor.name}`,
         );
         console.log(
+            `CustomerCreatedEventProcessor - Name of the current processor using constructor - ${CustomerCreatedEventProcessor.constructor.name}`,
+        );
+        console.log(
             `CustomerCreatedEventProcessor - Is event valid - ${
                 customerCreatedMessage.resource.typeId === 'customer' &&
                 customerCreatedMessage.type === 'CustomerCreated' &&
