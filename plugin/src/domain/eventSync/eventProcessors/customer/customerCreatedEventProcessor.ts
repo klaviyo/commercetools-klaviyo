@@ -6,7 +6,7 @@ export class CustomerCreatedEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
         const customerCreatedMessage = this.ctMessage as unknown as CustomerCreatedMessage;
         console.log(
-            `Is event valid - ${
+            `CustomerCreatedEventProcessor - Is event valid - ${
                 customerCreatedMessage.resource.typeId === 'customer' &&
                 customerCreatedMessage.type === 'CustomerCreated' &&
                 !!customerCreatedMessage.customer &&
@@ -14,7 +14,11 @@ export class CustomerCreatedEventProcessor extends AbstractEventProcessor {
                 !this.isEventDisabled(CustomerCreatedEventProcessor.name)
             }`,
         );
-        console.log(`Is event disabled - ${this.isEventDisabled(CustomerCreatedEventProcessor.name)}`);
+        console.log(
+            `CustomerCreatedEventProcessor - Is event disabled - ${this.isEventDisabled(
+                CustomerCreatedEventProcessor.name,
+            )}`,
+        );
         return (
             customerCreatedMessage.resource.typeId === 'customer' &&
             customerCreatedMessage.type === 'CustomerCreated' &&

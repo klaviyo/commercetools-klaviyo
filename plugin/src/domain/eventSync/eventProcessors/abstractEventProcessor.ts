@@ -16,6 +16,9 @@ export abstract class AbstractEventProcessor {
     isEventDisabled(processorName: string): boolean {
         const disabledEvents = config.get<string[]>('disabledEvents') ?? [];
         console.log(`Disabled events - ${JSON.stringify(disabledEvents)}`);
-        return disabledEvents.includes(processorName.replace('Processor', '').replace('Event', ''));
+        const eventName = processorName.replace('Processor', '').replace('Event', '');
+        console.log(`Name of current event - ${eventName}`);
+        console.log(`Is current event name configured to be disabled? - ${disabledEvents.includes(eventName)}`);
+        return disabledEvents.includes(eventName);
     }
 }
