@@ -37,9 +37,11 @@ app.post('/', async (req, res) => {
         const result = await processEvent(payload as MessageDeliveryPayload, new KlaviyoSdkService());
         switch (result.status) {
             case 'OK':
+                console.log(`Case OK`);
                 res.status(204).send();
                 break;
             case '4xx':
+                console.log(`Case 4xx, request accepted`);
                 res.status(202).send();
                 break;
             default:

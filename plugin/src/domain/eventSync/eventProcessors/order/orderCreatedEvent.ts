@@ -14,6 +14,17 @@ import { PaginatedProductResults } from '../../../../infrastructure/driven/comme
 export class OrderCreatedEvent extends AbstractEventProcessor {
     isEventValid(): boolean {
         const message = this.ctMessage as unknown as OrderCreatedMessage | OrderCustomerSetMessage;
+        console.log(
+            `Is event valid - ${
+                message.resource.typeId === 'order' &&
+                this.isValidMessageType(
+                    (message as unknown as MessageDeliveryPayload).payloadNotIncluded?.payloadType || message.type,
+                ) &&
+                this.hasExpectedMessageProperties(message) &&
+                !this.isEventDisabled(OrderCreatedEvent.name)
+            }`,
+        );
+        console.log(`Is event disabled - ${this.isEventDisabled(OrderCreatedEvent.name)}`);
         return (
             message.resource.typeId === 'order' &&
             this.isValidMessageType(

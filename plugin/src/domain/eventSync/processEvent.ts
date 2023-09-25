@@ -86,14 +86,20 @@ export const processEvent = async (
             .filter((eventProcessor) => eventProcessor.isEventValid())
             .map((eventProcessor) => eventProcessor.generateKlaviyoEvents()),
     );
+
+    console.log(`Promises for generated klaviyo events - ${JSON.stringify(klaviyoRequestsPromises)}`);
     const response = responseHandler(klaviyoRequestsPromises, ctMessage, false);
     if (response.status != 'OK') {
+        console.log(`Response not OK, returning response...`);
         return response;
     }
     const validRequests = klaviyoRequestsPromises.filter(isFulfilled).map((done) => done.value);
+    console.log(`Fulfilled requests - ${JSON.stringify(validRequests)}`);
     const klaviyoRequestPromises = validRequests
         .flat()
         .map((klaviyoEvent) => klaviyoService.sendEventToKlaviyo(klaviyoEvent));
+    console.log(`Requests sent to Klaviyo - ${JSON.stringify(klaviyoRequestPromises)}`);
     const results = await Promise.allSettled(klaviyoRequestPromises);
+    console.log(`Settled Promises -  ${JSON.stringify(results)}`);
     return responseHandler(results, ctMessage);
 };

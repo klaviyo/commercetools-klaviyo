@@ -5,6 +5,16 @@ import { Customer, CustomerCreatedMessage } from '@commercetools/platform-sdk';
 export class CustomerCreatedEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {
         const customerCreatedMessage = this.ctMessage as unknown as CustomerCreatedMessage;
+        console.log(
+            `Is event valid - ${
+                customerCreatedMessage.resource.typeId === 'customer' &&
+                customerCreatedMessage.type === 'CustomerCreated' &&
+                !!customerCreatedMessage.customer &&
+                !!customerCreatedMessage.customer.email &&
+                !this.isEventDisabled(CustomerCreatedEventProcessor.name)
+            }`,
+        );
+        console.log(`Is event disabled - ${this.isEventDisabled(CustomerCreatedEventProcessor.name)}`);
         return (
             customerCreatedMessage.resource.typeId === 'customer' &&
             customerCreatedMessage.type === 'CustomerCreated' &&
