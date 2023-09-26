@@ -3,11 +3,13 @@ import logger from '../../../../utils/log';
 import { ResourceDeletedDeliveryPayload } from '@commercetools/platform-sdk';
 
 export class CategoryResourceDeletedEventProcessor extends AbstractEventProcessor {
+    private readonly PROCESSOR_NAME = 'CategoryResourceDeleted';
+
     isEventValid(): boolean {
         return (
             this.ctMessage.notificationType === 'ResourceDeleted' &&
             this.ctMessage.resource.typeId === 'category' &&
-            !this.isEventDisabled(CategoryResourceDeletedEventProcessor.name)
+            !this.isEventDisabled(this.PROCESSOR_NAME)
         );
     }
 

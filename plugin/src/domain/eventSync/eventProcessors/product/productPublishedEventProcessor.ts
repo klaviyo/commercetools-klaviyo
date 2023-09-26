@@ -4,12 +4,14 @@ import { Product, ProductPublishedMessage } from '@commercetools/platform-sdk';
 import config from 'config';
 
 export class ProductPublishedEventProcessor extends AbstractEventProcessor {
+    private readonly PROCESSOR_NAME = 'ProductPublished';
+
     isEventValid(): boolean {
         const message = this.ctMessage as unknown as ProductPublishedMessage;
         return (
             message.resource.typeId === 'product' &&
             this.isValidMessageType(message.type) &&
-            !this.isEventDisabled(ProductPublishedEventProcessor.name)
+            !this.isEventDisabled(this.PROCESSOR_NAME)
         );
     }
 

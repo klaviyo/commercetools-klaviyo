@@ -3,11 +3,13 @@ import logger from '../../../../utils/log';
 import { ResourceUpdatedDeliveryPayload } from '@commercetools/platform-sdk';
 
 export class CustomerResourceUpdatedEventProcessor extends AbstractEventProcessor {
+    private readonly PROCESSOR_NAME = 'CustomerResourceUpdated';
+
     isEventValid(): boolean {
         return (
             this.ctMessage.notificationType === 'ResourceUpdated' &&
             this.ctMessage.resource.typeId === 'customer' &&
-            !this.isEventDisabled(CustomerResourceUpdatedEventProcessor.name)
+            !this.isEventDisabled(this.PROCESSOR_NAME)
         );
     }
 

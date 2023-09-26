@@ -4,12 +4,14 @@ import { ProductUnpublishedMessage } from '@commercetools/platform-sdk';
 import config from 'config';
 
 export class ProductUnpublishedEventProcessor extends AbstractEventProcessor {
+    private readonly PROCESSOR_NAME = 'ProductUnpublished';
+
     isEventValid(): boolean {
         const message = this.ctMessage as unknown as ProductUnpublishedMessage;
         return (
             message.resource.typeId === 'product' &&
             this.isValidMessageType(message.type) &&
-            !this.isEventDisabled(ProductUnpublishedEventProcessor.name)
+            !this.isEventDisabled(this.PROCESSOR_NAME)
         );
     }
 

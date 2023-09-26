@@ -13,8 +13,8 @@ export abstract class AbstractEventProcessor {
         return Reflect.construct(this, [ctMessage, context]) as T;
     }
 
-    isEventDisabled(processorName: string): boolean {
+    isEventDisabled(PROCESSOR_NAME: string): boolean {
         const disabledEvents = config.get<string[]>('disabledEvents') ?? [];
-        return disabledEvents.includes(processorName.replace('Processor', '').replace('Event', ''));
+        return disabledEvents.includes(PROCESSOR_NAME);
     }
 }

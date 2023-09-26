@@ -4,12 +4,14 @@ import { CategoryCreatedMessage, Category } from '@commercetools/platform-sdk';
 import config from 'config';
 
 export class CategoryCreatedEventProcessor extends AbstractEventProcessor {
+    private readonly PROCESSOR_NAME = 'CategoryCreated';
+
     isEventValid(): boolean {
         const message = this.ctMessage as unknown as CategoryCreatedMessage;
         return (
             message.resource.typeId === 'category' &&
             this.isValidMessageType(message.type) &&
-            !this.isEventDisabled(CategoryCreatedEventProcessor.name)
+            !this.isEventDisabled(this.PROCESSOR_NAME)
         );
     }
 

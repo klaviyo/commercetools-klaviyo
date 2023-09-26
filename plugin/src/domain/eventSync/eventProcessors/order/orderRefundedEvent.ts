@@ -10,6 +10,8 @@ import config from 'config';
 import { PaginatedProductResults } from '../../../../infrastructure/driven/commercetools/DefaultCtProductService';
 
 export class OrderRefundedEvent extends AbstractEventProcessor {
+    private readonly PROCESSOR_NAME = 'OrderRefunded';
+
     isEventValid(): boolean {
         const message = this.ctMessage as unknown as
             | PaymentTransactionAddedMessage
@@ -19,7 +21,7 @@ export class OrderRefundedEvent extends AbstractEventProcessor {
             message.resource.typeId === 'payment' &&
             this.isValidMessageType(message.type) &&
             this.hasExpectedMessageProperties(message) &&
-            !this.isEventDisabled(OrderRefundedEvent.name)
+            !this.isEventDisabled(this.PROCESSOR_NAME)
         );
     }
 

@@ -4,11 +4,13 @@ import { ResourceDeletedDeliveryPayload } from '@commercetools/platform-sdk';
 import config from 'config';
 
 export class ProductResourceDeletedEventProcessor extends AbstractEventProcessor {
+    private readonly PROCESSOR_NAME = 'ProductResourceDeleted';
+
     isEventValid(): boolean {
         return (
             this.ctMessage.resource.typeId === 'product' &&
             this.isValidMessageType(this.ctMessage.notificationType) &&
-            !this.isEventDisabled(ProductResourceDeletedEventProcessor.name)
+            !this.isEventDisabled(this.PROCESSOR_NAME)
         );
     }
 

@@ -3,12 +3,14 @@ import logger from '../../../../utils/log';
 import { InventoryEntry, ResourceUpdatedDeliveryPayload } from '@commercetools/platform-sdk';
 
 export class InventoryResourceUpdatedEventProcessor extends AbstractEventProcessor {
+    private readonly PROCESSOR_NAME = 'InventoryResourceUpdated';
+
     isEventValid(): boolean {
         return (
             this.ctMessage.notificationType === 'ResourceUpdated' &&
             this.ctMessage.resource.typeId === 'inventory-entry' &&
             !!this.ctMessage.resourceUserProvidedIdentifiers?.sku &&
-            !this.isEventDisabled(InventoryResourceUpdatedEventProcessor.name)
+            !this.isEventDisabled(this.PROCESSOR_NAME)
         );
     }
 

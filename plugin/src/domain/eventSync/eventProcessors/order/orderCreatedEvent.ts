@@ -12,6 +12,8 @@ import config from 'config';
 import { PaginatedProductResults } from '../../../../infrastructure/driven/commercetools/DefaultCtProductService';
 
 export class OrderCreatedEvent extends AbstractEventProcessor {
+    private readonly PROCESSOR_NAME = 'OrderCreated';
+
     isEventValid(): boolean {
         const message = this.ctMessage as unknown as OrderCreatedMessage | OrderCustomerSetMessage;
         return (
@@ -20,7 +22,7 @@ export class OrderCreatedEvent extends AbstractEventProcessor {
                 (message as unknown as MessageDeliveryPayload).payloadNotIncluded?.payloadType || message.type,
             ) &&
             this.hasExpectedMessageProperties(message) &&
-            !this.isEventDisabled(OrderCreatedEvent.name)
+            !this.isEventDisabled(this.PROCESSOR_NAME)
         );
     }
 

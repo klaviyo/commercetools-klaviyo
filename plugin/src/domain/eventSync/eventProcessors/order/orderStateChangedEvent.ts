@@ -6,13 +6,15 @@ import config from 'config';
 import { PaginatedProductResults } from '../../../../infrastructure/driven/commercetools/DefaultCtProductService';
 
 export class OrderStateChangedEvent extends AbstractEventProcessor {
+    private readonly PROCESSOR_NAME = ' OrderStateChanged';
+
     isEventValid(): boolean {
         const orderStateChangedMessage = this.ctMessage as unknown as OrderStateChangedMessage;
         return (
             orderStateChangedMessage.resource.typeId === 'order' &&
             this.isValidMessageType(orderStateChangedMessage.type) &&
             this.isValidState(orderStateChangedMessage.orderState) &&
-            !this.isEventDisabled(OrderStateChangedEvent.name)
+            !this.isEventDisabled(this.PROCESSOR_NAME)
         );
     }
 

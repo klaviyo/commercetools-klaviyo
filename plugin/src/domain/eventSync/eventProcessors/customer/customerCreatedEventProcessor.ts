@@ -3,6 +3,8 @@ import logger from '../../../../utils/log';
 import { Customer, CustomerCreatedMessage } from '@commercetools/platform-sdk';
 
 export class CustomerCreatedEventProcessor extends AbstractEventProcessor {
+    private readonly PROCESSOR_NAME = 'CustomerCreated';
+
     isEventValid(): boolean {
         const customerCreatedMessage = this.ctMessage as unknown as CustomerCreatedMessage;
         return (
@@ -10,7 +12,7 @@ export class CustomerCreatedEventProcessor extends AbstractEventProcessor {
             customerCreatedMessage.type === 'CustomerCreated' &&
             !!customerCreatedMessage.customer &&
             !!customerCreatedMessage.customer.email &&
-            !this.isEventDisabled(CustomerCreatedEventProcessor.name)
+            !this.isEventDisabled(this.PROCESSOR_NAME)
         );
     }
 
