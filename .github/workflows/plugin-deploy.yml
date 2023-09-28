@@ -78,7 +78,7 @@ jobs:
           gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
           service: ${{ env.ENV_STAGE }}-${{ env.SERVICE }}-realtime-events
           region: ${{ env.REGION }}
-          port: 6789
+          port: 8080
           image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
           ct_api_url: ${{ vars.CT_API_URL }}
           ct_auth_url: ${{ vars.CT_AUTH_URL }}
@@ -170,7 +170,7 @@ jobs:
           gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
           service: ${{ env.ENV_STAGE }}-${{ env.SERVICE }}-realtime-events
           region: ${{ env.REGION }}
-          port: 6789
+          port: 8080
           image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
           ct_api_url: ${{ vars.CT_API_URL }}
           ct_auth_url: ${{ vars.CT_AUTH_URL }}

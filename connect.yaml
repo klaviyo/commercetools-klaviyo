@@ -24,11 +24,7 @@ deployAs:
           description: String to use as base for product URLs
         - key: PREFERRED_LOCALE
           description: Preferred locale to use when selecting some localized strings
-        - key: APP_TYPE
-          description: Only EVENT (Realtime Events) is currently supported
-        - key: PUB_SUB_PORT
-          description: Port to use for the application (8080 required for Connect)
         - key: NODE_CONFIG
           description: Provide a stringified and escaped JSON here to override all plugin configurations
         - key: CONNECT_ENV
-          description: String from GitHub Actions or other source to identify environment (used in deploy/undeploy scripts) 
+          description: String from GitHub Actions or other source to identify environment (used in deploy/undeploy scripts, event adapter) 

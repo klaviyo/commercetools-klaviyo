@@ -232,7 +232,7 @@ docker push us-central1-docker.pkg.dev/klaviyo-ct-plugin/docker-repo/klaviyo-ct-
 gcloud run services update dev-klaviyo-ct-plugin-realtime-events \
 --image us-central1-docker.pkg.dev/klaviyo-ct-plugin/docker-repo/klaviyo-ct-plugin \
 --region=us-central1 \
---port 6789 \
+--port 8080 \
 --max-instances=100 \
 --update-secrets=KLAVIYO_AUTH_KEY=klaviyo_auth_key:latest \
 --update-secrets=CT_API_CLIENT=commercetools_api_client:latest

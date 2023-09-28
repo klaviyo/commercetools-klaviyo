@@ -100,15 +100,9 @@ determine if you need configuration changes or make a fork.
 		            "key" : "PREFERRED_LOCALE",
 		            "value" : "en-US" // optional
 		        },{
-		            "key": "APP_TYPE",
-		            "value": "EVENT" // Always "EVENT" for Connect
-		        },{
-		            "key": "PUB_SUB_PORT",
-		            "value": "8080" // Always "8080" for Connect
-		        },{
-                    "key" : "CONNECT_ENV",
-                    "value" : "<an arbitrary env string, used for subscription keys>"
-                }
+                "key" : "CONNECT_ENV",
+                "value" : "<an arbitrary env string, used for subscription keys>" // also checked to apply Connect specific properties
+            }
 		    ],
 		    "securedConfiguration" : [ // Values in this property are hidden after the request is made
 		        {
@@ -182,17 +176,11 @@ this configuration.
 		            "key" : "PREFERRED_LOCALE",
 		            "value" : "en-US" // optional
 		        },{
-		            "key": "APP_TYPE",
-		            "value": "EVENT" // Always "EVENT" for Connect
-		        },{
-		            "key": "PUB_SUB_PORT",
-		            "value": "8080" // Always "8080" for Connect
-		        },{
-                    "key" : "CONNECT_ENV",
-                    "value" : "<an arbitrary env string, used for subscription keys>"
-                },{
-		        	"key": "NODE_CONFIG",
-		        	"value": "{\"customer\":\"{\"customFields\":{\"properties\":{ ... }}}\"}" // stringified and escaped JSON configuration
+                "key" : "CONNECT_ENV",
+                "value" : "<an arbitrary env string, used for subscription keys>" // also checked to apply Connect specific properties
+            },{
+			        	"key": "NODE_CONFIG",
+			        	"value": "{\"customer\":\"{\"customFields\":{\"properties\":{ ... }}}\"}" // stringified and escaped JSON configuration
 		        }
 		    ],
 		    "securedConfiguration" : [ // Values in this property are hidden after the request is made
@@ -256,61 +244,6 @@ Connect documentation.
 		    "url" : "git@github.com:owner/repo.git", // HTTPS or SSH access, dependds on repo visibility
 		    "tag" : "vX.Y.Z" // Branches technically work, not recommended
 		  },
-		  "configurations" : [ {
-		    "applicationName" : "plugin",
-		    "standardConfiguration" : [ 
-		        {
-		            "key" : "CT_API_URL",
-		            "description" : "Commercetools API URL"
-		        },
-		        {
-		            "key" : "CT_AUTH_URL",
-		            "description" : "Commercetools Auth URL"
-		        },
-		        {
-		            "key" : "CT_PROJECT_ID",
-		            "description" : "Commercetools Project ID"
-		        },
-		        {
-		            "key" : "CT_SCOPES",
-		            "description" : "Scopes for your Commercetools Client ID"
-		        },
-		        {
-		            "key" : "PRODUCT_URL_TEMPLATE",
-		            "description" : "String to use as base for product URLs"
-		        },
-		        {
-		            "key" : "PREFERRED_LOCALE",
-		            "description" : "Preferred locale to use when selecting some localized strings"
-		        },
-                {
-                    "key" : "APP_TYPE",
-                    "description" : "Only EVENT (Realtime Events) is currently supported"
-                },
-                {
-                    "key" : "PUB_SUB_PORT",
-                    "description" : "Port to use for the application (8080 required for Connect)"
-                },
-                {
-                    "key" : "NODE_CONFIG",
-                    "description" : "Provide a stringified and escaped JSON here to override all plugin configurations"
-                },
-                {
-                    "key" : "CONNECT_ENV",
-                    "description" : "String from GitHub Actions or other source to identify environment (used in deploy/undeploy scripts)"
-                }
-		    ],
-		    "securedConfiguration" : [
-		        {
-		            "key" : "CT_API_CLIENT",
-		            "description" : "CT API Client ID for requests"
-		        },
-		        {
-		            "key" : "KLAVIYO_AUTH_KEY",
-		            "description" : "Klaviyo API key for requests"
-		        }
-		    ]
-		  } ],
 		  "supportedRegions" : [ "us-central1.gcp"]
 		}
       ```

@@ -275,7 +275,7 @@ bulkSyncApp.get('/sync/status', async (req, res) => {
 });
 
 export const bulkSyncApiAdapter: GenericAdapter = (): Promise<any> => {
-    if (process.env.APP_TYPE && process.env.APP_TYPE != 'BULK_IMPORT') {
+    if ((process.env.APP_TYPE && process.env.APP_TYPE != 'BULK_IMPORT') || process.env.CONNECT_ENV) {
         return Promise.resolve();
     }
     const PORT = process.env.BULK_IMPORT_PORT || 6779;
