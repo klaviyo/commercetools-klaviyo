@@ -26,7 +26,7 @@ jobs:
       - name: Build and deploy Container App
         uses: azure/container-apps-deploy-action@v1
         with:
-          appSourcePath: ${{ github.workspace }}
+          appSourcePath: ${{ github.workspace }}/plugin
           acrName: bbtest89jrj
           containerAppName: bb-test-klaviyo-container-app
           resourceGroup: test-web-rg
