@@ -30,6 +30,15 @@ describe('map CT product to Klaviyo product', () => {
         expect(klaviyoEvent).toMatchSnapshot();
     });
 
+    it('should map commercetools product variants with an empty images array to a klaviyo variants', () => {
+        const variant = { ...structuredClone(ctGet1Product.results[0].masterData.current.masterVariant), images: [] };
+        const klaviyoEvent = productMapper.mapCtProductVariantToKlaviyoVariant(
+            ctGet1Product.results[0] as unknown as Product,
+            variant as unknown as ProductVariant,
+        );
+        expect(klaviyoEvent).toMatchSnapshot();
+    });
+
     it('should map secondary locales to appropiate custom_metadata properties', () => {
         const customProduct = {
             ...ctGet1Product.results[0],
