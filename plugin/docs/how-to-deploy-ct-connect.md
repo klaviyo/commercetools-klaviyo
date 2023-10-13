@@ -36,6 +36,12 @@ The creation of the API keys also needs to be done manually.
 See [https://help.klaviyo.com/hc/en-us/articles/360002165611-Understand-multi-account-user-privileges](https://help.klaviyo.com/hc/en-us/articles/360002165611-Understand-multi-account-user-privileges)
 for more info.
 
+## Importing data in bulk into Klaviyo
+
+While this plugin has both a real-time sync and a bulk import component, the bulk import side of it is not supported under Connect at this time due to some technical limitations. Bulk imports have to be handled by deploying the plugin somewhere else or just running it locally.
+
+Running bulk import in a local environment is covered under the [how to run bulk import](./how_to_run_bulk_import.md) documentation.
+
 ## How does the plugin work with commercetools Connect?
 
 Under the hood, Connect uses some well-known technologies to host integrations for projects, like GCP CloudRun and

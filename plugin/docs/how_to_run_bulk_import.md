@@ -79,3 +79,26 @@ The bulk data import module requires all the following environment variables to 
 For `/sync/categories` and `/sync/products` there's an option to send the `"deleteAll": true` and `"confirmDeletetion": "products"` (or `"categories"`), to trigger a complete deletion of these resources from the Klaviyo Catalog. Keep in mind this **DOES NOT** differentiate between data that came from the plugin and data that might have been imported/created from another source. This is why both properties are required in body to start the process.
 
 Additionally, all endpoints shown above support adding `/stop` to the URL to cancel the process. This only stops the process, any modifications will not be reverted and any import tasks still running on Klaviyo servers will still complete.
+
+## Running in a local machine
+
+Setting up bulk import to run in a local machine is very straightforward. Just follow these steps:
+
+1. Head to the `plugin` directory and run `yarn install` to install all dependencies.
+2. Copy the `.env.test` file to `.env` and set the required environment variables. Remove/change any other variables as needed.
+    - `.env.test` may have variables which are not needed for your use case or may be missing some variables. Double check the environment variables above to avoid issues.
+3. Run `yarn run start-ts` to start the plugin. The port used for any of the components will be shown in your console.
+4. Open Postman or similar, prepare a POST request with the right URL. For example: `http://localhost:6779/sync/customers`.
+5. Send the request. If all went well, you should get a `2XX` status code right away.
+6. Monitor progress in your console, you'll get a summary of imported/errored items at the end.
+    - Errors will be logged along the way, a decently sized console buffer is recommended.
+    - Errors similar to `Product with ID <id> does not exist in Klaviyo` are expected, checks are performed before creating/updating items in Klaviyo.
+
+Also, do keep in mind there are sequences/rules that should be followed when importing data:
+
+- Customers and Orders don't have a strict dependency on each other, but importing Customers first is strongly recommended.
+- Categories must be imported before Products, since there's a dependency between them.
+- Products must have at least one (1) image and one (1) valid price.
+    - For example, if you set `PREFERRED_CURRENCY` you need at least a price to match said currency, otherwise any will do. 
+    - Prices with past expiration dates will also be ignored. For future dates, the closest one will be used and the rest will be ignored.
+- For products, in cases where more than one locale/currency/inventory channel is defined, only one will be chosen and imported based on configuration and priorities.
