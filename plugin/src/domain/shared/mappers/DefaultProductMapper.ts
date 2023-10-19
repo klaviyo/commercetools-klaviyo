@@ -129,7 +129,7 @@ export class DefaultProductMapper implements ProductMapper {
                     description: productDescription ? getLocalizedStringAsText(productDescription) : '',
                     sku: !update ? productVariant.sku : undefined,
                     url: productUrl,
-                    image_full_url: variantImages ? variantImages[0].url : undefined,
+                    image_full_url: variantImages?.[0]?.url,
                     inventory_quantity: variantInventoryQuantity ?? 0,
                     inventory_policy: 1,
                     price: variantPrice ? this.currencyService.convert(variantPrice.amount, variantPrice.currency) : 0,
