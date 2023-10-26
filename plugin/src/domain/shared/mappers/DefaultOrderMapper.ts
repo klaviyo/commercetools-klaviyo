@@ -34,6 +34,8 @@ export class DefaultOrderMapper implements OrderMapper {
                         order.totalPrice.currencyCode,
                     ),
                     properties: {
+                        ...mapAllowedProperties('order', { ...order }),
+                        ...mapAllowedProperties('order.customFields', { ...(order.custom?.fields || {}) }),
                         ItemNames: this.mapOrderLineItemsToItemNames(order),
                         Categories: this.getCategoryNamesFromProduct(
                             orderProducts.map((product) => product.masterData.current.categories).flat(),
@@ -73,6 +75,8 @@ export class DefaultOrderMapper implements OrderMapper {
                     },
                     value: this.currencyService.convert(refundTotal, order.totalPrice.currencyCode),
                     properties: {
+                        ...mapAllowedProperties('order', { ...order }),
+                        ...mapAllowedProperties('order.customFields', { ...(order.custom?.fields || {}) }),
                         ItemNames: this.mapOrderLineItemsToItemNames(order),
                         Categories: this.getCategoryNamesFromProduct(
                             orderProducts.map((product) => product.masterData.current.categories).flat(),
@@ -98,7 +102,7 @@ export class DefaultOrderMapper implements OrderMapper {
                         getTypedMoneyAsNumber(lineItem.totalPrice),
                         order.totalPrice.currencyCode,
                     ),
-                    properties: { ...lineItem },
+                    properties: { ...lineItem, name: getLocalizedStringAsText(lineItem.name) },
                     unique_id: lineItem.id,
                     time: time ?? order.createdAt,
                 },
