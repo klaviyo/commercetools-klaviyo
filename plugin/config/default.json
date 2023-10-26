@@ -29,7 +29,7 @@
     },
     "properties": {
       "include": [],
-      "exclude": [],
+      "exclude": ["cart", "custom", "customLineItems", "directDiscounts", "discountCodes", "gaClientId", "itemShippingAddresses", "lineItems", "paymentInfo", "refusedGifts","returnInfo","shipping","shippingInfo", "syncInfo", "taxedPrice", "taxedShippingPrice", "taxjarData", "upsShippingRates"],
       "map": {}
     },
     "metrics": {
