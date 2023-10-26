@@ -9,7 +9,6 @@ import { Product } from '@commercetools/platform-sdk';
 import { CtProductService } from '../../infrastructure/driven/commercetools/CtProductService';
 import { getElapsedSeconds, startTime } from '../../utils/time-utils';
 import { groupIntoMaxSizeJobs } from '../../utils/job-grouper';
-import { removeVariantsWithoutPricesOrImages } from '../../utils/product-utils';
 
 export class ProductsSync {
     lockKey = 'productFullSync';
@@ -205,26 +204,25 @@ export class ProductsSync {
         const productsForUpdate = ctPublishedProducts.filter((p) =>
             klaviyoItems.includes(`$custom:::$default:::${p.id}`),
         );
-        const productsForCreationWithPrices = removeVariantsWithoutPricesOrImages(productsForCreation);
-        const productsForUpdateWithPrices = removeVariantsWithoutPricesOrImages(productsForUpdate);
         const promises: KlaviyoEvent[] = [];
-        if (productsForCreationWithPrices.length) {
+        if (productsForCreation.length) {
             promises.push({
                 type: 'itemCreated',
-                body: this.productMapper.mapCtProductsToKlaviyoItemJob(productsForCreationWithPrices, 'itemCreated'),
+                body: this.productMapper.mapCtProductsToKlaviyoItemJob(productsForCreation, 'itemCreated'),
             });
         }
-        if (productsForUpdateWithPrices.length) {
+        if (productsForUpdate.length) {
             promises.push({
                 type: 'itemUpdated',
-                body: this.productMapper.mapCtProductsToKlaviyoItemJob(productsForUpdateWithPrices, 'itemUpdated'),
+                body: this.productMapper.mapCtProductsToKlaviyoItemJob(productsForUpdate, 'itemUpdated'),
             });
         }
         return promises;
     };
 
     private generateProductVariantsJobRequestForKlaviyo = async (product: Product): Promise<KlaviyoEvent[]> => {
-        const combinedVariants = [product.masterData.current.masterVariant].concat(product.masterData.current.variants);
+        const combinedVariants = [product.masterData.current.masterVariant]
+            .concat(product.masterData.current.variants);
         const ctProductVariants = combinedVariants
             .map((v) => v.sku || '')
             .filter((v) => v)
@@ -282,7 +280,7 @@ export class ProductsSync {
             this.klaviyoService.sendEventToKlaviyo({ type: 'itemDeleted', body: e }),
         );
         return klaviyoItemPromises;
-    };
+    }
 
     public async releaseLockExternally(): Promise<void> {
         await this.lockService.releaseLock(this.lockKey);

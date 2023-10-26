@@ -47,9 +47,7 @@ export class DefaultProductMapper implements ProductMapper {
                     title: getLocalizedStringAsText(productName),
                     description: productDescription ? getLocalizedStringAsText(productDescription) : '',
                     url: productUrl,
-                    image_full_url: productMasterVariantImages?.[0]?.url
-                        ? productMasterVariantImages[0]?.url
-                        : undefined,
+                    image_full_url: productMasterVariantImages ? productMasterVariantImages[0]?.url : undefined,
                     price: productPrice ? this.currencyService.convert(productPrice.amount, productPrice.currency) : 0,
                     custom_metadata: {
                         title_json: JSON.stringify(
