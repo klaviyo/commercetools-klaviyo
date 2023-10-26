@@ -34,8 +34,6 @@ export class DefaultOrderMapper implements OrderMapper {
                         order.totalPrice.currencyCode,
                     ),
                     properties: {
-                        ...mapAllowedProperties('order', { ...order }),
-                        ...mapAllowedProperties('order.customFields', { ...(order.custom?.fields || {}) }),
                         ItemNames: this.mapOrderLineItemsToItemNames(order),
                         Categories: this.getCategoryNamesFromProduct(
                             orderProducts.map((product) => product.masterData.current.categories).flat(),
@@ -75,8 +73,6 @@ export class DefaultOrderMapper implements OrderMapper {
                     },
                     value: this.currencyService.convert(refundTotal, order.totalPrice.currencyCode),
                     properties: {
-                        ...mapAllowedProperties('order', { ...order }),
-                        ...mapAllowedProperties('order.customFields', { ...(order.custom?.fields || {}) }),
                         ItemNames: this.mapOrderLineItemsToItemNames(order),
                         Categories: this.getCategoryNamesFromProduct(
                             orderProducts.map((product) => product.masterData.current.categories).flat(),
@@ -112,8 +108,7 @@ export class DefaultOrderMapper implements OrderMapper {
 
     private mapOrderLineItemsToItemNames(order: Order): string[] {
         const lineItemNames = order.lineItems.map((item) => getLocalizedStringAsText(item.name));
-        const customLineItemNames =
-            order.customLineItems?.map((item) => getLocalizedStringAsText(item.name)) || [];
+        const customLineItemNames = order.customLineItems?.map((item) => getLocalizedStringAsText(item.name)) || [];
         return Array.from(new Set(lineItemNames.concat(customLineItemNames)));
     }
 
