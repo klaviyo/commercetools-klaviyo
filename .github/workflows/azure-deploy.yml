@@ -18,8 +18,8 @@ jobs:
         with:
           bevActionOnNoRef: error
           AZURE_REGISTRY: |
-            main:bbprod33hdc
-            staging:bbtest89jrj
+            main:bbprod33hdc.azurecr.io
+            staging:bbtest89jrj.azurecr.io
           AZURE_CONTAINER_APP_NAME: |
             main:bb-prod-klaviyo-container-app
             staging:bb-test-klaviyo-container-app
