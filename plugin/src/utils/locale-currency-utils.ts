@@ -136,7 +136,16 @@ export const getProductPriceByPriority = (
     const chosenPrice = singleRangedPrice || singleRegularPrice;
 
     return {
-        amount: getTypedMoneyAsNumber(chosenPrice?.value),
+        amount: getTypedMoneyAsNumber(
+            chosenPrice?.value?.centAmount
+                ? chosenPrice.value
+                : {
+                      centAmount: 0,
+                      fractionDigits: 2,
+                      type: 'centPrecision',
+                      currencyCode: chosenPrice?.value?.currencyCode,
+                  },
+        ),
         currency: chosenPrice?.value?.currencyCode,
         country: chosenPrice?.country,
     };

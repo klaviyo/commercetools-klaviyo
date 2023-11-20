@@ -29,7 +29,7 @@
     },
     "properties": {
       "include": [],
-      "exclude": [],
+      "exclude": ["cart", "custom", "customLineItems", "directDiscounts", "discountCodes", "itemShippingAddresses", "lineItems", "paymentInfo", "refusedGifts", "returnInfo", "shipping", "shippingInfo", "syncInfo", "taxedPrice", "taxedShippingPrice"],
       "map": {}
     },
     "metrics": {
@@ -42,7 +42,7 @@
     "customFields": {
       "properties": {
         "include": [],
-        "exclude": [],
+        "exclude": ["taxjarData", "upsShippingRates", "selectedShippingMethod", "paypalOrderId", "reservedOrderNumber", "cjEventId", "gaClientId", "newsletterOptIn", "cartId", "customShippingMethod", "customShippingRatesData", "customShippingRate"],
         "map": {}
       }
     }

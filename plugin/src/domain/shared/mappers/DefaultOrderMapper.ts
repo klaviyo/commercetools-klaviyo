@@ -102,7 +102,7 @@ export class DefaultOrderMapper implements OrderMapper {
                         getTypedMoneyAsNumber(lineItem.totalPrice),
                         order.totalPrice.currencyCode,
                     ),
-                    properties: { ...lineItem },
+                    properties: { ...lineItem, name: getLocalizedStringAsText(lineItem.name) },
                     unique_id: lineItem.id,
                     time: time ?? order.createdAt,
                 },
@@ -112,8 +112,7 @@ export class DefaultOrderMapper implements OrderMapper {
 
     private mapOrderLineItemsToItemNames(order: Order): string[] {
         const lineItemNames = order.lineItems.map((item) => getLocalizedStringAsText(item.name));
-        const customLineItemNames =
-            order.customLineItems?.map((item) => getLocalizedStringAsText(item.name)) || [];
+        const customLineItemNames = order.customLineItems?.map((item) => getLocalizedStringAsText(item.name)) || [];
         return Array.from(new Set(lineItemNames.concat(customLineItemNames)));
     }
 
