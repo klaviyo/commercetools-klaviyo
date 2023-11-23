@@ -9,7 +9,7 @@ import { OrderStateChangedEvent } from './eventProcessors/order/orderStateChange
 import { OrderRefundedEvent } from './eventProcessors/order/orderRefundedEvent';
 import { CustomerResourceUpdatedEventProcessor } from './eventProcessors/customer/customerResourceUpdatedEventProcessor';
 import { isFulfilled } from '../../utils/promise';
-import { DummyCurrencyService } from '../shared/services/dummyCurrencyService';
+import { CurrencyService } from '../shared/services/CurrencyService';
 import { KlaviyoService } from '../../infrastructure/driven/klaviyo/KlaviyoService';
 import { KlaviyoSdkService } from '../../infrastructure/driven/klaviyo/KlaviyoSdkService';
 import { Context } from '../../types/klaviyo-context';
@@ -33,10 +33,10 @@ import { ProductPublishedEventProcessor } from './eventProcessors/product/produc
 
 const context: Context = {
     klaviyoService: new KlaviyoSdkService(),
-    orderMapper: new DefaultOrderMapper(new DummyCurrencyService(), new DefaultCustomerMapper()),
+    orderMapper: new DefaultOrderMapper(new CurrencyService(), new DefaultCustomerMapper()),
     customerMapper: new DefaultCustomerMapper(),
     categoryMapper: new DefaultCategoryMapper(),
-    productMapper: new DefaultProductMapper(new DummyCurrencyService()),
+    productMapper: new DefaultProductMapper(new CurrencyService()),
     ctCustomerService: new DefaultCtCustomerService(getApiRoot()),
     ctProductService: new DefaultCtProductService(getApiRoot()),
     ctCategoryService: new DefaultCtCategoryService(getApiRoot()),
