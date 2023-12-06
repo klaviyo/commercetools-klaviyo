@@ -104,7 +104,7 @@ export class DefaultOrderMapper implements OrderMapper {
                     ),
                     properties: {
                         ...lineItem,
-                        id: `${lineItem.productId}_${lineItem.variant.id}_${order.locale?.split('-')[0] ?? ''}-${
+                        productId: `${lineItem.productId}_${lineItem.variant.id}_${order.locale?.split('-')[0] ?? ''}-${
                             order.store?.key.toUpperCase() ?? ''
                         }`,
                         name: getLocalizedStringAsText(lineItem.name),
