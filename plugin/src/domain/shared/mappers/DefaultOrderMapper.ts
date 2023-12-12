@@ -102,7 +102,13 @@ export class DefaultOrderMapper implements OrderMapper {
                         getTypedMoneyAsNumber(lineItem.totalPrice),
                         order.totalPrice.currencyCode,
                     ),
-                    properties: { ...lineItem, name: getLocalizedStringAsText(lineItem.name) },
+                    properties: {
+                        ...lineItem,
+                        productId: `${lineItem.productId}_${lineItem.variant.id}_${order.locale?.split('-')[0] ?? ''}-${
+                            order.store?.key.toUpperCase() ?? ''
+                        }`,
+                        name: getLocalizedStringAsText(lineItem.name),
+                    },
                     unique_id: lineItem.id,
                     time: time ?? order.createdAt,
                 },
