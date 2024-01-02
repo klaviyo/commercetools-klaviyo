@@ -5,7 +5,7 @@ on:
       - master
       - main
     paths:
-      - package.json
+      - plugin/package.json
 jobs:
   tag-npm-release:
     name: Tag new npm package releases
