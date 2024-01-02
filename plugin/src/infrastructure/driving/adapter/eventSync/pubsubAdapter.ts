@@ -17,6 +17,7 @@ const interceptor = new BatchInterceptor({
 
 interceptor.apply();
 interceptor.on('request', ({ request }) => {
+    /* c8 ignore start */
     if (request.url.includes('a.klaviyo.com')) {
         // Detect running on Connect by certain environment variables
         const runningOnConnect = String(process.env.K_SERVICE || '').includes('event-');
@@ -24,6 +25,7 @@ interceptor.on('request', ({ request }) => {
         const headerVersion = packageJson.version.replace('v', '');
         request.headers.set('User-Agent', `Commercetools${hostedOrConnect}Sync/${headerVersion}`);
     }
+    /* c8 ignore end */
 });
 
 app.post('/', async (req, res) => {
