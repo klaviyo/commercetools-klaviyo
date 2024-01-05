@@ -17,4 +17,4 @@ jobs:
         uses: ./.github/actions/tag-on-npm-version
         with:
           tag-prefix: 'v'
-          package-json-path: './plugin'
+          package-json-path: './plugin/'
