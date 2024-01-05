@@ -13,5 +13,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: neverendingqs/gh-action-tag-on-npm-version@master
-        working-directory: ./plugin
+      - name: Push tag version
+        uses: ./.github/actions/tag-on-npm-version
+        with:
+          tag-prefix: 'v'
+          package-json-path: './plugin'
