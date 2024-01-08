@@ -6,7 +6,6 @@ COPY package.json yarn.lock ./
 # install dependencies
 RUN yarn --frozen-lockfile
 COPY . .
-RUN yarn test
 RUN yarn build
 # remove development dependencies
 RUN yarn install --production --ignore-scripts --prefer-offline --force --frozen-lockfile

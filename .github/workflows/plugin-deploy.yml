@@ -30,10 +30,32 @@ jobs:
           ct_tf_secret: ${{ secrets.CT_TF_SECRET }}
           klaviyo_auth_key: ${{ secrets.KLAVIYO_AUTH_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+  build_test:
+    name: 'Build and test'
+    runs-on: ubuntu-latest
+    needs: [ infrastructure ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: yarn
+          cache-dependency-path: ./plugin/yarn.lock
+      - name: Dependencies install
+        working-directory: ./plugin
+        run: yarn install --frozen-lockfile
+      - name: Linting
+        working-directory: ./plugin
+        run: yarn lint
+      - name: Test
+        working-directory: ./plugin
+        run: yarn test
   docker_image:
     name: "Build and push docker image"
     runs-on: ubuntu-latest
-    needs: [ infrastructure ]
+    needs: [ build_test ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
