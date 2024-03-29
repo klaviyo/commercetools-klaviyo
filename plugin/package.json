@@ -64,7 +64,7 @@
     "config": "^3.3.9",
     "country-data": "^0.0.31",
     "dotenv": "^16.0.3",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "klaviyo-api": "^3.0.0",
     "winston": "^3.8.2"
   }
