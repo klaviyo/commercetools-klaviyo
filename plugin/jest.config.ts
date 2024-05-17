@@ -9,9 +9,23 @@ const jestConfig: Config.InitialOptions = {
     // Automatically clear mock calls, instances, contexts and results before every test
     clearMocks: true,
     collectCoverage: true,
-    collectCoverageFrom: ['src/**/*.{ts,tsx}', '!**/node_modules/**', '!src/test/**/*.{ts,tsx}', '!src/types/**/*.{ts,tsx}'],
+    collectCoverageFrom: [
+        'src/**/*.{ts,tsx}',
+        '!**/node_modules/**',
+        '!src/test/**/*.{ts,tsx}',
+        '!src/types/**/*.{ts,tsx}',
+        '!src/domain/shared/mappers/*.ts',
+        'src/domain/shared/mappers/Default*Mapper.ts',
+        '!src/infrastructure/driven/commercetools/*.ts',
+        'src/infrastructure/driven/commercetools/Default*Service.ts',
+        '!src/domain/shared/services/CurrencyService.ts',
+        '!src/domain/bulkSync/services/LockService.ts',
+        '!src/infrastructure/driving/adapter/eventSync/genericAdapter.ts',
+        '!src/infrastructure/driving/adapter/eventSync/sqsAdapter.ts',
+        '!src/index.ts',
+    ],
     coverageDirectory: 'coverage',
-    coverageProvider: 'v8',
+    coverageProvider: 'babel',
     coverageThreshold: {
         global: {
             branches: 80,

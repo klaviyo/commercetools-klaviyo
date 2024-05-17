@@ -98,7 +98,17 @@ Also, do keep in mind there are sequences/rules that should be followed when imp
 
 - Customers and Orders don't have a strict dependency on each other, but importing Customers first is strongly recommended.
 - Categories must be imported before Products, since there's a dependency between them.
-- Products must have at least one (1) image and one (1) valid price.
-    - For example, if you set `PREFERRED_CURRENCY` you need at least a price to match said currency, otherwise any will do. 
-    - Prices with past expiration dates will also be ignored. For future dates, the closest one will be used and the rest will be ignored.
+- Products must have at least one (1) image. Prices are optional, but recommended.
+    - Undefined prices will send a price of 0 (zero) to Klaviyo, regardless of currency.
+    - If you set `PREFERRED_CURRENCY` you need at least a price to match said currency, otherwise the resulting price will be 0. If not set, the first price found will be picked.
+    - Expiration dates which are still within range are preferred over basic prices.
+    - Prices with past expiration dates will be ignored. For future dates, the closest one will be used and the rest will be ignored.
 - For products, in cases where more than one locale/currency/inventory channel is defined, only one will be chosen and imported based on configuration and priorities.
+
+## Running bulk import on a schedule
+
+The bulk import component is intended to be a one-and-done, despite the fact it can be reused periodically as needed. It doesn't ship with any options to run import jobs on a schedule by default.
+
+Code changes would be needed if this needed to be implemented in code. As a workaround, any tool or combination of tools capable of performing requests on a schedule (e.g.: a combination of `cron` and `curl`) would allow the user to schedule import jobs of any given type.
+
+Regardless of the method use, it's important to keep in mind logs need to be checked manually and certain operations depend on existing data from other operations (see previous section).
