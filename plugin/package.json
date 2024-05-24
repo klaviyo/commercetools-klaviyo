@@ -1,6 +1,6 @@
 {
   "name": "klaviyo-ct-plugin",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Klaviyo plugin for integration with commercetools",
   "main": "index.js",
   "author": {
