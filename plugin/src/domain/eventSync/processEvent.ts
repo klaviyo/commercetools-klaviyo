@@ -13,8 +13,6 @@ import { DummyCurrencyService } from '../shared/services/dummyCurrencyService';
 import { KlaviyoService } from '../../infrastructure/driven/klaviyo/KlaviyoService';
 import { KlaviyoSdkService } from '../../infrastructure/driven/klaviyo/KlaviyoSdkService';
 import { Context } from '../../types/klaviyo-context';
-import { DefaultOrderMapper } from '../shared/mappers/DefaultOrderMapper';
-import { DefaultCustomerMapper } from '../shared/mappers/DefaultCustomerMapper';
 import { DefaultCategoryMapper } from '../shared/mappers/DefaultCategoryMapper';
 import { DefaultProductMapper } from '../shared/mappers/DefaultProductMapper';
 import { CategoryCreatedEventProcessor } from './eventProcessors/category/categoryCreatedEventProcessor';
@@ -30,11 +28,13 @@ import { DefaultCtPaymentService } from '../../infrastructure/driven/commercetoo
 import { DefaultCtOrderService } from '../../infrastructure/driven/commercetools/DefaultCtOrderService';
 import { InventoryResourceUpdatedEventProcessor } from './eventProcessors/inventory/inventoryResourceUpdatedEventProcessor';
 import { ProductPublishedEventProcessor } from './eventProcessors/product/productPublishedEventProcessor';
+import { SharperImageDefaultCustomerMapper } from '../shared/mappers/sharperimage/SharperImageDefaultCustomerMapper';
+import { SharperImageDefaultOrderMapper } from '../shared/mappers/sharperimage/SharperImageDefaultOrderMapper';
 
 const context: Context = {
     klaviyoService: new KlaviyoSdkService(),
-    orderMapper: new DefaultOrderMapper(new DummyCurrencyService(), new DefaultCustomerMapper()),
-    customerMapper: new DefaultCustomerMapper(),
+    orderMapper: new SharperImageDefaultOrderMapper(new DummyCurrencyService(), new SharperImageDefaultCustomerMapper()),
+    customerMapper: new SharperImageDefaultCustomerMapper(),
     categoryMapper: new DefaultCategoryMapper(),
     productMapper: new DefaultProductMapper(new DummyCurrencyService()),
     ctCustomerService: new DefaultCtCustomerService(getApiRoot()),
