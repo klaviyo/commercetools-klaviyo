@@ -20,13 +20,29 @@ import {
 
 export class DefaultProductMapper implements ProductMapper {
     constructor(private readonly currencyService: CurrencyService) {}
+
+    private stripNonASCII(input: string | undefined | null): string {
+        // eslint-disable-next-line no-control-regex
+        return input?.replace(/[^\x00-\x7F]+/g, '') ?? '';
+    }
+
+    private cleanText(text: string) {
+        const cleanedText = encodeURIComponent(
+            this.stripNonASCII(text)
+            .replace(/\s+/g, ' ')
+            .trim(),
+        ).replace(/%20/g, '+');
+        return cleanedText;
+    }
+
     public mapCtProductToKlaviyoItem(product: Product, update = false): ItemRequest {
         const productName = product.masterData.current.name;
         const productDescription = product.masterData.current.description;
         const productSlug = product.masterData.current.slug;
         const defaultProductSlug = getLocalizedStringAsText(productSlug);
+        const defaultProductName = getLocalizedStringAsText(productName);
         const productUrl = process.env.PRODUCT_URL_TEMPLATE
-            ? String(process.env.PRODUCT_URL_TEMPLATE).replace('{{productSlug}}', defaultProductSlug)
+            ? String(process.env.PRODUCT_URL_TEMPLATE).replace('{{productSlug}}', defaultProductSlug).replace('{{productName}}', this.cleanText(defaultProductName))
             : 'None';
         const productMasterVariantImages = product.masterData.current.masterVariant.images;
         const allProductCategories = product.masterData.current.categories.concat(
@@ -108,8 +124,9 @@ export class DefaultProductMapper implements ProductMapper {
         const productDescription = product.masterData.current.description;
         const productSlug = product.masterData.current.slug;
         const defaultProductSlug = getLocalizedStringAsText(productSlug);
+        const defaultProductName = getLocalizedStringAsText(productName);
         const productUrl = process.env.PRODUCT_URL_TEMPLATE
-            ? String(process.env.PRODUCT_URL_TEMPLATE).replace('{{productSlug}}', defaultProductSlug)
+            ? String(process.env.PRODUCT_URL_TEMPLATE).replace('{{productSlug}}', defaultProductSlug).replace('{{productName}}', this.cleanText(defaultProductName))
             : 'None';
         const variantImages = productVariant.images;
         const variantPrice = productVariant.prices
