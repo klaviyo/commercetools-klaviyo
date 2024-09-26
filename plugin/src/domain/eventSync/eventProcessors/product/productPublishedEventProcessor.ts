@@ -2,6 +2,7 @@ import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
 import { Product, ProductPublishedMessage } from '@commercetools/platform-sdk';
 import config from 'config';
+import { getLocalizedStringAsText } from '../../../../utils/locale-currency-utils';
 
 export class ProductPublishedEventProcessor extends AbstractEventProcessor {
     private readonly PROCESSOR_NAME = 'ProductPublished';
@@ -52,8 +53,10 @@ export class ProductPublishedEventProcessor extends AbstractEventProcessor {
             .map((v) => v.sku || '')
             .filter((v) => v)
             .map((v) => `$custom:::$default:::${v}`);
+        const productSlug = product.masterData.current.slug;
+        const defaultProductSlug = getLocalizedStringAsText(productSlug);
         const klaviyoVariants = (
-            await this.context.klaviyoService.getKlaviyoItemVariantsByCtSkus(product.id, undefined, ['id'])
+            await this.context.klaviyoService.getKlaviyoItemVariantsByCtSkus(defaultProductSlug, undefined, ['id'])
         ).map((i) => i.id);
         const variantsForCreation = combinedVariants.filter(
             (v) => !klaviyoVariants.includes(`$custom:::$default:::${v.sku}`),

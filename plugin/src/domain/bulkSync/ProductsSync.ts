@@ -9,6 +9,7 @@ import { Product } from '@commercetools/platform-sdk';
 import { CtProductService } from '../../infrastructure/driven/commercetools/CtProductService';
 import { getElapsedSeconds, startTime } from '../../utils/time-utils';
 import { groupIntoMaxSizeJobs } from '../../utils/job-grouper';
+import { getLocalizedStringAsText } from '../../utils/locale-currency-utils';
 
 export class ProductsSync {
     lockKey = 'productFullSync';
@@ -195,7 +196,11 @@ export class ProductsSync {
 
     private generateProductsJobRequestForKlaviyo = async (products: Product[]): Promise<KlaviyoEvent[]> => {
         const ctPublishedProducts = products.filter((p) => p.masterData.current);
-        const klaviyoItems = (await this.klaviyoService.getKlaviyoItemsByIds(ctPublishedProducts.map((p) => p.id))).map(
+        const klaviyoItems = (await this.klaviyoService.getKlaviyoItemsByIds(ctPublishedProducts.map((p) => {
+            const productSlug = p.masterData.current.slug;
+            const defaultProductSlug = getLocalizedStringAsText(productSlug);
+            return defaultProductSlug;
+        }))).map(
             (i) => i.id,
         );
         const productsForCreation = ctPublishedProducts.filter(
@@ -227,8 +232,10 @@ export class ProductsSync {
             .map((v) => v.sku || '')
             .filter((v) => v)
             .map((v) => `$custom:::$default:::${v}`);
+        const productSlug = product.masterData.current.slug;
+        const defaultProductSlug = getLocalizedStringAsText(productSlug);
         const klaviyoVariants = (
-            await this.klaviyoService.getKlaviyoItemVariantsByCtSkus(product.id, undefined, ['id'])
+            await this.klaviyoService.getKlaviyoItemVariantsByCtSkus(defaultProductSlug, undefined, ['id'])
         ).map((i) => i.id);
         const variantsForCreation = combinedVariants.filter(
             (v) => !klaviyoVariants.includes(`$custom:::$default:::${v.sku}`),
