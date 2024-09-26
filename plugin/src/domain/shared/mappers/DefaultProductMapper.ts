@@ -54,12 +54,12 @@ export class DefaultProductMapper implements ProductMapper {
         return {
             data: {
                 type: 'catalog-item',
-                id: update ? `$custom:::$default:::${product.id}` : undefined,
+                id: update ? `$custom:::$default:::${defaultProductSlug}` : undefined,
                 attributes: {
                     published: true,
                     integration_type: !update ? '$custom' : undefined,
                     catalog_type: !update ? '$default' : undefined,
-                    external_id: !update ? product.id : undefined,
+                    external_id: !update ? defaultProductSlug : undefined,
                     title: getLocalizedStringAsText(productName),
                     description: productDescription ? getLocalizedStringAsText(productDescription) : '',
                     url: productUrl,
@@ -274,9 +274,11 @@ export class DefaultProductMapper implements ProductMapper {
     }
 
     private mapCtProductToKlaviyoVariantItem(product: Product): KlaviyoRelationshipData {
+        const productSlug = product.masterData.current.slug;
+        const defaultProductSlug = getLocalizedStringAsText(productSlug);
         return {
             type: 'catalog-item',
-            id: `$custom:::$default:::${product.id}`,
+            id: `$custom:::$default:::${defaultProductSlug}`,
         };
     }
 
