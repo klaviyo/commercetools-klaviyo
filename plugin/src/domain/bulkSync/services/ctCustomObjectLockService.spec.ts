@@ -30,7 +30,7 @@ describe('ctCustomObjectLockService', () => {
       throw new CTErrorResponse(404, "not found")
     });
 
-    await ctCustomObjectLockService.acquireLock("someKey");
+    ctCustomObjectLockService.acquireLock("someKey");
 
     expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
     expect(mockPostCustomObjectApiRequest.execute).toBeCalledTimes(1);
@@ -40,7 +40,7 @@ describe('ctCustomObjectLockService', () => {
   it('should not be able to acquire the lock when is not available', async () => {
     mockGetCustomObjectApiRequest.execute.mockResolvedValueOnce(mock<ClientResponse<CustomObject>>());
 
-    await expect(ctCustomObjectLockService.acquireLock("someKey")).rejects.toThrow(Error);
+    expect(ctCustomObjectLockService.acquireLock("someKey")).rejects.toThrow(Error);
 
     expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
     expect(mockPostCustomObjectApiRequest.execute).toBeCalledTimes(0);
@@ -50,7 +50,7 @@ describe('ctCustomObjectLockService', () => {
   it('should release the lock', async () => {
     mockDeleteCustomObjectApiRequest.execute.mockResolvedValueOnce(mock<ClientResponse<CustomObject>>());
 
-    await expect(ctCustomObjectLockService.releaseLock("someKey"));
+    expect(ctCustomObjectLockService.releaseLock("someKey"));
 
     expect(mockDeleteCustomObjectApiRequest.execute).toBeCalledTimes(1);
     expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(0);
@@ -62,7 +62,7 @@ describe('ctCustomObjectLockService', () => {
       throw new CTErrorResponse(401, "unauthorized")
     });
 
-    await expect(ctCustomObjectLockService.acquireLock("someKey")).rejects.toThrow(Error);
+    expect(ctCustomObjectLockService.acquireLock("someKey")).rejects.toThrow(Error);
 
     expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
     expect(mockPostCustomObjectApiRequest.execute).toBeCalledTimes(0);
@@ -77,7 +77,7 @@ describe('ctCustomObjectLockService', () => {
       throw new CTErrorResponse(429, "too many requests")
     });
 
-    await expect(ctCustomObjectLockService.acquireLock("someKey")).rejects.toThrow(Error);
+    expect(ctCustomObjectLockService.acquireLock("someKey")).rejects.toThrow(Error);
 
     expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
     expect(mockPostCustomObjectApiRequest.execute).toBeCalledTimes(1);
@@ -89,7 +89,7 @@ describe('ctCustomObjectLockService', () => {
       throw new CTErrorResponse(500, "unknown error")
     });
 
-    await expect(ctCustomObjectLockService.releaseLock("someKey")).rejects.toThrow(Error);
+    expect(ctCustomObjectLockService.releaseLock("someKey")).rejects.toThrow(Error);
 
     expect(mockDeleteCustomObjectApiRequest.execute).toBeCalledTimes(1);
   });
@@ -97,7 +97,7 @@ describe('ctCustomObjectLockService', () => {
   it('should check if the lock exists', async () => {
     mockGetCustomObjectApiRequest.execute.mockResolvedValueOnce(mock<ClientResponse<CustomObject>>());
 
-    await expect(ctCustomObjectLockService.checkLock("someKey")).rejects.toThrow(Error);
+    expect(ctCustomObjectLockService.checkLock("someKey")).rejects.toThrow(Error);
 
     expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
   });
@@ -107,7 +107,7 @@ describe('ctCustomObjectLockService', () => {
       throw new CTErrorResponse(500, "unknown error")
     });
 
-    await expect(ctCustomObjectLockService.checkLock("someKey")).rejects.toThrow(Error);
+    expect(ctCustomObjectLockService.checkLock("someKey")).rejects.toThrow(Error);
 
     expect(mockGetCustomObjectApiRequest.execute).toBeCalledTimes(1);
   });

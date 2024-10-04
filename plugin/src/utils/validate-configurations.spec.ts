@@ -4,7 +4,7 @@ describe('validateEnvironment', () => {
     it('should exit without issues if all required env variables are defined', async () => {
         let error;
         try {
-            await validateEnvironment();
+            validateEnvironment();
         } catch (err) {
             error = err
         }
@@ -16,7 +16,7 @@ describe('validateEnvironment', () => {
         process.env.CT_API_URL = '';
         process.env.CT_API_CLIENT = '{abc}';
         try {
-            await validateEnvironment();
+            validateEnvironment();
         } catch (err) {
             error = err
         }

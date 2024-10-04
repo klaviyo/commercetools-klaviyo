@@ -42,7 +42,7 @@ describe('bulkSyncApp order sync endpoint', () => {
     });
 
     afterEach(async () => {
-        await server.close();
+        server.close();
     });
 
     it('should accept the start sync request and return 202', (done) => {
@@ -206,7 +206,7 @@ describe('bulkSyncApp customer sync endpoint', () => {
     });
 
     afterEach(async () => {
-        await server.close();
+        server.close();
     });
 
     it('should accept the start sync request and return 202', (done) => {
@@ -341,7 +341,7 @@ describe('bulkSyncApp category sync endpoint', () => {
     });
 
     afterEach(async () => {
-        await server.close();
+        server.close();
     });
 
     it('should accept the start sync request and return 202', (done) => {
@@ -450,7 +450,7 @@ describe('bulkSyncApp product sync endpoint', () => {
     });
 
     afterEach(async () => {
-        await server.close();
+        server.close();
     });
 
     it('should accept the start sync request and return 202', (done) => {
@@ -559,7 +559,7 @@ describe('bulkSyncApp status check endpoint', () => {
     });
 
     afterEach(async () => {
-        await server.close();
+        server.close();
     });
 
     it('should accept the log status request and return 202', (done) => {
@@ -582,7 +582,7 @@ describe('bulkSyncApp workerMessageHandler', () => {
     });
 
     afterEach(async () => {
-        await server.close();
+        server.close();
     });
 
     it('should call bree remove when a "done" message is received from a worker', () => {
