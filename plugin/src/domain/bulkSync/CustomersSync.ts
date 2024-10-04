@@ -21,7 +21,7 @@ export class CustomersSync {
         logger.info('Started sync of all historical customers');
         try {
             //ensures that only one sync at the time is running
-            await this.lockService.acquireLock(this.lockKey);
+            this.lockService.acquireLock(this.lockKey);
 
             let ctCustomerResults: PaginatedCustomerResults | undefined;
             let succeeded = 0,
@@ -54,11 +54,11 @@ export class CustomersSync {
             logger.info(
                 `Historical customers import. Total customers to be imported ${totalCustomers}, total klaviyo profiles: ${totalKlaviyoProfiles}, successfully imported: ${succeeded}, errored: ${errored}`,
             );
-            await this.lockService.releaseLock(this.lockKey);
+            this.lockService.releaseLock(this.lockKey);
         } catch (e: any) {
             if (e?.code !== ErrorCodes.LOCKED) {
                 logger.error('Error while syncing all historical customers', e);
-                await this.lockService.releaseLock(this.lockKey);
+                this.lockService.releaseLock(this.lockKey);
             } else {
                 logger.warn('Already locked');
             }
@@ -69,7 +69,7 @@ export class CustomersSync {
         logger.info('Started sync of historical customers by id range');
         try {
             //ensures that only one sync at the time is running
-            await this.lockService.acquireLock(this.lockKey);
+            this.lockService.acquireLock(this.lockKey);
 
             let ctCustomerResults: PaginatedCustomerResults | undefined;
             let succeeded = 0,
@@ -105,11 +105,11 @@ export class CustomersSync {
             logger.info(
                 `Historical customers import by id range. Total customers to be imported ${totalCustomers}, total klaviyo profiles: ${totalKlaviyoProfiles}, successfully imported: ${succeeded}, errored: ${errored}`,
             );
-            await this.lockService.releaseLock(this.lockKey);
+            this.lockService.releaseLock(this.lockKey);
         } catch (e: any) {
             if (e?.code !== ErrorCodes.LOCKED) {
                 logger.error('Error while syncing historical customers by id range', e);
-                await this.lockService.releaseLock(this.lockKey);
+                this.lockService.releaseLock(this.lockKey);
             } else {
                 logger.warn('Already locked');
             }
@@ -129,6 +129,6 @@ export class CustomersSync {
     };
 
     public async releaseLockExternally(): Promise<void> {
-        await this.lockService.releaseLock(this.lockKey);
+        this.lockService.releaseLock(this.lockKey);
     }
 }

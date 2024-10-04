@@ -24,7 +24,7 @@ export class ProductsSync {
         logger.info('Started sync of all historical products');
         try {
             //ensures that only one sync at the time is running
-            await this.lockService.acquireLock(this.lockKey);
+            this.lockService.acquireLock(this.lockKey);
 
             let ctProductsResult: PaginatedProductResults | undefined;
             let succeeded = 0,
@@ -135,11 +135,11 @@ export class ProductsSync {
                     _startTime,
                 )} seconds`,
             );
-            await this.lockService.releaseLock(this.lockKey);
+            this.lockService.releaseLock(this.lockKey);
         } catch (e: any) {
             if (e?.code !== ErrorCodes.LOCKED) {
                 logger.error('Error while syncing all historical products', e);
-                await this.lockService.releaseLock(this.lockKey);
+                this.lockService.releaseLock(this.lockKey);
             } else {
                 logger.warn('Already locked');
             }
@@ -150,7 +150,7 @@ export class ProductsSync {
         logger.info('Started deletion of all products and variants in Klaviyo');
         try {
             //ensures that only one sync at the time is running
-            await this.lockService.acquireLock(this.lockKey);
+            this.lockService.acquireLock(this.lockKey);
 
             let klaviyoItemResults: KlaviyoQueryResult<KlaviyoCatalogItem> | undefined;
             let succeeded = 0,
@@ -183,11 +183,11 @@ export class ProductsSync {
             logger.info(
                 `Klaviyo products/variants deletion. Total products to be deleted ${totalItems}, successfully deleted: ${succeeded}, errored: ${errored}`,
             );
-            await this.lockService.releaseLock(this.lockKey);
+            this.lockService.releaseLock(this.lockKey);
         } catch (e: any) {
             if (e?.code !== ErrorCodes.LOCKED) {
                 logger.error('Error while deleting all products from Klaviyo', e);
-                await this.lockService.releaseLock(this.lockKey);
+                this.lockService.releaseLock(this.lockKey);
             } else {
                 logger.warn('Already locked');
             }
@@ -290,6 +290,6 @@ export class ProductsSync {
     }
 
     public async releaseLockExternally(): Promise<void> {
-        await this.lockService.releaseLock(this.lockKey);
+        this.lockService.releaseLock(this.lockKey);
     }
 }

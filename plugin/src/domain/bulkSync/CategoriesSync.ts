@@ -21,7 +21,7 @@ export class CategoriesSync {
         logger.info('Started sync of all historical categories');
         try {
             //ensures that only one sync at the time is running
-            await this.lockService.acquireLock(this.lockKey);
+            this.lockService.acquireLock(this.lockKey);
 
             let ctCategoryResults: PaginatedCategoryResults | undefined;
             let succeeded = 0,
@@ -56,11 +56,11 @@ export class CategoriesSync {
             logger.info(
                 `Historical categories import. Total categories to be imported ${totalCategories}, total klaviyo categories: ${totalKlaviyoCategories}, successfully imported: ${succeeded}, errored: ${errored}`,
             );
-            await this.lockService.releaseLock(this.lockKey);
+            this.lockService.releaseLock(this.lockKey);
         } catch (e: any) {
             if (e?.code !== ErrorCodes.LOCKED) {
                 logger.error('Error while syncing all historical categories', e);
-                await this.lockService.releaseLock(this.lockKey);
+                this.lockService.releaseLock(this.lockKey);
             } else {
                 logger.warn('Already locked');
             }
@@ -71,7 +71,7 @@ export class CategoriesSync {
         logger.info('Started deletion of all categories in Klaviyo');
         try {
             //ensures that only one sync at the time is running
-            await this.lockService.acquireLock(this.lockKey);
+            this.lockService.acquireLock(this.lockKey);
 
             let klaviyoCategoryResults: KlaviyoQueryResult<KlaviyoCategory> | undefined;
             let succeeded = 0,
@@ -104,11 +104,11 @@ export class CategoriesSync {
             logger.info(
                 `Klaviyo categories deletion. Total categories to be deleted ${totalCategories}, successfully deleted: ${succeeded}, errored: ${errored}`,
             );
-            await this.lockService.releaseLock(this.lockKey);
+            this.lockService.releaseLock(this.lockKey);
         } catch (e: any) {
             if (e?.code !== ErrorCodes.LOCKED) {
                 logger.error('Error while deleting all categories in Klaviyo', e);
-                await this.lockService.releaseLock(this.lockKey);
+                this.lockService.releaseLock(this.lockKey);
             } else {
                 logger.warn('Already locked');
             }
@@ -138,6 +138,6 @@ export class CategoriesSync {
     }
 
     public async releaseLockExternally(): Promise<void> {
-        await this.lockService.releaseLock(this.lockKey);
+        this.lockService.releaseLock(this.lockKey);
     }
 }

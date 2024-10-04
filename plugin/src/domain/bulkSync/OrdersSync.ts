@@ -41,7 +41,7 @@ export class OrdersSync {
     private syncOrders = async (ordersMethod: any, importTypeText: string, args: unknown[]) => {
         try {
             //ensures that only one sync at the time is running
-            await this.lockService.acquireLock(this.lockKey);
+            this.lockService.acquireLock(this.lockKey);
 
             let ctOrdersResult: PaginatedOrderResults | undefined;
             let ctProductsByOrder: any = {};
@@ -96,14 +96,14 @@ export class OrdersSync {
                     _startTime,
                 )} seconds`,
             );
-            await this.lockService.releaseLock(this.lockKey);
+            this.lockService.releaseLock(this.lockKey);
         } catch (e: any) {
             if (e?.code !== ErrorCodes.LOCKED) {
                 logger.error('Error while syncing historical orders${importTypeText}', e);
-                await this.lockService.releaseLock(this.lockKey);
-            } else {
-                logger.warn('Already locked');
+                this.lockService.releaseLock(this.lockKey);
+                return;
             }
+            logger.warn('Already locked');
         }
     };
 
@@ -158,6 +158,6 @@ export class OrdersSync {
     };
 
     public async releaseLockExternally(): Promise<void> {
-        await this.lockService.releaseLock(this.lockKey);
+        this.lockService.releaseLock(this.lockKey);
     }
 }

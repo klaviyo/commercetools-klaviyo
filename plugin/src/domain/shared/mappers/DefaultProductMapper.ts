@@ -223,23 +223,18 @@ export class DefaultProductMapper implements ProductMapper {
         };
     }
 
+    private static TYPE_TO_JOB_TYPE: Record<string, 'catalog-variant-bulk-create-job' | 'catalog-variant-bulk-update-job' | 'catalog-variant-bulk-delete-job'> =  {
+        variantCreated: 'catalog-variant-bulk-create-job',
+        variantUpdated: 'catalog-variant-bulk-update-job',
+        variantDeleted: 'catalog-variant-bulk-delete-job',
+    };
+
     public mapCtProductVariantsToKlaviyoVariantsJob(
         product: Product,
         productVariants: ProductVariant[] | string[],
         type: string,
     ): ItemVariantJobRequest {
-        let jobType: any;
-        switch (type) {
-            case 'variantCreated':
-                jobType = 'catalog-variant-bulk-create-job';
-                break;
-            case 'variantUpdated':
-                jobType = 'catalog-variant-bulk-update-job';
-                break;
-            case 'variantDeleted':
-                jobType = 'catalog-variant-bulk-delete-job';
-                break;
-        }
+        const jobType = DefaultProductMapper.TYPE_TO_JOB_TYPE[type];
         return {
             data: {
                 type: jobType,
@@ -283,39 +278,43 @@ export class DefaultProductMapper implements ProductMapper {
     }
 
     public getProductInventoryByPriority(availability?: ProductVariantAvailability | InventoryEntry): number | null {
-        if (!availability) {
-            return 0;
+        const availableQuantity = availability?.availableQuantity || 0;
+
+        if (!availability || !config.has('product.inventory.useChannelInventory')) {
+            return availableQuantity;
         }
 
-        if (config.has('product.inventory.useChannelInventory')) {
-            const productInventoryChannel = config.get('product.inventory.useChannelInventory') as string;
-            const variantAvailabilityChannels = (availability as ProductVariantAvailability).channels;
-            const inventoryEntryChannel = (availability as InventoryEntry).supplyChannel;
-            if (productInventoryChannel && (variantAvailabilityChannels || inventoryEntryChannel)) {
-                const variantChannelAvailableQuantity = variantAvailabilityChannels
-                    ? variantAvailabilityChannels[productInventoryChannel]?.availableQuantity
-                    : undefined;
-                const inventoryChannelAvailableQuantity =
-                    inventoryEntryChannel?.id === productInventoryChannel ? availability.availableQuantity : undefined;
-                if (variantChannelAvailableQuantity) {
-                    return variantChannelAvailableQuantity;
-                }
+        const productInventoryChannel = config.get('product.inventory.useChannelInventory') as string;
+        const variantAvailabilityChannels = (availability as ProductVariantAvailability).channels;
+        const inventoryEntryChannel = (availability as InventoryEntry).supplyChannel;
 
-                if (inventoryChannelAvailableQuantity) {
-                    return inventoryChannelAvailableQuantity;
-                } else {
-                    if (!variantAvailabilityChannels) {
-                        return null;
-                    }
-                }
-            }
-            // Prevents bulk sync and inventory update events from stepping on each other
-            else if (!productInventoryChannel && inventoryEntryChannel) {
+        if (!productInventoryChannel || !(variantAvailabilityChannels || inventoryEntryChannel)) {
+            if (!productInventoryChannel && inventoryEntryChannel) {
                 return null;
             }
+            return availableQuantity;
         }
 
-        return availability?.availableQuantity || 0;
+        const variantChannelAvailableQuantity = variantAvailabilityChannels
+            ? variantAvailabilityChannels[productInventoryChannel]?.availableQuantity
+            : undefined;
+        
+        if (variantChannelAvailableQuantity) {
+            return variantChannelAvailableQuantity;
+        }
+
+        const inventoryChannelAvailableQuantity =
+            inventoryEntryChannel?.id === productInventoryChannel ? availability.availableQuantity : undefined;
+
+        if (inventoryChannelAvailableQuantity) {
+            return inventoryChannelAvailableQuantity;
+        }
+        
+        if (!variantAvailabilityChannels) {
+            return null;
+        }
+
+        return availableQuantity;
     }
 
     public mapKlaviyoItemIdToDeleteItemRequest(klaviyoItemId: string): ItemDeletedRequest {

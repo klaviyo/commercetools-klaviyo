@@ -81,59 +81,69 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
-    private async createOrUpdateProfile(body: KlaviyoRequestType, create: boolean) {
+    private async handleProfileError(body: KlaviyoRequestType, create: boolean, e: any) {
+        if (!e.status === 400) {
+            return;
+        }
+
+        let errorCauses;
         try {
-            return await (create ? Profiles.createProfile(body) : Profiles.updateProfile(body, body.data?.id));
-        } catch (e: any) {
-            if (e.status === 400) {
-                let errorCauses;
-                try {
-                    errorCauses = JSON.parse(e?.response?.error?.text)?.errors.map((e: any) => e?.source?.pointer);
-                } catch (e) {
-                    logger.error('Error getting error source pointer from error response', e);
-                    throw new StatusError(
-                        400,
-                        `Bad request, error getting error source pointer from error response. Request body: ${JSON.stringify(
-                            body,
-                        )}`,
-                    );
-                }
-                if (errorCauses.includes('/data/attributes/phone_number')) {
-                    logger.info(
-                        `Invalid phone number when ${
-                            create ? 'creating' : 'updating'
-                        } profile. Retrying after removing phone number from profile...`,
-                        JSON.parse(e?.response?.error?.text),
-                    );
-                    const modifiedBody: any = {
-                        data: {
-                            ...body.data,
-                            attributes: {
-                                ...(body.data as any).attributes,
-                                phone_number: undefined,
-                            },
-                        },
-                    };
-                    try {
-                        return await (create
-                            ? Profiles.createProfile(modifiedBody)
-                            : Profiles.updateProfile(modifiedBody, modifiedBody.data?.id));
-                    } catch (e: any) {
-                        logger.error(
-                            `Error ${
-                                create ? 'creating' : 'updating'
-                            } profile in Klaviyo after removing phone_number. Response code ${e.status}, ${e.message}`,
-                            e,
-                        );
-                        throw e;
-                    }
-                }
-            }
+            errorCauses = JSON.parse(e?.response?.error?.text)?.errors.map((e: any) => e?.source?.pointer);
+        } catch (e) {
+            logger.error('Error getting error source pointer from error response', e);
+            throw new StatusError(
+                400,
+                `Bad request, error getting error source pointer from error response. Request body: ${JSON.stringify(
+                    body,
+                )}`,
+            );
+        }
+
+        if (!errorCauses.includes('/data/attributes/phone_number')) {
             logger.error(
                 `Error ${create ? 'creating' : 'updating'} profile in Klaviyo. Response code ${e.status}, ${e.message}`,
                 e,
             );
             throw e;
+        }
+
+        logger.info(
+            `Invalid phone number when ${
+                create ? 'creating' : 'updating'
+            } profile. Retrying after removing phone number from profile...`,
+            JSON.parse(e?.response?.error?.text),
+        );
+
+        const modifiedBody: any = {
+            data: {
+                ...body.data,
+                attributes: {
+                    ...(body.data as any).attributes,
+                    phone_number: undefined,
+                },
+            },
+        };
+        
+        try {
+            return await (create
+                ? Profiles.createProfile(modifiedBody)
+                : Profiles.updateProfile(modifiedBody, modifiedBody.data?.id));
+        } catch (e: any) {
+            logger.error(
+                `Error ${
+                    create ? 'creating' : 'updating'
+                } profile in Klaviyo after removing phone_number. Response code ${e.status}, ${e.message}`,
+                e,
+            );
+            throw e;
+        }
+    }
+
+    private async createOrUpdateProfile(body: KlaviyoRequestType, create: boolean) {
+        try {
+            return await (create ? Profiles.createProfile(body) : Profiles.updateProfile(body, body.data?.id));
+        } catch (e: any) {
+            return this.handleProfileError(body, create, e);
         }
     }
 
