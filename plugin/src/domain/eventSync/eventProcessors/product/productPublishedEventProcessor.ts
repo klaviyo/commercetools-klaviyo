@@ -20,7 +20,7 @@ export class ProductPublishedEventProcessor extends AbstractEventProcessor {
         const message = this.ctMessage as unknown as ProductPublishedMessage;
         logger.info(`processing product published message`);
         const ctProduct = (await this.context.ctProductService.getProductById(message.resource.id)) as Product;
-        const klaviyoItem = await this.context.klaviyoService.getKlaviyoItemByExternalId(message.resource.id);
+        const klaviyoItem = await this.context.klaviyoService.getKlaviyoItemByExternalId(getLocalizedStringAsText(ctProduct.masterData.current.slug));
 
         const variantJobRequests = await this.generateProductVariantsJobRequestForKlaviyo(ctProduct);
 

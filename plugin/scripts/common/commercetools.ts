@@ -1,6 +1,6 @@
 import { getApiRoot } from '../../src/infrastructure/driven/commercetools/ctService';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
-import { Subscription, SubscriptionDraft } from '@commercetools/platform-sdk';
+import { SubscriptionDraft, SubscriptionUpdate } from '@commercetools/platform-sdk';
 
 const ctApiRoot: ByProjectKeyRequestBuilder = getApiRoot();
 
@@ -63,7 +63,7 @@ export const createSubscription = async (body: SubscriptionDraft) => {
 		.execute();
 };
 
-export const updateSubscription = async (key: string, body: SubscriptionDraft) => {
+export const updateSubscription = async (key: string, body: SubscriptionUpdate) => {
 	await ctApiRoot
 		.subscriptions()
 		.withKey({ key })
