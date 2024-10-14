@@ -222,7 +222,6 @@ bulkSyncApp.post('/sync/products', async (req, res) => {
                 confirmDeletion = 'products';
             }
         }
-        await ctLockService.releaseLock('productFullSync');
         await ctLockService.checkLock('productFullSync');
         await bree.add([
             {
