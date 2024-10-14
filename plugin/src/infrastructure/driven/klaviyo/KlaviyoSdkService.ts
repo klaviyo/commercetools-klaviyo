@@ -82,7 +82,7 @@ export class KlaviyoSdkService extends KlaviyoService {
     }
 
     private async handleProfileError(body: KlaviyoRequestType, create: boolean, e: any) {
-        if (!e.status === 400) {
+        if (e.status !== 400) {
             return;
         }
 

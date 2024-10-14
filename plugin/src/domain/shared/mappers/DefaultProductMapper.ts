@@ -59,7 +59,7 @@ export class DefaultProductMapper implements ProductMapper {
                     published: true,
                     integration_type: !update ? '$custom' : undefined,
                     catalog_type: !update ? '$default' : undefined,
-                    external_id: !update ? product.id : undefined,
+                    external_id: !update ? defaultProductSlug : undefined,
                     title: getLocalizedStringAsText(productName),
                     description: productDescription ? getLocalizedStringAsText(productDescription) : '',
                     url: productUrl,

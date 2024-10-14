@@ -20,7 +20,7 @@ export class ProductPublishedEventProcessor extends AbstractEventProcessor {
         const message = this.ctMessage as unknown as ProductPublishedMessage;
         logger.info(`processing product published message`);
         const ctProduct = (await this.context.ctProductService.getProductById(message.resource.id)) as Product;
-        const klaviyoItem = await this.context.klaviyoService.getKlaviyoItemByExternalId(getLocalizedStringAsText(ctProduct.masterData.current.slug));
+        const klaviyoItem = await this.context.klaviyoService.getKlaviyoItemByExternalId(getLocalizedStringAsText(message.productProjection.slug));
 
         const variantJobRequests = await this.generateProductVariantsJobRequestForKlaviyo(ctProduct);
 
@@ -49,7 +49,7 @@ export class ProductPublishedEventProcessor extends AbstractEventProcessor {
 
     private generateProductVariantsJobRequestForKlaviyo = async (product: Product): Promise<KlaviyoEvent[]> => {
         const combinedVariants = [product.masterData.current.masterVariant].concat(product.masterData.current.variants);
-        const ctProductVariants = combinedVariants
+        const ctProductVariantKlaviyoIds = combinedVariants
             .map((v) => v.sku || '')
             .filter((v) => v)
             .map((v) => `$custom:::$default:::${v}`);
@@ -64,7 +64,7 @@ export class ProductPublishedEventProcessor extends AbstractEventProcessor {
         const variantsForUpdate = combinedVariants.filter((v) =>
             klaviyoVariants.includes(`$custom:::$default:::${v.sku}`),
         );
-        const variantsForDeletion = klaviyoVariants.filter((v) => v && !ctProductVariants.includes(v));
+        const variantsForDeletion = klaviyoVariants.filter((v) => v && !ctProductVariantKlaviyoIds.includes(v));
         const promises: KlaviyoEvent[] = [];
         if (variantsForDeletion.length) {
             promises.push({
