@@ -61,8 +61,8 @@ export class SharperImageDefaultOrderMapper extends DefaultOrderMapper {
       };
     }
 
-    public mapOrderLineToProductOrderedEvent(lineItem: LineItem, order: Order, time?: string): EventRequest {
-      const baseData = super.mapOrderLineToProductOrderedEvent(lineItem, order, time);
+    public mapOrderLineToProductOrderedEvent(lineItem: LineItem, order: Order, orderProducts: Product[], time?: string): EventRequest {
+      const baseData = super.mapOrderLineToProductOrderedEvent(lineItem, order, orderProducts, time);
       const sharperImageProfileData = getCustomerProfileFromOrderSharperImage(order, this.sharperImageCustomerMapper, true);
 
       return {

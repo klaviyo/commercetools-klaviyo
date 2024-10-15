@@ -89,7 +89,7 @@ export class DefaultOrderMapper implements OrderMapper {
         };
     }
 
-    public mapOrderLineToProductOrderedEvent(lineItem: LineItem, order: Order, time?: string): EventRequest {
+    public mapOrderLineToProductOrderedEvent(lineItem: LineItem, order: Order, orderProducts: Product[], time?: string): EventRequest {
         return {
             data: {
                 type: 'event',
@@ -102,7 +102,12 @@ export class DefaultOrderMapper implements OrderMapper {
                         getTypedMoneyAsNumber(lineItem.totalPrice),
                         order.totalPrice.currencyCode,
                     ),
-                    properties: { ...lineItem },
+                    properties: {
+                        ...lineItem,
+                        Categories: this.getCategoryNamesFromProduct(
+                            orderProducts.map((product) => product.masterData.current.categories).flat(),
+                        ),
+                    },
                     unique_id: lineItem.id,
                     time: time ?? order.createdAt,
                 },
