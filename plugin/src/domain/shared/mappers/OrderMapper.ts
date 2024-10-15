@@ -14,5 +14,5 @@ export interface OrderMapper {
         metric: string,
         time?: string,
     ): EventRequest;
-    mapOrderLineToProductOrderedEvent(lineItem: LineItem, order: Order, time?: string): EventRequest;
+    mapOrderLineToProductOrderedEvent(lineItem: LineItem, order: Order, orderProducts: Product[], time?: string): EventRequest;
 }

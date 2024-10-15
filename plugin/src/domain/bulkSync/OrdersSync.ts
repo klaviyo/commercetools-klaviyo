@@ -119,7 +119,8 @@ export class OrdersSync {
         const eventTime: Date = new Date(order.createdAt);
         order.lineItems.forEach((line) => {
             eventTime.setSeconds(eventTime.getSeconds() + 1);
-            events.push(this.orderMapper.mapOrderLineToProductOrderedEvent(line, order, eventTime.toISOString()));
+            // TODO: pass in products
+            events.push(this.orderMapper.mapOrderLineToProductOrderedEvent(line, order, orderProducts, eventTime.toISOString()));
         });
 
         //Order fulfilled event
