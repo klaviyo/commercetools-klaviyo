@@ -124,18 +124,9 @@ export class DefaultOrderMapper implements OrderMapper {
 
     private getCategoryNamesFromProduct(categories: CategoryReference[]): string[] {
         const categoryNames = categories.map((category) => {
-            const categoryAncestorNames = (category.obj as Category).ancestors.map((ancestor) =>
-                getLocalizedStringAsText((ancestor.obj as Category).name),
-            );
-            const categoryName = getLocalizedStringAsText((category.obj as Category).name);
-            const discreteCategoryNames = categoryAncestorNames.concat(categoryName);
-            return discreteCategoryNames.map((name, index) => {
-                const ancestorNames = [];
-                for (let i = index; i >= 0; i--) {
-                    ancestorNames.push(discreteCategoryNames[i]);
-                }
-                return ancestorNames.reverse().join(' > ');
-            });
+            const cat = (category.obj as Category);
+            const categoryName = getLocalizedStringAsText(cat.name);
+            return categoryName;
         });
 
         // Conversion from Array -> Set -> Array removes duplicate entries.
