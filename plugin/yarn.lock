@@ -836,16 +836,16 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@mswjs/interceptors@^0.25.13":
-  version "0.25.13"
-  resolved "https://registry.yarnpkg.com/@mswjs/interceptors/-/interceptors-0.25.13.tgz#c7f8b845b5fdbd8f0f71fbbde06d8a40a9e81b35"
-  integrity sha512-xfjR81WwXPHwhDbqJRHlxYmboJuiSaIKpP4I5TJVFl/EmByOU13jOBT9hmEnxcjR3jvFYoqoNKt7MM9uqerj9A==
+"@mswjs/interceptors@^0.36.4":
+  version "0.36.9"
+  resolved "https://registry.yarnpkg.com/@mswjs/interceptors/-/interceptors-0.36.9.tgz#48958805e9b6f2937553ce47bd39969559e1db2e"
+  integrity sha512-mMRDUBwSNeCgjSMEWfjoh4Rm9fbyZ7xQ9SBq8eGHiiyRn1ieTip3pNEt0wxWVPPxR4i1Rv9bTkeEbkX7M4c15A==
   dependencies:
     "@open-draft/deferred-promise" "^2.2.0"
     "@open-draft/logger" "^0.3.0"
     "@open-draft/until" "^2.0.0"
     is-node-process "^1.2.0"
-    outvariant "^1.2.1"
+    outvariant "^1.4.3"
     strict-event-emitter "^0.5.1"
 
 "@nodelib/fs.scandir@2.1.5":
@@ -4193,10 +4193,15 @@ optionator@^0.9.3:
     prelude-ls "^1.2.1"
     type-check "^0.4.0"
 
-outvariant@^1.2.1, outvariant@^1.4.0:
+outvariant@^1.4.0:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/outvariant/-/outvariant-1.4.2.tgz#f54f19240eeb7f15b28263d5147405752d8e2066"
   integrity sha512-Ou3dJ6bA/UJ5GVHxah4LnqDwZRwAmWxrG3wtrHrbGnP4RnLCtA64A4F+ae7Y8ww660JaddSoArUR5HjipWSHAQ==
+
+outvariant@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/outvariant/-/outvariant-1.4.3.tgz#221c1bfc093e8fec7075497e7799fdbf43d14873"
+  integrity sha512-+Sl2UErvtsoajRDKCE5/dBz4DIvHXQQnAxtQTF04OJxY0+DyZXSo5P5Bb7XYWOh81syohlYL24hbDwxedPUJCA==
 
 p-finally@^1.0.0:
   version "1.0.0"
