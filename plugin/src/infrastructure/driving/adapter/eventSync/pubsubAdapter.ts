@@ -4,9 +4,29 @@ import { processEvent } from '../../../../domain/eventSync/processEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import logger from '../../../../utils/log';
 import { KlaviyoSdkService } from '../../../driven/klaviyo/KlaviyoSdkService';
+import { BatchInterceptor } from '@mswjs/interceptors';
+import { ClientRequestInterceptor } from '@mswjs/interceptors/ClientRequest';
+import * as packageJson from '../../../../../package.json';
 
 export const app = express();
 app.use(express.json());
+const interceptor = new BatchInterceptor({
+    name: 'klaviyo-useragent-interceptor',
+    interceptors: [new ClientRequestInterceptor()],
+});
+
+interceptor.apply();
+interceptor.on('request', ({ request }) => {
+    /* c8 ignore start */
+    if (request.url.includes('a.klaviyo.com')) {
+        // Detect running on Connect by certain environment variables
+        const runningOnConnect = String(process.env.K_SERVICE || '').includes('event-');
+        const hostedOrConnect = runningOnConnect ? 'Connect' : 'Hosted';
+        const headerVersion = packageJson.version.replace('v', '');
+        request.headers.set('User-Agent', `Commercetools${hostedOrConnect}Sync/${headerVersion}`);
+    }
+    /* c8 ignore end */
+});
 
 app.post('/', async (req, res) => {
     if (!req.body) {

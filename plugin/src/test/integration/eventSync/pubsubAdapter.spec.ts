@@ -28,6 +28,17 @@ describe('pub/sub adapter', () => {
         });
     });
 
+    it('should fail to process message when there is no body', (done) => {
+        pubsubAdapter().then((app) => {
+            chai.request(app)
+                .post('/')
+                .end((res, err) => {
+                    done();
+                    expect(err.status).to.eq(400);
+                });
+        });
+    });
+
     it('should not start the API server if the APP_TYPE env variable is set to EVENT', (done) => {
         process.env.APP_TYPE = 'EVENT';
 
