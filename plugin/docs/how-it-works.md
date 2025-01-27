@@ -249,7 +249,7 @@ like `title_en:"some value"`. Useful to get additional strings/prices/currencies
 properties.
 
 (1) Only if a description is available, otherwise "None".
-(2) Only if `PRODUCT_URL_TEMPLATE` is set in environment variables, otherwise "None".
+(2) Improvised with product slug. Only if `PRODUCT_URL_TEMPLATE` is set in environment variables, otherwise "None". Since CT is API-first, they don't impose a frontend and have no context of what the "product page URL" will be.
 
 ## Bulk data import
 

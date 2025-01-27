@@ -315,4 +315,14 @@ describe('getProductPriceByPriority', () => {
 			currency: 'EUR',
 		});
 	});
+
+	it('should return a single price with an amount of 0 (zero) when prices are not defined', async () => {
+		const price = getProductPriceByPriority([]);
+
+		expect(price).toEqual({
+			amount: 0,
+			country: undefined,
+			currency: undefined,
+		});
+	});
 });

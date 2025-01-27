@@ -1,0 +1,20 @@
+name: Tag new npm package releases
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - plugin/package.json
+jobs:
+  tag-npm-release:
+    name: Tag new npm package releases
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Push tag version
+        uses: ./.github/actions/tag-on-npm-version
+        with:
+          tag-prefix: 'v'
+          package-json-path: './plugin/'
