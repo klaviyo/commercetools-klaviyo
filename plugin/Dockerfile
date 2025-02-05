@@ -6,13 +6,12 @@ COPY package.json yarn.lock ./
 # install dependencies
 RUN yarn --frozen-lockfile
 COPY . .
-# RUN yarn test
 RUN yarn build
 # remove development dependencies
 RUN yarn install --production --ignore-scripts --prefer-offline --force --frozen-lockfile
 
 
-FROM node:20-slim
+FROM node:20-alpine
 
 ENV NODE_ENV production
 ENV NODE_CONFIG_DIR ./dist/config
