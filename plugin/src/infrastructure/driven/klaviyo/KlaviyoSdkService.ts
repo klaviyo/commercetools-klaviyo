@@ -27,7 +27,6 @@ export class KlaviyoSdkService extends KlaviyoService {
                 return this.createOrUpdateProfile(event.body, false);
             case 'profileUpdated':
                 return this.createOrUpdateProfile(event.body, false);
-            //return Client.createClientProfile(event.body, process.env.KLAVIYO_COMPANY_ID);
             case 'categoryCreated':
                 return this.createCategory(event.body);
             case 'categoryDeleted':
