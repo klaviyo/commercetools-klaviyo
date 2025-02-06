@@ -3747,10 +3747,10 @@ kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
-klaviyo-api@^8.0.0:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/klaviyo-api/-/klaviyo-api-8.0.2.tgz#0736d52f377ca7906f6172fbc44297b3c0cf3f19"
-  integrity sha512-LVLe4PxOs4Y8K6Hl2Hd5oaNOb/SI5i5B19c6fdbul6qV9rL+u/x+O36k3+mYJ6k+fjzXJGU93ef12tDNtagvIg==
+klaviyo-api@^7.0.0:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/klaviyo-api/-/klaviyo-api-7.2.0.tgz#1069f33f7436962d0fc61711fa78119a94989647"
+  integrity sha512-cy5DgPMc8okTxAD0E23JFT8ZCqY6nKsbncCCJ/g7trqTsycpvHvbAAGSJhItes/14fkbue7MoN3xF02T4Z3sYg==
   dependencies:
     axios "^1.4.0"
     exponential-backoff "^3.1.1"
