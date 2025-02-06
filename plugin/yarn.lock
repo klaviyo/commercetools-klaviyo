@@ -2437,6 +2437,11 @@ expect@^29.0.0, expect@^29.7.0:
     jest-message-util "^29.7.0"
     jest-util "^29.7.0"
 
+exponential-backoff@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/exponential-backoff/-/exponential-backoff-3.1.1.tgz#64ac7526fe341ab18a39016cd22c787d01e00bf6"
+  integrity sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==
+
 express@^4.18.2:
   version "4.19.2"
   resolved "https://registry.yarnpkg.com/express/-/express-4.19.2.tgz#e25437827a3aa7f2a827bc8171bbbb664a356465"
@@ -3742,12 +3747,13 @@ kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
-klaviyo-api@^14.0.0:
-  version "14.0.0"
-  resolved "https://registry.yarnpkg.com/klaviyo-api/-/klaviyo-api-14.0.0.tgz#cd729a3935f8e40ba5ae9318f95c108a611e048f"
-  integrity sha512-rQfmu0ZopX73xKrzp2zuTlYGnyAQtAyWrjc9RRrbs+IKEUXnGyaLGiQJYOysJrLcZq0LL7MQ+X3ToJxqRbx10A==
+klaviyo-api@^13.0.0:
+  version "13.0.0"
+  resolved "https://registry.yarnpkg.com/klaviyo-api/-/klaviyo-api-13.0.0.tgz#41eb2e487024f3144b00a5b1582395ad6e15873e"
+  integrity sha512-OWd0nQNzoi8T+Tet9P7yJ3hRUDQxaUNkDxAgXR2P5cG30V4F+Xjx/8Zo86vYP1V/+zGqZa6giJnC1r/BBqYERg==
   dependencies:
     axios "^1.7.7"
+    exponential-backoff "^3.1.1"
     form-data "^4.0.0"
 
 kleur@^3.0.3:
