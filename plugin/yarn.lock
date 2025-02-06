@@ -3742,10 +3742,10 @@ kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
-klaviyo-api@^16.0.0:
-  version "16.0.0"
-  resolved "https://registry.yarnpkg.com/klaviyo-api/-/klaviyo-api-16.0.0.tgz#0aabefbcfcbeac7224a2a81604164411db4fb29c"
-  integrity sha512-oM0U5cHjWUIuuDqwcyZaI3b2pp4gc4dRuLhi55qO3hqJG9tPTUXxzPjFpyqd/0FDl6mShzMZxJyL+IY0zVuZyw==
+klaviyo-api@^15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/klaviyo-api/-/klaviyo-api-15.0.0.tgz#c16389d4af733733e8d47fd6438685b350efbceb"
+  integrity sha512-zic2QwuuPNj4U1GJ6mM+gAVivm8lVYmxA3TLLaCPTvAukA0wBQqquCDrTzSGwH4nld7Erx/dSZi3XOj/Thq+fg==
   dependencies:
     axios "^1.7.7"
     form-data "^4.0.0"
