@@ -1415,7 +1415,7 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-axios@^1.7.7:
+axios@^1.4.0:
   version "1.7.9"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.9.tgz#d7d071380c132a24accda1b2cfc1535b79ec650a"
   integrity sha512-LhLcE7Hbiryz8oMDdDptSrWowmB4Bl6RCt6sIJKpRB4XtVf0iEgewX3au/pJqm+Py1kCASkb/FFKjxQaLtxJvw==
@@ -3747,12 +3747,12 @@ kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
-klaviyo-api@^13.0.0:
-  version "13.0.0"
-  resolved "https://registry.yarnpkg.com/klaviyo-api/-/klaviyo-api-13.0.0.tgz#41eb2e487024f3144b00a5b1582395ad6e15873e"
-  integrity sha512-OWd0nQNzoi8T+Tet9P7yJ3hRUDQxaUNkDxAgXR2P5cG30V4F+Xjx/8Zo86vYP1V/+zGqZa6giJnC1r/BBqYERg==
+klaviyo-api@^12.0.0:
+  version "12.0.1"
+  resolved "https://registry.yarnpkg.com/klaviyo-api/-/klaviyo-api-12.0.1.tgz#da7a3018332016077ef5b30c824b6a27efc04b15"
+  integrity sha512-6bSin+13NtqO1bVbIsOTaKKi//2vkwb1LS5F7wxFERhy3qiLkCXNcPfG2+bd79RDabmM3hkwPDID3qhy6hqLHg==
   dependencies:
-    axios "^1.7.7"
+    axios "^1.4.0"
     exponential-backoff "^3.1.1"
     form-data "^4.0.0"
 
