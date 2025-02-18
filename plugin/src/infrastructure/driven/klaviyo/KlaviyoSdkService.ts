@@ -1,10 +1,10 @@
-import { KlaviyoService } from './KlaviyoService';
-import logger from '../../../utils/log';
-import { Client, ConfigWrapper, Events, Profiles, Catalogs } from 'klaviyo-api';
 import * as dotenv from 'dotenv';
-import { delaySeconds } from '../../../utils/delay-seconds';
+import { Catalogs, ConfigWrapper, Events, Profiles } from 'klaviyo-api';
 import { StatusError } from '../../../types/errors/StatusError';
+import { delaySeconds } from '../../../utils/delay-seconds';
+import logger from '../../../utils/log';
 import { isRateLimited, isRejected } from '../../../utils/promise';
+import { KlaviyoService } from './KlaviyoService';
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ export class KlaviyoSdkService extends KlaviyoService {
             case 'profileResourceUpdated':
                 return this.createOrUpdateProfile(event.body, false);
             case 'profileUpdated':
-                return Client.createClientProfile(event.body, process.env.KLAVIYO_COMPANY_ID);
+                return this.createOrUpdateProfile(event.body, false);
             case 'categoryCreated':
                 return this.createCategory(event.body);
             case 'categoryDeleted':
