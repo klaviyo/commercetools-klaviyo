@@ -4,51 +4,53 @@ exports[`map CT product to Klaviyo product should map a commercetools product ar
 {
   "data": {
     "attributes": {
-      "items": [
-        {
-          "attributes": {
-            "catalog_type": "$default",
-            "custom_metadata": {
-              "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
-              "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
-              "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
-              "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
+      "items": {
+        "data": [
+          {
+            "attributes": {
+              "catalogType": "$default",
+              "customMetadata": {
+                "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
+                "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
+                "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
+                "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
+              },
+              "description": "",
+              "externalId": "cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
+              "imageFullUrl": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
+              "integrationType": "$custom",
+              "price": 118.75,
+              "published": true,
+              "title": "Bag medium GUM black",
+              "url": "https://example-store.com/products/gum-bag-medium-BS1900-black",
             },
-            "description": "",
-            "external_id": "cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
-            "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
-            "integration_type": "$custom",
-            "price": 118.75,
-            "published": true,
-            "title": "Bag medium GUM black",
-            "url": "https://example-store.com/products/gum-bag-medium-BS1900-black",
-          },
-          "id": undefined,
-          "relationships": {
-            "categories": {
-              "data": [
-                {
-                  "id": "$custom:::$default:::5b4de911-e0c3-473e-a6ba-dd61d47d0bbd",
-                  "type": "catalog-category",
-                },
-                {
-                  "id": "$custom:::$default:::c7ee29ed-c092-4ed3-bda3-a66839ce90c7",
-                  "type": "catalog-category",
-                },
-                {
-                  "id": "$custom:::$default:::12c2780d-5b45-4de7-8bbb-448df3e7a341",
-                  "type": "catalog-category",
-                },
-                {
-                  "id": "$custom:::$default:::5b4de911-e0c3-473e-a6ba-dd61d47d0bce",
-                  "type": "catalog-category",
-                },
-              ],
+            "id": undefined,
+            "relationships": {
+              "categories": {
+                "data": [
+                  {
+                    "id": "$custom:::$default:::5b4de911-e0c3-473e-a6ba-dd61d47d0bbd",
+                    "type": "catalog-category",
+                  },
+                  {
+                    "id": "$custom:::$default:::c7ee29ed-c092-4ed3-bda3-a66839ce90c7",
+                    "type": "catalog-category",
+                  },
+                  {
+                    "id": "$custom:::$default:::12c2780d-5b45-4de7-8bbb-448df3e7a341",
+                    "type": "catalog-category",
+                  },
+                  {
+                    "id": "$custom:::$default:::5b4de911-e0c3-473e-a6ba-dd61d47d0bce",
+                    "type": "catalog-category",
+                  },
+                ],
+              },
             },
+            "type": "catalog-item",
           },
-          "type": "catalog-item",
-        },
-      ],
+        ],
+      },
     },
     "type": "catalog-item-bulk-create-job",
   },
@@ -59,51 +61,53 @@ exports[`map CT product to Klaviyo product should map a commercetools product ar
 {
   "data": {
     "attributes": {
-      "items": [
-        {
-          "attributes": {
-            "catalog_type": undefined,
-            "custom_metadata": {
-              "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
-              "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
-              "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
-              "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
+      "items": {
+        "data": [
+          {
+            "attributes": {
+              "catalogType": undefined,
+              "customMetadata": {
+                "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
+                "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
+                "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
+                "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
+              },
+              "description": "",
+              "externalId": undefined,
+              "imageFullUrl": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
+              "integrationType": undefined,
+              "price": 118.75,
+              "published": true,
+              "title": "Bag medium GUM black",
+              "url": "https://example-store.com/products/gum-bag-medium-BS1900-black",
             },
-            "description": "",
-            "external_id": undefined,
-            "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
-            "integration_type": undefined,
-            "price": 118.75,
-            "published": true,
-            "title": "Bag medium GUM black",
-            "url": "https://example-store.com/products/gum-bag-medium-BS1900-black",
-          },
-          "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
-          "relationships": {
-            "categories": {
-              "data": [
-                {
-                  "id": "$custom:::$default:::5b4de911-e0c3-473e-a6ba-dd61d47d0bbd",
-                  "type": "catalog-category",
-                },
-                {
-                  "id": "$custom:::$default:::c7ee29ed-c092-4ed3-bda3-a66839ce90c7",
-                  "type": "catalog-category",
-                },
-                {
-                  "id": "$custom:::$default:::12c2780d-5b45-4de7-8bbb-448df3e7a341",
-                  "type": "catalog-category",
-                },
-                {
-                  "id": "$custom:::$default:::5b4de911-e0c3-473e-a6ba-dd61d47d0bce",
-                  "type": "catalog-category",
-                },
-              ],
+            "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
+            "relationships": {
+              "categories": {
+                "data": [
+                  {
+                    "id": "$custom:::$default:::5b4de911-e0c3-473e-a6ba-dd61d47d0bbd",
+                    "type": "catalog-category",
+                  },
+                  {
+                    "id": "$custom:::$default:::c7ee29ed-c092-4ed3-bda3-a66839ce90c7",
+                    "type": "catalog-category",
+                  },
+                  {
+                    "id": "$custom:::$default:::12c2780d-5b45-4de7-8bbb-448df3e7a341",
+                    "type": "catalog-category",
+                  },
+                  {
+                    "id": "$custom:::$default:::5b4de911-e0c3-473e-a6ba-dd61d47d0bce",
+                    "type": "catalog-category",
+                  },
+                ],
+              },
             },
+            "type": "catalog-item",
           },
-          "type": "catalog-item",
-        },
-      ],
+        ],
+      },
     },
     "type": "catalog-item-bulk-update-job",
   },
@@ -114,17 +118,17 @@ exports[`map CT product to Klaviyo product should map a commercetools product to
 {
   "data": {
     "attributes": {
-      "catalog_type": "$default",
-      "custom_metadata": {
+      "catalogType": "$default",
+      "customMetadata": {
         "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
         "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
         "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
         "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
       },
       "description": "",
-      "external_id": "cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
-      "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
-      "integration_type": "$custom",
+      "externalId": "cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
+      "imageFullUrl": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
+      "integrationType": "$custom",
       "price": 118.75,
       "published": true,
       "title": "Bag medium GUM black",
@@ -162,42 +166,42 @@ exports[`map CT product to Klaviyo product should map a commercetools product wi
 {
   "data": {
     "attributes": {
-      "variants": [
-        {
-          "attributes": {
-            "catalog_type": "$default",
-            "custom_metadata": {
-              "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
-              "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
-              "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
-              "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
+      "variants": {
+        "data": [
+          {
+            "attributes": {
+              "catalogType": "$default",
+              "customMetadata": {
+                "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
+                "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
+                "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
+                "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
+              },
+              "description": "",
+              "externalId": "A0E2000000027DV",
+              "imageFullUrl": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
+              "integrationType": "$custom",
+              "inventoryPolicy": 1,
+              "inventoryQuantity": 0,
+              "price": 118.75,
+              "published": true,
+              "sku": "A0E2000000027DV",
+              "title": "Bag medium GUM black",
+              "url": "https://example-store.com/products/gum-bag-medium-BS1900-black",
             },
-            "description": "",
-            "external_id": "A0E2000000027DV",
-            "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
-            "integration_type": "$custom",
-            "inventory_policy": 1,
-            "inventory_quantity": 0,
-            "price": 118.75,
-            "published": true,
-            "sku": "A0E2000000027DV",
-            "title": "Bag medium GUM black",
-            "url": "https://example-store.com/products/gum-bag-medium-BS1900-black",
-          },
-          "id": undefined,
-          "relationships": {
-            "items": {
-              "data": [
-                {
+            "id": undefined,
+            "relationships": {
+              "item": {
+                "data": {
                   "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
                   "type": "catalog-item",
                 },
-              ],
+              },
             },
+            "type": "catalog-variant",
           },
-          "type": "catalog-variant",
-        },
-      ],
+        ],
+      },
     },
     "type": "catalog-variant-bulk-create-job",
   },
@@ -208,12 +212,14 @@ exports[`map CT product to Klaviyo product should map a commercetools product wi
 {
   "data": {
     "attributes": {
-      "variants": [
-        {
-          "id": "$custom:::$default:::A0E2000000027DV",
-          "type": "catalog-variant",
-        },
-      ],
+      "variants": {
+        "data": [
+          {
+            "id": "$custom:::$default:::A0E2000000027DV",
+            "type": "catalog-variant",
+          },
+        ],
+      },
     },
     "type": "catalog-variant-bulk-delete-job",
   },
@@ -224,33 +230,35 @@ exports[`map CT product to Klaviyo product should map a commercetools product wi
 {
   "data": {
     "attributes": {
-      "variants": [
-        {
-          "attributes": {
-            "catalog_type": undefined,
-            "custom_metadata": {
-              "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
-              "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
-              "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
-              "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
+      "variants": {
+        "data": [
+          {
+            "attributes": {
+              "catalogType": undefined,
+              "customMetadata": {
+                "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
+                "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
+                "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
+                "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
+              },
+              "description": "",
+              "externalId": undefined,
+              "imageFullUrl": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
+              "integrationType": undefined,
+              "inventoryPolicy": 1,
+              "inventoryQuantity": 0,
+              "price": 118.75,
+              "published": true,
+              "sku": undefined,
+              "title": "Bag medium GUM black",
+              "url": "https://example-store.com/products/gum-bag-medium-BS1900-black",
             },
-            "description": "",
-            "external_id": undefined,
-            "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
-            "integration_type": undefined,
-            "inventory_policy": 1,
-            "inventory_quantity": 0,
-            "price": 118.75,
-            "published": true,
-            "sku": undefined,
-            "title": "Bag medium GUM black",
-            "url": "https://example-store.com/products/gum-bag-medium-BS1900-black",
+            "id": "$custom:::$default:::A0E2000000027DV",
+            "relationships": undefined,
+            "type": "catalog-variant",
           },
-          "id": "$custom:::$default:::A0E2000000027DV",
-          "relationships": undefined,
-          "type": "catalog-variant",
-        },
-      ],
+        ],
+      },
     },
     "type": "catalog-variant-bulk-update-job",
   },
@@ -261,8 +269,8 @@ exports[`map CT product to Klaviyo product should map commercetools inventory en
 {
   "data": {
     "attributes": {
-      "inventory_policy": 1,
-      "inventory_quantity": undefined,
+      "inventoryPolicy": 1,
+      "inventoryQuantity": undefined,
       "published": true,
     },
     "id": "$custom:::$default:::EXPROD1",
@@ -275,8 +283,8 @@ exports[`map CT product to Klaviyo product should map commercetools inventory en
 {
   "data": {
     "attributes": {
-      "inventory_policy": 1,
-      "inventory_quantity": 55,
+      "inventoryPolicy": 1,
+      "inventoryQuantity": 55,
       "published": true,
     },
     "id": "$custom:::$default:::EXPROD1",
@@ -289,8 +297,8 @@ exports[`map CT product to Klaviyo product should map commercetools inventory en
 {
   "data": {
     "attributes": {
-      "inventory_policy": 1,
-      "inventory_quantity": 120,
+      "inventoryPolicy": 1,
+      "inventoryQuantity": 120,
       "published": true,
     },
     "id": "$custom:::$default:::EXPROD1",
@@ -303,19 +311,19 @@ exports[`map CT product to Klaviyo product should map commercetools product vari
 {
   "data": {
     "attributes": {
-      "catalog_type": "$default",
-      "custom_metadata": {
+      "catalogType": "$default",
+      "customMetadata": {
         "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR"}",
         "price_json": "{"price_EUR":20,"price_AD":20,"price_AT":20,"price_AX":20,"price_BE":20,"price_BL":20,"price_CP":20,"price_CY":20,"price_DE":20,"price_EA":20,"price_EE":20,"price_ES":20,"price_EU":20,"price_FI":20,"price_FR":20,"price_FX":20,"price_GF":20,"price_GP":20,"price_GR":20,"price_IC":20,"price_IE":20,"price_IT":20,"price_LT":20,"price_LU":20,"price_LV":20,"price_MC":20,"price_ME":20,"price_MF":20,"price_MQ":20,"price_MT":20,"price_NL":20,"price_PM":20,"price_PT":20,"price_RE":20,"price_SI":20,"price_SK":20,"price_SM":20,"price_TF":20,"price_VA":20,"price_XK":20,"price_YT":20,"price_ZW":20}",
         "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
         "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
       },
       "description": "",
-      "external_id": "A0E2000000027DV",
-      "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
-      "integration_type": "$custom",
-      "inventory_policy": 1,
-      "inventory_quantity": 0,
+      "externalId": "A0E2000000027DV",
+      "imageFullUrl": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
+      "integrationType": "$custom",
+      "inventoryPolicy": 1,
+      "inventoryQuantity": 0,
       "price": 20,
       "published": true,
       "sku": "A0E2000000027DV",
@@ -324,13 +332,11 @@ exports[`map CT product to Klaviyo product should map commercetools product vari
     },
     "id": undefined,
     "relationships": {
-      "items": {
-        "data": [
-          {
-            "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
-            "type": "catalog-item",
-          },
-        ],
+      "item": {
+        "data": {
+          "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
+          "type": "catalog-item",
+        },
       },
     },
     "type": "catalog-variant",
@@ -342,19 +348,19 @@ exports[`map CT product to Klaviyo product should map commercetools product vari
 {
   "data": {
     "attributes": {
-      "catalog_type": "$default",
-      "custom_metadata": {
+      "catalogType": "$default",
+      "customMetadata": {
         "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
         "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
         "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
         "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
       },
       "description": "",
-      "external_id": "A0E2000000027DV",
-      "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
-      "integration_type": "$custom",
-      "inventory_policy": 1,
-      "inventory_quantity": 0,
+      "externalId": "A0E2000000027DV",
+      "imageFullUrl": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
+      "integrationType": "$custom",
+      "inventoryPolicy": 1,
+      "inventoryQuantity": 0,
       "price": 118.75,
       "published": true,
       "sku": "A0E2000000027DV",
@@ -363,13 +369,11 @@ exports[`map CT product to Klaviyo product should map commercetools product vari
     },
     "id": undefined,
     "relationships": {
-      "items": {
-        "data": [
-          {
-            "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
-            "type": "catalog-item",
-          },
-        ],
+      "item": {
+        "data": {
+          "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
+          "type": "catalog-item",
+        },
       },
     },
     "type": "catalog-variant",
@@ -381,19 +385,19 @@ exports[`map CT product to Klaviyo product should map commercetools product vari
 {
   "data": {
     "attributes": {
-      "catalog_type": "$default",
-      "custom_metadata": {
+      "catalogType": "$default",
+      "customMetadata": {
         "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
         "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
         "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
         "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
       },
       "description": "",
-      "external_id": "A0E2000000027DV",
-      "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
-      "integration_type": "$custom",
-      "inventory_policy": 1,
-      "inventory_quantity": 0,
+      "externalId": "A0E2000000027DV",
+      "imageFullUrl": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
+      "integrationType": "$custom",
+      "inventoryPolicy": 1,
+      "inventoryQuantity": 0,
       "price": 118.75,
       "published": true,
       "sku": "A0E2000000027DV",
@@ -402,13 +406,11 @@ exports[`map CT product to Klaviyo product should map commercetools product vari
     },
     "id": undefined,
     "relationships": {
-      "items": {
-        "data": [
-          {
-            "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
-            "type": "catalog-item",
-          },
-        ],
+      "item": {
+        "data": {
+          "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
+          "type": "catalog-item",
+        },
       },
     },
     "type": "catalog-variant",
@@ -420,19 +422,19 @@ exports[`map CT product to Klaviyo product should map commercetools product vari
 {
   "data": {
     "attributes": {
-      "catalog_type": "$default",
-      "custom_metadata": {
+      "catalogType": "$default",
+      "customMetadata": {
         "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
         "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
         "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
         "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
       },
       "description": "",
-      "external_id": "A0E2000000027DV",
-      "image_full_url": undefined,
-      "integration_type": "$custom",
-      "inventory_policy": 1,
-      "inventory_quantity": 0,
+      "externalId": "A0E2000000027DV",
+      "imageFullUrl": undefined,
+      "integrationType": "$custom",
+      "inventoryPolicy": 1,
+      "inventoryQuantity": 0,
       "price": 118.75,
       "published": true,
       "sku": "A0E2000000027DV",
@@ -441,13 +443,11 @@ exports[`map CT product to Klaviyo product should map commercetools product vari
     },
     "id": undefined,
     "relationships": {
-      "items": {
-        "data": [
-          {
-            "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
-            "type": "catalog-item",
-          },
-        ],
+      "item": {
+        "data": {
+          "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
+          "type": "catalog-item",
+        },
       },
     },
     "type": "catalog-variant",
@@ -459,17 +459,17 @@ exports[`map CT product to Klaviyo product should map secondary locales to appro
 {
   "data": {
     "attributes": {
-      "catalog_type": "$default",
-      "custom_metadata": {
+      "catalogType": "$default",
+      "customMetadata": {
         "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
         "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
         "slug_json": "{"slug_en-US":"product-name","slug_en-GB":"british-product-name","slug_de":"german-product-name"}",
         "title_json": "{"title_en-US":"Product Name","title_en-GB":"British Product Name","title_de":"German Product Name"}",
       },
       "description": "Product Description",
-      "external_id": "cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
-      "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
-      "integration_type": "$custom",
+      "externalId": "cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
+      "imageFullUrl": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
+      "integrationType": "$custom",
       "price": 118.75,
       "published": true,
       "title": "Product Name",
@@ -507,19 +507,19 @@ exports[`map CT product to Klaviyo product should map secondary locales to appro
 {
   "data": {
     "attributes": {
-      "catalog_type": "$default",
-      "custom_metadata": {
+      "catalogType": "$default",
+      "customMetadata": {
         "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
         "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
         "slug_json": "{"slug_en-US":"product-name","slug_en-GB":"british-product-name","slug_de":"german-product-name"}",
         "title_json": "{"title_en-US":"Product Name","title_en-GB":"British Product Name","title_de":"German Product Name"}",
       },
       "description": "Product Description",
-      "external_id": "A0E2000000027DV",
-      "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
-      "integration_type": "$custom",
-      "inventory_policy": 1,
-      "inventory_quantity": 0,
+      "externalId": "A0E2000000027DV",
+      "imageFullUrl": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
+      "integrationType": "$custom",
+      "inventoryPolicy": 1,
+      "inventoryQuantity": 0,
       "price": 118.75,
       "published": true,
       "sku": "A0E2000000027DV",
@@ -528,13 +528,11 @@ exports[`map CT product to Klaviyo product should map secondary locales to appro
     },
     "id": undefined,
     "relationships": {
-      "items": {
-        "data": [
-          {
-            "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
-            "type": "catalog-item",
-          },
-        ],
+      "item": {
+        "data": {
+          "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
+          "type": "catalog-item",
+        },
       },
     },
     "type": "catalog-variant",
@@ -546,19 +544,19 @@ exports[`map CT product to Klaviyo product should map variant inventory by chann
 {
   "data": {
     "attributes": {
-      "catalog_type": "$default",
-      "custom_metadata": {
+      "catalogType": "$default",
+      "customMetadata": {
         "currency_json": "{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR","currency_US":"USD"}",
         "price_json": "{"price_EUR":118.75,"price_AD":118.75,"price_AT":118.75,"price_AX":118.75,"price_BE":118.75,"price_BL":118.75,"price_CP":118.75,"price_CY":118.75,"price_DE":118.75,"price_EA":118.75,"price_EE":118.75,"price_ES":118.75,"price_EU":118.75,"price_FI":118.75,"price_FR":118.75,"price_FX":118.75,"price_GF":118.75,"price_GP":118.75,"price_GR":118.75,"price_IC":118.75,"price_IE":118.75,"price_IT":118.75,"price_LT":118.75,"price_LU":118.75,"price_LV":118.75,"price_MC":118.75,"price_ME":118.75,"price_MF":118.75,"price_MQ":118.75,"price_MT":118.75,"price_NL":118.75,"price_PM":118.75,"price_PT":118.75,"price_RE":118.75,"price_SI":118.75,"price_SK":118.75,"price_SM":118.75,"price_TF":118.75,"price_VA":118.75,"price_XK":118.75,"price_YT":118.75,"price_ZW":118.75,"price_USD":118.75,"price_US":118.75}",
         "slug_json": "{"slug_en":"gum-bag-medium-BS1900-black","slug_de":"gum-tasche-medium-BS1900-schwarz"}",
         "title_json": "{"title_en":"Bag medium GUM black","title_de":"Tasche medium GUM schwarz"}",
       },
       "description": "",
-      "external_id": "A0E2000000027DV",
-      "image_full_url": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
-      "integration_type": "$custom",
-      "inventory_policy": 1,
-      "inventory_quantity": 55,
+      "externalId": "A0E2000000027DV",
+      "imageFullUrl": "https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/082612_1_medium.jpg",
+      "integrationType": "$custom",
+      "inventoryPolicy": 1,
+      "inventoryQuantity": 55,
       "price": 118.75,
       "published": true,
       "sku": "A0E2000000027DV",
@@ -567,13 +565,11 @@ exports[`map CT product to Klaviyo product should map variant inventory by chann
     },
     "id": undefined,
     "relationships": {
-      "items": {
-        "data": [
-          {
-            "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
-            "type": "catalog-item",
-          },
-        ],
+      "item": {
+        "data": {
+          "id": "$custom:::$default:::cb09966e-cb7a-4c3a-8eb5-e07f1a53ab8b",
+          "type": "catalog-item",
+        },
       },
     },
     "type": "catalog-variant",

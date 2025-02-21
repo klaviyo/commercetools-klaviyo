@@ -1,10 +1,26 @@
 import { KlaviyoService } from './KlaviyoService';
 import logger from '../../../utils/log';
-import { Client, ConfigWrapper, Events, Profiles, Catalogs } from 'klaviyo-api';
+import {
+    GlobalApiKeySettings,
+    Events,
+    Profiles,
+    Catalogs,
+    GetProfileResponseData,
+    CatalogCategoryCreateQuery,
+    GetCatalogItemResponseCollectionCompoundDocumentDataInner,
+    GetCatalogItemResponseCollectionCompoundDocument,
+    GetCatalogCategoryResponseCollection,
+    GetCatalogVariantResponseCollectionDataInner,
+    GetCatalogCategoryResponseCollectionDataInner,
+    CatalogItemCreateQuery,
+    CatalogItemUpdateQuery,
+    RetryWithExponentialBackoff,
+} from 'klaviyo-api';
 import * as dotenv from 'dotenv';
 import { delaySeconds } from '../../../utils/delay-seconds';
 import { StatusError } from '../../../types/errors/StatusError';
-import { isRateLimited, isRejected } from '../../../utils/promise';
+import { ItemRequest } from '../../../types/klaviyo-types';
+import { KlaviyoEvent, KlaviyoRequestType } from '../../../types/klaviyo-plugin';
 
 dotenv.config();
 
@@ -14,7 +30,12 @@ if (!process.env.KLAVIYO_AUTH_KEY) {
     );
 }
 
-ConfigWrapper(process.env.KLAVIYO_AUTH_KEY);
+const retryWithExponentialBackoff: RetryWithExponentialBackoff = new RetryWithExponentialBackoff({
+    retryCodes: [429, 503, 504, 524],
+    numRetries: 5,
+    maxInterval: 60,
+});
+new GlobalApiKeySettings(process.env.KLAVIYO_AUTH_KEY || '', retryWithExponentialBackoff);
 export class KlaviyoSdkService extends KlaviyoService {
     public async sendEventToKlaviyo(event: KlaviyoEvent): Promise<any> {
         logger.info('Sending event to Klaviyo', { zdata: event.body });
@@ -25,16 +46,18 @@ export class KlaviyoSdkService extends KlaviyoService {
                 return this.createOrUpdateProfile(event.body, true);
             case 'profileResourceUpdated':
                 return this.createOrUpdateProfile(event.body, false);
-            case 'profileUpdated':
-                return Client.createClientProfile(event.body, process.env.KLAVIYO_COMPANY_ID);
             case 'categoryCreated':
                 return this.createCategory(event.body);
             case 'categoryDeleted':
                 return Catalogs.deleteCatalogCategory(event.body.data.id);
             case 'categoryUpdated':
-                return Catalogs.updateCatalogCategory(event.body, event.body.data?.id);
+                return Catalogs.updateCatalogCategory(event.body.data?.id, event.body);
+            case 'variantCreated':
+                return Catalogs.createCatalogVariant(event.body);
             case 'variantUpdated':
-                return Catalogs.updateCatalogVariant(event.body, event.body.data?.id);
+                return Catalogs.updateCatalogVariant(event.body.data?.id, event.body);
+            case 'variantDeleted':
+                return Catalogs.deleteCatalogVariant(event.body.data?.id);
             case 'itemDeleted':
                 return this.deleteCatalogItemWithVariants(event.body.data.id);
             case 'itemCreated':
@@ -64,14 +87,14 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
-    public async getKlaviyoProfileByExternalId(externalId: string): Promise<ProfileType | undefined> {
+    public async getKlaviyoProfileByExternalId(externalId: string): Promise<GetProfileResponseData | undefined> {
         logger.info(`Getting profile in Klaviyo with externalId ${externalId}`);
         try {
             const filter = `equals(external_id,"${externalId}")`;
             const profiles = await Profiles.getProfiles({ filter });
             logger.debug('Profiles response', profiles);
             const profile = profiles?.body.data?.find(
-                (profile: ProfileType) => profile.attributes.external_id === externalId,
+                (profile: GetProfileResponseData) => profile.attributes.externalId === externalId,
             );
             logger.debug('Profile', profile);
             return profile;
@@ -83,12 +106,12 @@ export class KlaviyoSdkService extends KlaviyoService {
 
     private async createOrUpdateProfile(body: KlaviyoRequestType, create: boolean) {
         try {
-            return await (create ? Profiles.createProfile(body) : Profiles.updateProfile(body, body.data?.id));
+            return await (create ? Profiles.createProfile(body) : Profiles.updateProfile(body.data.id!, body));
         } catch (e: any) {
             if (e.status === 400) {
                 let errorCauses;
                 try {
-                    errorCauses = JSON.parse(e?.response?.error?.text)?.errors.map((e: any) => e?.source?.pointer);
+                    errorCauses = (e.response?.data?.errors || []).map((err: any) => err?.source?.pointer);
                 } catch (e) {
                     logger.error('Error getting error source pointer from error response', e);
                     throw new StatusError(
@@ -103,27 +126,27 @@ export class KlaviyoSdkService extends KlaviyoService {
                         `Invalid phone number when ${
                             create ? 'creating' : 'updating'
                         } profile. Retrying after removing phone number from profile...`,
-                        JSON.parse(e?.response?.error?.text),
+                        e.response?.data,
                     );
                     const modifiedBody: any = {
                         data: {
                             ...body.data,
                             attributes: {
                                 ...(body.data as any).attributes,
-                                phone_number: undefined,
+                                phoneNumber: undefined,
                             },
                         },
                     };
                     try {
                         return await (create
                             ? Profiles.createProfile(modifiedBody)
-                            : Profiles.updateProfile(modifiedBody, modifiedBody.data?.id));
+                            : Profiles.updateProfile(modifiedBody.data?.id, modifiedBody));
                     } catch (e: any) {
                         logger.error(
                             `Error ${
                                 create ? 'creating' : 'updating'
                             } profile in Klaviyo after removing phone_number. Response code ${e.status}, ${e.message}`,
-                            e,
+                            e.response?.data || e,
                         );
                         throw e;
                     }
@@ -137,7 +160,7 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
-    private async createCategory(body: KlaviyoRequestType) {
+    private async createCategory(body: CatalogCategoryCreateQuery) {
         try {
             return await Catalogs.createCatalogCategory(body);
         } catch (e: any) {
@@ -146,12 +169,12 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
-    private async deleteCatalogItemWithVariants(itemId?: string) {
+    private async deleteCatalogItemWithVariants(itemId: string) {
         try {
             return await Catalogs.deleteCatalogItem(itemId);
         } catch (e: any) {
             logger.error(`Error deleting item in Klaviyo. Response code ${e.status}, ${e.message}`, e);
-            if (e.status === 404) {
+            if ((e.response?.status || e.status) === 404) {
                 logger.error(`Item with itemId ${itemId} does not exist in Klaviyo. Failed to delete, ignoring.`);
                 // Avoid returning a 4XX error to the queue for this, just in case.
                 // This would end up returning the message to the queue indefinitely.
@@ -168,20 +191,12 @@ export class KlaviyoSdkService extends KlaviyoService {
     private async createUpdateItem(body: ItemRequest, type: string) {
         try {
             let baseItemRequest;
-            const { variantJobRequests, ...itemBody } = body;
+            const { data } = body;
             if (type === 'itemCreated') {
-                baseItemRequest = await Catalogs.createCatalogItem(itemBody);
+                baseItemRequest = await Catalogs.createCatalogItem({ data } as unknown as CatalogItemCreateQuery);
             } else if (type === 'itemUpdated') {
-                baseItemRequest = await Catalogs.updateCatalogItem(itemBody, itemBody.data?.id);
-            }
-
-            const variantPromises = await Promise.allSettled(
-                (variantJobRequests as any).map(async (r: KlaviyoEvent) => await this.sendJobRequestToKlaviyo(r)),
-            );
-
-            const rejectedPromises = variantPromises.filter((p) => isRejected(p) && !isRateLimited(p));
-            if (rejectedPromises.length) {
-                rejectedPromises.forEach((rejected: any) => logger.error('Error syncing event with klaviyo', rejected));
+                const updateData = { data } as unknown as CatalogItemUpdateQuery;
+                baseItemRequest = await Catalogs.updateCatalogItem(updateData.data.id, updateData);
             }
 
             return baseItemRequest;
@@ -250,15 +265,15 @@ export class KlaviyoSdkService extends KlaviyoService {
         return job;
     }
 
-    public async getKlaviyoCategoryByExternalId(externalId: string): Promise<CategoryType | undefined> {
+    public async getKlaviyoCategoryByExternalId(
+        externalId: string,
+    ): Promise<GetCatalogCategoryResponseCollectionDataInner | undefined> {
         logger.info(`Getting categories in Klaviyo with externalId ${externalId}`);
         try {
             const filter = `any(ids,["$custom:::$default:::${externalId}"])`;
             const categories = await Catalogs.getCatalogCategories({ filter });
             logger.debug('Categories response', categories);
-            const category = categories?.body.data?.find(
-                (category: CategoryType) => category.attributes.external_id === externalId,
-            );
+            const category = categories?.body.data?.find((category) => category.attributes.externalId === externalId);
             logger.debug('Category', category);
             return category;
         } catch (e) {
@@ -267,7 +282,7 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
-    public async getKlaviyoItemsByIds(ids: string[], fieldsCatalogItem?: string[]): Promise<ItemType[]> {
+    public async getKlaviyoItemsByIds(ids: string[], fieldsCatalogItem?: any[]) {
         if (!ids.length) {
             return [];
         } else {
@@ -288,8 +303,8 @@ export class KlaviyoSdkService extends KlaviyoService {
     public async getKlaviyoItemVariantsByCtSkus(
         productId?: string,
         skus?: string[],
-        fieldsCatalogVariant?: string[],
-    ): Promise<ItemVariantType[]> {
+        fieldsCatalogVariant?: any[],
+    ): Promise<GetCatalogVariantResponseCollectionDataInner[]> {
         let filter;
         if (skus && !skus.length) {
             return [];
@@ -320,7 +335,7 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
-    public async getKlaviyoPaginatedCategories(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCategory>> {
+    public async getKlaviyoPaginatedCategories(nextPageCursor?: string): Promise<GetCatalogCategoryResponseCollection> {
         logger.info(
             `Getting categories in Klaviyo ${nextPageCursor ? 'with pagination cursor: ' + nextPageCursor : ''}`,
         );
@@ -338,7 +353,9 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
-    public async getKlaviyoPaginatedItems(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCatalogItem>> {
+    public async getKlaviyoPaginatedItems(
+        nextPageCursor?: string,
+    ): Promise<GetCatalogItemResponseCollectionCompoundDocument> {
         logger.info(`Getting items in Klaviyo ${nextPageCursor ? 'with pagination cursor: ' + nextPageCursor : ''}`);
         try {
             const categories = await Catalogs.getCatalogItems({ pageCursor: nextPageCursor });
@@ -352,7 +369,9 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
-    public async getKlaviyoItemByExternalId(externalId: string): Promise<ItemType | undefined> {
+    public async getKlaviyoItemByExternalId(
+        externalId: string,
+    ): Promise<GetCatalogItemResponseCollectionCompoundDocumentDataInner | undefined> {
         logger.info(`Getting item in Klaviyo with externalId ${externalId}`);
         try {
             const itemId = `$custom:::$default:::${externalId}`;

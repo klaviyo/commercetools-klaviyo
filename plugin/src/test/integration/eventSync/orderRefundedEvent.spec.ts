@@ -70,8 +70,10 @@ describe('pubSub adapter order refunded mesasge', () => {
         const createEventNock = klaviyoEventNock({
             type: 'event',
             attributes: {
-                profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                metric: { name: 'Refunded Order' },
+                profile: {
+                    data: { type: 'profile', attributes: { email: 'test@klaviyo.com', external_id: '123-123-123' } },
+                },
+                metric: { data: { type: 'metric', attributes: { name: 'Refunded Order' } } },
                 value: 13,
                 properties: {
                     ...mapAllowedProperties('order', {
@@ -86,7 +88,7 @@ describe('pubSub adapter order refunded mesasge', () => {
                     Categories: ['Test Category 1'],
                 },
                 unique_id: '3456789',
-                time: '2023-01-27T15:00:00.000Z',
+                time: new Date('2023-01-27T15:00:00.000Z').toISOString(),
             },
         });
 
@@ -188,8 +190,13 @@ describe('pubSub event that produces 5xx error', () => {
             {
                 type: 'event',
                 attributes: {
-                    profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                    metric: { name: 'Refunded Order' },
+                    profile: {
+                        data: {
+                            type: 'profile',
+                            attributes: { email: 'test@klaviyo.com', external_id: '123-123-123' },
+                        },
+                    },
+                    metric: { data: { type: 'metric', attributes: { name: 'Refunded Order' } } },
                     value: 13,
                     properties: {
                         ...mapAllowedProperties('order', {
@@ -204,7 +211,7 @@ describe('pubSub event that produces 5xx error', () => {
                         Categories: ['Test Category 1'],
                     },
                     unique_id: '3456789',
-                    time: '2023-01-27T15:00:00.000Z',
+                    time: new Date('2023-01-27T15:00:00.000Z').toISOString(),
                 },
             },
             500,

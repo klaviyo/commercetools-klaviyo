@@ -89,7 +89,7 @@ describe('syncAllProducts', () => {
                     },
                 },
             ],
-        })
+        });
         Object.defineProperty(mockProduct, 'masterData', {
             value: {
                 current: {
@@ -125,7 +125,7 @@ describe('syncAllProducts', () => {
                 data: {
                     type: 'catalog-variant-bulk-create-job',
                     attributes: {
-                        variants: [{ type: 'catalog-variant', id: 'test-id', attributes: {} as any }],
+                        variants: { data: [{ type: 'catalog-variant', id: 'test-id', attributes: {} as any }] },
                     },
                 },
             }));
@@ -134,7 +134,7 @@ describe('syncAllProducts', () => {
             data: {
                 type: 'catalog-item-bulk-create-job',
                 attributes: {
-                    items: Array(6).fill({ type: 'catalog-item', id: 'test-id' }),
+                    items: { data: Array(6).fill({ type: 'catalog-item', id: 'test-id' }) },
                 },
             },
         }));
@@ -142,7 +142,7 @@ describe('syncAllProducts', () => {
             data: {
                 type: 'catalog-item-bulk-create-job',
                 attributes: {
-                    items: Array(4).fill({ type: 'catalog-item', id: 'test-id' }),
+                    items: { data: Array(4).fill({ type: 'catalog-item', id: 'test-id' }) },
                 },
             },
         }));

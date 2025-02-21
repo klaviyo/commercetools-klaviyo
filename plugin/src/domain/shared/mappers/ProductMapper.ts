@@ -1,4 +1,12 @@
 import { InventoryEntry, Product, ProductVariant } from '@commercetools/platform-sdk';
+import {
+    ItemDeletedRequest,
+    ItemJobRequest,
+    ItemRequest,
+    ItemVariantJobRequest,
+    ItemVariantRequest,
+} from '../../../types/klaviyo-types';
+import { GetCatalogVariantResponseCollectionDataInner } from 'klaviyo-api';
 
 export interface ProductMapper {
     mapCtProductToKlaviyoItem(product: Product, update?: boolean): ItemRequest;
@@ -14,5 +22,9 @@ export interface ProductMapper {
         type: string,
     ): ItemVariantJobRequest;
     mapKlaviyoItemIdToDeleteItemRequest(klaviyoItemId: string): ItemDeletedRequest;
-    mapCtInventoryEntryToKlaviyoVariant(inventory: InventoryEntry, klaviyoVariant: ItemVariantType): ItemVariantRequest;
+    mapKlaviyoVariantIdToDeleteVariantRequest(klaviyoVariantId: string): ItemDeletedRequest;
+    mapCtInventoryEntryToKlaviyoVariant(
+        inventory: InventoryEntry,
+        klaviyoVariant: GetCatalogVariantResponseCollectionDataInner,
+    ): ItemVariantRequest;
 }

@@ -4,6 +4,8 @@ import { OrderStateChangedMessage } from '@commercetools/platform-sdk/dist/decla
 import { OrderState, Product } from '@commercetools/platform-sdk';
 import config from 'config';
 import { PaginatedProductResults } from '../../../../infrastructure/driven/commercetools/DefaultCtProductService';
+import { EventRequest } from '../../../../types/klaviyo-types';
+import { KlaviyoEvent } from '../../../../types/klaviyo-plugin';
 
 export class OrderStateChangedEvent extends AbstractEventProcessor {
     private readonly PROCESSOR_NAME = ' OrderStateChanged';

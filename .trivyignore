@@ -1,0 +1,3 @@
+# Already defined a newer version of cross-spawn for this.
+# Dependency chain is jest - jest/core - execa - cross-spawn.
+#CVE-2024-21538

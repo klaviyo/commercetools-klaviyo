@@ -1,4 +1,5 @@
 import { LineItem, Order, Product } from '@commercetools/platform-sdk';
+import { EventRequest } from '../../../types/klaviyo-types';
 
 export interface OrderMapper {
     mapCtOrderToKlaviyoEvent(

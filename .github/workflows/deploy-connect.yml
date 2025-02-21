@@ -30,7 +30,7 @@ jobs:
       access_token: ${{ fromJSON(steps.authenticate.outputs.output).data.access_token }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Authenticate
         id: authenticate
         uses: ./.github/actions/connect/authenticate
@@ -47,7 +47,7 @@ jobs:
       connector: ${{ steps.update-tag.outputs.output }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Get and update Connector
         id: update-tag
         uses: ./.github/actions/connect/update-tag
@@ -65,7 +65,7 @@ jobs:
       connector: ${{ steps.request-previewable.outputs.response }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Request Previewable Access
         id: request-previewable
         uses: ./.github/actions/connect/request-previewable
@@ -81,7 +81,7 @@ jobs:
     environment: ${{ github.event.inputs.environment }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Check and Undeploy Connector
         id: undeploy
         uses: ./.github/actions/connect/undeploy
@@ -98,7 +98,7 @@ jobs:
     environment: ${{ github.event.inputs.environment }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Deploy Connector
         id: deploy
         uses: ./.github/actions/connect/deploy

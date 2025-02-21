@@ -1,3 +1,5 @@
+import { ProfileType } from "../../types/klaviyo-types";
+
 const sampleKlaviyoProfile = (): ProfileType => {
     return {
         type: 'profile',

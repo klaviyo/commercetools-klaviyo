@@ -52,7 +52,7 @@ runs:
       shell: bash
       working-directory: ./plugin/src/test/e2e/postman
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: E2E-reports

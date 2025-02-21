@@ -5,7 +5,7 @@ import { klaviyoEventNock } from '../nocks/KlaviyoEventNock';
 import { sampleOrderCreatedMessage, sampleOrderStateChangedMessage } from '../../testData/orderData';
 import { ctAuthNock, ctGetOrderByIdNock, getProductsByIdRange } from '../nocks/commercetoolsNock';
 import { mapAllowedProperties } from '../../../utils/property-mapper';
-import nock from "nock";
+import nock from 'nock';
 import { ctGet2Orders } from '../../testData/ctGetOrders';
 
 chai.use(chaiHttp);
@@ -16,38 +16,35 @@ describe('pubSub adapter order state changed message', () => {
         server = app.listen(0);
     });
 
-  afterAll((done) => {
-    server.close(() => {
-      done();
+    afterAll((done) => {
+        server.close(() => {
+            done();
+        });
+        nock.cleanAll();
     });
-    nock.cleanAll();
-  });
 
     beforeEach(() => {
         ctAuthNock(2);
         ctGetOrderByIdNock('3456789');
-        getProductsByIdRange(
-            ['2d69d31e-cccc-450d-83c8-aa27c2a0a620'],
-            {
-                results: [
-                    {
-                        masterData: {
-                            current: {
-                                categories: {
-                                    obj: {
-                                        name: {
-                                            'en-US': 'Test Category 1',
-                                        },
-                                        ancestors: [],
-                                    }
+        getProductsByIdRange(['2d69d31e-cccc-450d-83c8-aa27c2a0a620'], {
+            results: [
+                {
+                    masterData: {
+                        current: {
+                            categories: {
+                                obj: {
+                                    name: {
+                                        'en-US': 'Test Category 1',
+                                    },
+                                    ancestors: [],
                                 },
                             },
                         },
                     },
-                ],
-                count: 0,
-            },
-        );
+                },
+            ],
+            count: 0,
+        });
     });
 
     it('should return status 204 when the request is valid but ignored as message type is not supported', (done) => {
@@ -68,21 +65,25 @@ describe('pubSub adapter order state changed message', () => {
         const createEventNock = klaviyoEventNock({
             type: 'event',
             attributes: {
-                profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                metric: { name: 'Cancelled Order' },
+                profile: {
+                    data: { type: 'profile', attributes: { email: 'test@klaviyo.com', external_id: '123-123-123' } },
+                },
+                metric: { data: { type: 'metric', attributes: { name: 'Cancelled Order' } } },
                 value: 13,
                 properties: {
                     ...mapAllowedProperties('order', {
                         ...sampleOrderCreatedMessage.order,
-                        lineItems: [{
-                            ...ctGet2Orders.results[0].lineItems[0],
-                        }],
+                        lineItems: [
+                            {
+                                ...ctGet2Orders.results[0].lineItems[0],
+                            },
+                        ],
                     }),
                     ItemNames: ['Product Name'],
                     Categories: ['Test Category 1'],
                 },
                 unique_id: '3456789',
-                time: '2023-01-27T15:00:00.000Z',
+                time: new Date('2023-01-27T15:00:00.000Z').toISOString(),
             },
         });
 
@@ -144,28 +145,25 @@ describe('pubSub event that produces 5xx error', () => {
     beforeEach(() => {
         ctAuthNock(2);
         ctGetOrderByIdNock('3456789');
-        getProductsByIdRange(
-            ['2d69d31e-cccc-450d-83c8-aa27c2a0a620'],
-            {
-                results: [
-                    {
-                        masterData: {
-                            current: {
-                                categories: {
-                                    obj: {
-                                        name: {
-                                            'en-US': 'Test Category 1',
-                                        },
-                                        ancestors: [],
-                                    }
+        getProductsByIdRange(['2d69d31e-cccc-450d-83c8-aa27c2a0a620'], {
+            results: [
+                {
+                    masterData: {
+                        current: {
+                            categories: {
+                                obj: {
+                                    name: {
+                                        'en-US': 'Test Category 1',
+                                    },
+                                    ancestors: [],
                                 },
                             },
                         },
                     },
-                ],
-                count: 0,
-            },
-        );
+                },
+            ],
+            count: 0,
+        });
     });
 
     it('should not acknowledge the message to pub/sub and return status 500 when the request is invalid', (done) => {
@@ -175,21 +173,28 @@ describe('pubSub event that produces 5xx error', () => {
             {
                 type: 'event',
                 attributes: {
-                    profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                    metric: { name: 'Cancelled Order' },
+                    profile: {
+                        data: {
+                            type: 'profile',
+                            attributes: { email: 'test@klaviyo.com', external_id: '123-123-123' },
+                        },
+                    },
+                    metric: { data: { type: 'metric', attributes: { name: 'Cancelled Order' } } },
                     value: 13,
                     properties: {
                         ...mapAllowedProperties('order', {
                             ...sampleOrderCreatedMessage.order,
-                            lineItems: [{
-                                ...ctGet2Orders.results[0].lineItems[0],
-                            }],
+                            lineItems: [
+                                {
+                                    ...ctGet2Orders.results[0].lineItems[0],
+                                },
+                            ],
                         }),
                         ItemNames: ['Product Name'],
                         Categories: ['Test Category 1'],
                     },
                     unique_id: '3456789',
-                    time: '2023-01-27T15:00:00.000Z',
+                    time: new Date('2023-01-27T15:00:00.000Z').toISOString(),
                 },
             },
             500,

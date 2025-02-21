@@ -3,6 +3,7 @@ import { DeepMockProxy, mock, mockDeep } from 'jest-mock-extended';
 import { OrderStateChangedEvent } from './orderStateChangedEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import { Context } from '../../../../types/klaviyo-context';
+import { EventRequest } from '../../../../types/klaviyo-types';
 
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 const orderEventRequestMock = mock<EventRequest>();

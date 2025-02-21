@@ -1,6 +1,7 @@
 import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
 import { ResourceUpdatedDeliveryPayload } from '@commercetools/platform-sdk';
+import { KlaviyoEvent } from '../../../../types/klaviyo-plugin';
 
 export class CustomerResourceUpdatedEventProcessor extends AbstractEventProcessor {
     private readonly PROCESSOR_NAME = 'CustomerResourceUpdated';

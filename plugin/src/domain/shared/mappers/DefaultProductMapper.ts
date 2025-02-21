@@ -17,6 +17,16 @@ import {
     getAdditionalPricesAsJson,
     getAdditionalCurrenciesAsJson,
 } from '../../../utils/locale-currency-utils';
+import {
+    ItemDeletedRequest,
+    ItemJobRequest,
+    ItemRequest,
+    ItemVariantJobRequest,
+    ItemVariantRequest,
+    ItemVariantType,
+    KlaviyoRelationshipData,
+} from '../../../types/klaviyo-types';
+import { GetCatalogVariantResponseCollectionDataInner } from 'klaviyo-api';
 
 export class DefaultProductMapper implements ProductMapper {
     constructor(private readonly currencyService: CurrencyService) {}
@@ -41,15 +51,15 @@ export class DefaultProductMapper implements ProductMapper {
                 id: update ? `$custom:::$default:::${product.id}` : undefined,
                 attributes: {
                     published: true,
-                    integration_type: !update ? '$custom' : undefined,
-                    catalog_type: !update ? '$default' : undefined,
-                    external_id: !update ? product.id : undefined,
+                    integrationType: !update ? '$custom' : undefined,
+                    catalogType: !update ? '$default' : undefined,
+                    externalId: !update ? product.id : undefined,
                     title: getLocalizedStringAsText(productName),
                     description: productDescription ? getLocalizedStringAsText(productDescription) : '',
                     url: productUrl,
-                    image_full_url: productMasterVariantImages ? productMasterVariantImages[0]?.url : undefined,
+                    imageFullUrl: productMasterVariantImages ? productMasterVariantImages[0]?.url : undefined,
                     price: productPrice ? this.currencyService.convert(productPrice.amount, productPrice.currency) : 0,
-                    custom_metadata: {
+                    customMetadata: {
                         title_json: JSON.stringify(
                             getAdditionalLocalizedStringsAsJson([
                                 {
@@ -96,7 +106,7 @@ export class DefaultProductMapper implements ProductMapper {
                       }
                     : undefined,
             },
-        };
+        } as any;
     }
 
     public mapCtProductVariantToKlaviyoVariant(
@@ -122,18 +132,18 @@ export class DefaultProductMapper implements ProductMapper {
                 id: update ? `$custom:::$default:::${productVariant.sku}` : undefined,
                 attributes: {
                     published: true,
-                    integration_type: !update ? '$custom' : undefined,
-                    catalog_type: !update ? '$default' : undefined,
-                    external_id: !update ? productVariant.sku : undefined,
+                    integrationType: !update ? '$custom' : undefined,
+                    catalogType: !update ? '$default' : undefined,
+                    externalId: !update ? productVariant.sku : undefined,
                     title: getLocalizedStringAsText(productName),
                     description: productDescription ? getLocalizedStringAsText(productDescription) : '',
                     sku: !update ? productVariant.sku : undefined,
                     url: productUrl,
-                    image_full_url: variantImages?.[0]?.url,
-                    inventory_quantity: variantInventoryQuantity ?? 0,
-                    inventory_policy: 1,
+                    imageFullUrl: variantImages?.[0]?.url,
+                    inventoryQuantity: variantInventoryQuantity ?? 0,
+                    inventoryPolicy: 1,
                     price: variantPrice ? this.currencyService.convert(variantPrice.amount, variantPrice.currency) : 0,
-                    custom_metadata: {
+                    customMetadata: {
                         title_json: JSON.stringify(
                             getAdditionalLocalizedStringsAsJson([
                                 {
@@ -174,8 +184,8 @@ export class DefaultProductMapper implements ProductMapper {
                 },
                 relationships: !update
                     ? {
-                          items: {
-                              data: [this.mapCtProductToKlaviyoVariantItem(product)],
+                          item: {
+                              data: this.mapCtProductToKlaviyoVariantItem(product),
                           },
                       }
                     : undefined,
@@ -198,12 +208,14 @@ export class DefaultProductMapper implements ProductMapper {
             data: {
                 type: jobType,
                 attributes: {
-                    items: products
-                        .filter((p) => p.masterData.current)
-                        .map((p) => this.mapCtProductToKlaviyoItem(p, type === 'itemUpdated').data),
+                    items: {
+                        data: products
+                            .filter((p) => p.masterData.current)
+                            .map((p) => this.mapCtProductToKlaviyoItem(p, type === 'itemUpdated').data),
+                    },
                 },
             },
-        };
+        } as any;
     }
 
     public mapCtProductVariantsToKlaviyoVariantsJob(
@@ -227,23 +239,25 @@ export class DefaultProductMapper implements ProductMapper {
             data: {
                 type: jobType,
                 attributes: {
-                    variants:
-                        type === 'variantDeleted'
-                            ? productVariants.map(
-                                  (v) =>
-                                      ({
-                                          type: 'catalog-variant',
-                                          id: v as string,
-                                      } as ItemVariantType),
-                              )
-                            : productVariants.map(
-                                  (v) =>
-                                      this.mapCtProductVariantToKlaviyoVariant(
-                                          product,
-                                          v as ProductVariant,
-                                          type === 'variantUpdated',
-                                      ).data,
-                              ),
+                    variants: {
+                        data:
+                            type === 'variantDeleted'
+                                ? productVariants.map(
+                                      (v) =>
+                                          ({
+                                              type: 'catalog-variant',
+                                              id: v as string,
+                                          } as ItemVariantType),
+                                  )
+                                : productVariants.map(
+                                      (v) =>
+                                          this.mapCtProductVariantToKlaviyoVariant(
+                                              product,
+                                              v as ProductVariant,
+                                              type === 'variantUpdated',
+                                          ).data,
+                                  ),
+                    },
                 },
             },
         };
@@ -307,9 +321,17 @@ export class DefaultProductMapper implements ProductMapper {
         };
     }
 
+    public mapKlaviyoVariantIdToDeleteVariantRequest(klaviyoVariantId: string): ItemDeletedRequest {
+        return {
+            data: {
+                id: klaviyoVariantId,
+            },
+        };
+    }
+
     public mapCtInventoryEntryToKlaviyoVariant(
         inventory: InventoryEntry,
-        klaviyoVariant: ItemVariantType,
+        klaviyoVariant: GetCatalogVariantResponseCollectionDataInner,
     ): ItemVariantRequest {
         const inventoryEntryQuantity = this.getProductInventoryByPriority(inventory);
         return {
@@ -317,8 +339,8 @@ export class DefaultProductMapper implements ProductMapper {
                 type: 'catalog-variant',
                 id: klaviyoVariant.id,
                 attributes: {
-                    inventory_policy: 1,
-                    inventory_quantity: inventoryEntryQuantity !== null ? inventoryEntryQuantity : undefined,
+                    inventoryPolicy: 1,
+                    inventoryQuantity: inventoryEntryQuantity !== null ? inventoryEntryQuantity : undefined,
                     published: true,
                 },
             },

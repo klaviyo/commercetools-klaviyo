@@ -47,20 +47,15 @@ describe('pubSub adapter inventory resource updated message', () => {
                 },
             ],
         });
-        const updateKlaviyoVariantNock = klaviyoUpdateVariantNock(
-            '920d4485-5f6e-4eaf-8c1a-6cebe6e0420f',
-            {
-                data: {
-                    type: 'catalog-variant',
-                    id: '920d4485-5f6e-4eaf-8c1a-6cebe6e0420f',
-                    attributes: {
-                        inventory_policy: 1,
-                        inventory_quantity: 100,
-                        published: true,
-                    },
-                },
+        const updateKlaviyoVariantNock = klaviyoUpdateVariantNock('920d4485-5f6e-4eaf-8c1a-6cebe6e0420f', {
+            type: 'catalog-variant',
+            id: '920d4485-5f6e-4eaf-8c1a-6cebe6e0420f',
+            attributes: {
+                inventory_policy: 1,
+                inventory_quantity: 100,
+                published: true,
             },
-        );
+        });
 
         chai.request(server)
             .post('/')
@@ -90,20 +85,15 @@ describe('pubSub adapter inventory resource updated message', () => {
                 },
             ],
         });
-        const updateKlaviyoVariantNock = klaviyoUpdateVariantNock(
-            '920d4485-5f6e-4eaf-8c1a-6cebe6e0420f',
-            {
-                data: {
-                    type: 'catalog-variant',
-                    id: '920d4485-5f6e-4eaf-8c1a-6cebe6e0420f',
-                    attributes: {
-                        inventory_policy: 1,
-                        inventory_quantity: 100,
-                        published: true,
-                    },
-                },
+        const updateKlaviyoVariantNock = klaviyoUpdateVariantNock('920d4485-5f6e-4eaf-8c1a-6cebe6e0420f', {
+            type: 'catalog-variant',
+            id: '920d4485-5f6e-4eaf-8c1a-6cebe6e0420f',
+            attributes: {
+                inventory_policy: 1,
+                inventory_quantity: 100,
+                published: true,
             },
-        );
+        });
 
         chai.request(server)
             .post('/')
@@ -133,20 +123,15 @@ describe('pubSub adapter inventory resource updated message', () => {
                 },
             ],
         });
-        const updateKlaviyoVariantNock = klaviyoUpdateVariantNock(
-            '920d4485-5f6e-4eaf-8c1a-6cebe6e0420f',
-            {
-                data: {
-                    type: 'catalog-variant',
-                    id: '920d4485-5f6e-4eaf-8c1a-6cebe6e0420f',
-                    attributes: {
-                        inventory_policy: 1,
-                        inventory_quantity: 100,
-                        published: true,
-                    },
-                },
+        const updateKlaviyoVariantNock = klaviyoUpdateVariantNock('920d4485-5f6e-4eaf-8c1a-6cebe6e0420f', {
+            type: 'catalog-variant',
+            id: '920d4485-5f6e-4eaf-8c1a-6cebe6e0420f',
+            attributes: {
+                inventory_policy: 1,
+                inventory_quantity: 100,
+                published: true,
             },
-        );
+        });
 
         chai.request(server)
             .post('/')

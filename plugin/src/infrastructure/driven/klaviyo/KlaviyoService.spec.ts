@@ -1,6 +1,15 @@
 import { KlaviyoService } from './KlaviyoService';
 import logger from '../../../utils/log';
 import { mock } from 'jest-mock-extended';
+import {
+    GetCatalogCategoryResponseCollection,
+    GetCatalogCategoryResponseCollectionDataInner,
+    GetCatalogItemResponseCollectionCompoundDocument,
+    GetCatalogItemResponseCollectionCompoundDocumentDataInner,
+    GetCatalogVariantResponseCollectionDataInner,
+    GetProfileResponseData,
+} from 'klaviyo-api';
+import { KlaviyoEvent } from '../../../types/klaviyo-plugin';
 
 jest.mock('../../../utils/log', () => {
     return {
@@ -15,7 +24,7 @@ describe('Klaviyo abstract service', () => {
     });
 
     class DummyKlaviyoService extends KlaviyoService {
-        getKlaviyoProfileByExternalId(externalId: string): Promise<ProfileType | undefined> {
+        getKlaviyoProfileByExternalId(externalId: string): Promise<GetProfileResponseData | undefined> {
             return Promise.resolve(undefined);
         }
 
@@ -23,7 +32,9 @@ describe('Klaviyo abstract service', () => {
             return Promise.resolve(undefined);
         }
 
-        getKlaviyoCategoryByExternalId(externalId: string): Promise<CategoryType | undefined> {
+        getKlaviyoCategoryByExternalId(
+            externalId: string,
+        ): Promise<GetCatalogCategoryResponseCollectionDataInner | undefined> {
             return Promise.resolve(undefined);
         }
 
@@ -31,24 +42,33 @@ describe('Klaviyo abstract service', () => {
             return Promise.resolve(undefined);
         }
 
-        getKlaviyoItemsByIds (ids: string[], fieldsCatalogItem?: string[]): Promise<ItemType[]> {
-            return Promise.resolve(mock<ItemType[]>());
+        getKlaviyoItemsByIds(
+            ids: string[],
+            fieldsCatalogItem?: string[],
+        ): Promise<GetCatalogItemResponseCollectionCompoundDocumentDataInner[]> {
+            return Promise.resolve(mock<GetCatalogItemResponseCollectionCompoundDocumentDataInner[]>());
         }
 
-        getKlaviyoItemVariantsByCtSkus (productId?: string, skus?: string[], fieldsCatalogVariant?: string[]): Promise<ItemVariantType[]> {
-            return Promise.resolve(mock<ItemVariantType[]>());
+        getKlaviyoItemVariantsByCtSkus(
+            productId?: string,
+            skus?: string[],
+            fieldsCatalogVariant?: string[],
+        ): Promise<GetCatalogVariantResponseCollectionDataInner[]> {
+            return Promise.resolve(mock<GetCatalogVariantResponseCollectionDataInner[]>());
         }
 
-        getKlaviyoPaginatedCategories(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCategory>> {
-            return Promise.resolve(mock<KlaviyoQueryResult<KlaviyoCategory>>());
+        getKlaviyoPaginatedCategories(nextPageCursor?: string): Promise<GetCatalogCategoryResponseCollection> {
+            return Promise.resolve(mock<GetCatalogCategoryResponseCollection>());
         }
 
-        getKlaviyoPaginatedItems(nextPageCursor?: string): Promise<KlaviyoQueryResult<KlaviyoCatalogItem>> {
-            return Promise.resolve(mock<KlaviyoQueryResult<KlaviyoCatalogItem>>());
+        getKlaviyoPaginatedItems(nextPageCursor?: string): Promise<GetCatalogItemResponseCollectionCompoundDocument> {
+            return Promise.resolve(mock<GetCatalogItemResponseCollectionCompoundDocument>());
         }
 
-        getKlaviyoItemByExternalId(externalId: string): Promise<ItemType | undefined> {
-            return Promise.resolve(mock<ItemType>());
+        getKlaviyoItemByExternalId(
+            externalId: string,
+        ): Promise<GetCatalogItemResponseCollectionCompoundDocumentDataInner | undefined> {
+            return Promise.resolve(mock<GetCatalogItemResponseCollectionCompoundDocumentDataInner>());
         }
     }
 
@@ -145,33 +165,39 @@ describe('Klaviyo abstract service', () => {
 
     test('should delay execution if "retry-after" header is set', async () => {
         const klaviyoService = new DummyKlaviyoService();
-        await klaviyoService.checkRateLimitsAndDelay([
-            {
-                reason: {
-                    response: {
-                        headers: {
-                            'retry-after': '1',
+        await klaviyoService.checkRateLimitsAndDelay(
+            [
+                {
+                    reason: {
+                        response: {
+                            headers: {
+                                'retry-after': '1',
+                            },
                         },
                     },
+                    status: 'rejected',
                 },
-                status: 'rejected',
-            },
-        ], 1);
+            ],
+            1,
+        );
         expect(logger.info).toBeCalledTimes(1);
     });
 
     test('should continue execution normally if "retry-after" header is not set', async () => {
         const klaviyoService = new DummyKlaviyoService();
-        await klaviyoService.checkRateLimitsAndDelay([
-            {
-                reason: {
-                    response: {
-                        headers: {},
+        await klaviyoService.checkRateLimitsAndDelay(
+            [
+                {
+                    reason: {
+                        response: {
+                            headers: {},
+                        },
                     },
+                    status: 'rejected',
                 },
-                status: 'rejected',
-            },
-        ], 1);
+            ],
+            1,
+        );
         expect(logger.info).toBeCalledTimes(0);
     });
 

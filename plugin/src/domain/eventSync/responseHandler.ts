@@ -1,6 +1,7 @@
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import logger from '../../utils/log';
 import { isFulfilled, isRejected } from '../../utils/promise';
+import { ProcessingResult } from '../../types/klaviyo-plugin';
 
 export const responseHandler = (
     results: Array<PromiseSettledResult<Awaited<Promise<any>>>>,

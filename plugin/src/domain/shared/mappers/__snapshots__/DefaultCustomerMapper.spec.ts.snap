@@ -5,9 +5,9 @@ exports[`map CT customer to Klaviyo profile should include/exclude/map custom fi
   "data": {
     "attributes": {
       "email": "Alfred_Lebsack@hotmail.com",
-      "external_id": "77d8e6f4-2dee-4ac9-bd21-4035b6ba76d8",
-      "first_name": "Jailyn",
-      "last_name": "Hilll",
+      "externalId": "77d8e6f4-2dee-4ac9-bd21-4035b6ba76d8",
+      "firstName": "Jailyn",
+      "lastName": "Hilll",
       "location": {
         "address1": "12, First Street",
         "address2": "",
@@ -17,7 +17,7 @@ exports[`map CT customer to Klaviyo profile should include/exclude/map custom fi
         "zip": "12345",
       },
       "organization": undefined,
-      "phone_number": "+39 3234567892",
+      "phoneNumber": "+39 3234567892",
       "properties": {
         "includedFieldAfterMap": true,
       },
@@ -34,9 +34,9 @@ exports[`map CT customer to Klaviyo profile should map a commercetools customer 
   "data": {
     "attributes": {
       "email": "Alfred_Lebsack@hotmail.com",
-      "external_id": "77d8e6f4-2dee-4ac9-bd21-4035b6ba76d8",
-      "first_name": "Jailyn",
-      "last_name": "Hilll",
+      "externalId": "77d8e6f4-2dee-4ac9-bd21-4035b6ba76d8",
+      "firstName": "Jailyn",
+      "lastName": "Hilll",
       "location": {
         "address1": "12, First Street",
         "address2": "",
@@ -46,7 +46,7 @@ exports[`map CT customer to Klaviyo profile should map a commercetools customer 
         "zip": "12345",
       },
       "organization": undefined,
-      "phone_number": "+39 3234567892",
+      "phoneNumber": "+39 3234567892",
       "properties": undefined,
       "title": "Miss",
     },
@@ -61,9 +61,9 @@ exports[`map CT customer to Klaviyo profile should map a commercetools customer 
   "data": {
     "attributes": {
       "email": "Alfred_Lebsack@hotmail.com",
-      "external_id": "77d8e6f4-2dee-4ac9-bd21-4035b6ba76d8",
-      "first_name": "Jailyn",
-      "last_name": "Hilll",
+      "externalId": "77d8e6f4-2dee-4ac9-bd21-4035b6ba76d8",
+      "firstName": "Jailyn",
+      "lastName": "Hilll",
       "location": {
         "address1": "12, First Street",
         "address2": "",
@@ -73,7 +73,7 @@ exports[`map CT customer to Klaviyo profile should map a commercetools customer 
         "zip": "12345",
       },
       "organization": undefined,
-      "phone_number": "+39 3234567892",
+      "phoneNumber": "+39 3234567892",
       "properties": undefined,
       "title": "Miss",
     },

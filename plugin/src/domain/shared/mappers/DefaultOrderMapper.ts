@@ -7,6 +7,7 @@ import config from 'config';
 import { CurrencyService } from '../services/CurrencyService';
 import { CustomerMapper } from './CustomerMapper';
 import { getLocalizedStringAsText } from '../../../utils/locale-currency-utils';
+import { EventRequest } from '../../../types/klaviyo-types';
 
 export class DefaultOrderMapper implements OrderMapper {
     constructor(private readonly currencyService: CurrencyService, private readonly customerMapper: CustomerMapper) {}
@@ -21,13 +22,20 @@ export class DefaultOrderMapper implements OrderMapper {
             data: {
                 type: 'event',
                 attributes: {
-                    profile: getCustomerProfileFromOrder(
-                        order,
-                        this.customerMapper,
-                        updateAdditionalProfileProperties && metric === config.get('order.metrics.placedOrder'),
-                    ),
+                    profile: {
+                        data: getCustomerProfileFromOrder(
+                            order,
+                            this.customerMapper,
+                            updateAdditionalProfileProperties && metric === config.get('order.metrics.placedOrder'),
+                        ),
+                    },
                     metric: {
-                        name: metric,
+                        data: {
+                            type: 'metric',
+                            attributes: {
+                                name: metric,
+                            },
+                        },
                     },
                     value: this.currencyService.convert(
                         getTypedMoneyAsNumber(order?.totalPrice),
@@ -41,8 +49,8 @@ export class DefaultOrderMapper implements OrderMapper {
                             orderProducts.map((product) => product.masterData.current.categories).flat(),
                         ),
                     } as any,
-                    unique_id: order.id,
-                    time: time ?? order.createdAt,
+                    uniqueId: order.id,
+                    time: time ? new Date(time) : new Date(order.createdAt),
                 },
             },
         };
@@ -69,9 +77,14 @@ export class DefaultOrderMapper implements OrderMapper {
             data: {
                 type: 'event',
                 attributes: {
-                    profile: getCustomerProfileFromOrder(order, this.customerMapper),
+                    profile: { data: getCustomerProfileFromOrder(order, this.customerMapper) },
                     metric: {
-                        name: metric,
+                        data: {
+                            type: 'metric',
+                            attributes: {
+                                name: metric,
+                            },
+                        },
                     },
                     value: this.currencyService.convert(refundTotal, order.totalPrice.currencyCode),
                     properties: {
@@ -82,8 +95,8 @@ export class DefaultOrderMapper implements OrderMapper {
                             orderProducts.map((product) => product.masterData.current.categories).flat(),
                         ),
                     } as any,
-                    unique_id: order.id,
-                    time: time ?? order.createdAt,
+                    uniqueId: order.id,
+                    time: time ? new Date(time) : new Date(order.createdAt),
                 },
             },
         };
@@ -94,17 +107,17 @@ export class DefaultOrderMapper implements OrderMapper {
             data: {
                 type: 'event',
                 attributes: {
-                    profile: getCustomerProfileFromOrder(order, this.customerMapper),
+                    profile: { data: getCustomerProfileFromOrder(order, this.customerMapper) },
                     metric: {
-                        name: config.get('order.metrics.orderedProduct'),
+                        data: { type: 'metric', attributes: { name: config.get('order.metrics.orderedProduct') } },
                     },
                     value: this.currencyService.convert(
                         getTypedMoneyAsNumber(lineItem.totalPrice),
                         order.totalPrice.currencyCode,
                     ),
                     properties: { ...lineItem },
-                    unique_id: lineItem.id,
-                    time: time ?? order.createdAt,
+                    uniqueId: lineItem.id,
+                    time: time ? new Date(time) : new Date(order.createdAt),
                 },
             },
         };
@@ -112,8 +125,7 @@ export class DefaultOrderMapper implements OrderMapper {
 
     private mapOrderLineItemsToItemNames(order: Order): string[] {
         const lineItemNames = order.lineItems.map((item) => getLocalizedStringAsText(item.name));
-        const customLineItemNames =
-            order.customLineItems?.map((item) => getLocalizedStringAsText(item.name)) || [];
+        const customLineItemNames = order.customLineItems?.map((item) => getLocalizedStringAsText(item.name)) || [];
         return Array.from(new Set(lineItemNames.concat(customLineItemNames)));
     }
 

@@ -12,6 +12,8 @@ import { CtOrderService } from '../../infrastructure/driven/commercetools/CtOrde
 import { getElapsedSeconds, startTime } from '../../utils/time-utils';
 import { CtProductService } from '../../infrastructure/driven/commercetools/CtProductService';
 import { PaginatedProductResults } from '../../infrastructure/driven/commercetools/DefaultCtProductService';
+import { EventRequest } from '../../types/klaviyo-types';
+import { delaySeconds } from '../../utils/delay-seconds';
 
 export class OrdersSync {
     lockKey = 'orderFullSync';
@@ -90,6 +92,7 @@ export class OrdersSync {
                 if (rejectedPromises.length) {
                     rejectedPromises.forEach((rejected) => logger.error('Error syncing event with klaviyo', rejected));
                 }
+                await delaySeconds(2);
             } while ((ctOrdersResult as PaginatedOrderResults).hasMore);
             logger.info(
                 `Historical orders import${importTypeText}. Total orders to be imported ${totalOrders}, total klaviyo events: ${totalKlaviyoEvents}, successfully imported: ${succeeded}, errored: ${errored}, elapsed time: ${getElapsedSeconds(

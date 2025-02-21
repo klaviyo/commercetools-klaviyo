@@ -2,6 +2,7 @@ import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
 import { Product, ProductPublishedMessage } from '@commercetools/platform-sdk';
 import config from 'config';
+import { KlaviyoEvent } from '../../../../types/klaviyo-plugin';
 
 export class ProductPublishedEventProcessor extends AbstractEventProcessor {
     private readonly PROCESSOR_NAME = 'ProductPublished';
@@ -21,7 +22,7 @@ export class ProductPublishedEventProcessor extends AbstractEventProcessor {
         const ctProduct = (await this.context.ctProductService.getProductById(message.resource.id)) as Product;
         const klaviyoItem = await this.context.klaviyoService.getKlaviyoItemByExternalId(message.resource.id);
 
-        const variantJobRequests = await this.generateProductVariantsJobRequestForKlaviyo(ctProduct);
+        const variantRequests = await this.generateProductVariantsRequestsForKlaviyo(ctProduct);
 
         let klaviyoEvent: KlaviyoEvent;
         if (!klaviyoItem || !klaviyoItem.id) {
@@ -35,8 +36,8 @@ export class ProductPublishedEventProcessor extends AbstractEventProcessor {
                 type: 'itemUpdated',
             };
         }
-        (klaviyoEvent.body as ItemRequest).variantJobRequests = variantJobRequests;
-        return [klaviyoEvent];
+
+        return [klaviyoEvent, ...variantRequests];
     }
 
     private isValidMessageType(type: string): boolean {
@@ -46,7 +47,7 @@ export class ProductPublishedEventProcessor extends AbstractEventProcessor {
         );
     }
 
-    private generateProductVariantsJobRequestForKlaviyo = async (product: Product): Promise<KlaviyoEvent[]> => {
+    private generateProductVariantsRequestsForKlaviyo = async (product: Product): Promise<KlaviyoEvent[]> => {
         const combinedVariants = [product.masterData.current.masterVariant].concat(product.masterData.current.variants);
         const ctProductVariants = combinedVariants
             .map((v) => v.sku || '')
@@ -64,33 +65,27 @@ export class ProductPublishedEventProcessor extends AbstractEventProcessor {
         const variantsForDeletion = klaviyoVariants.filter((v) => v && !ctProductVariants.includes(v));
         const promises: KlaviyoEvent[] = [];
         if (variantsForDeletion.length) {
-            promises.push({
-                type: 'variantDeleted',
-                body: this.context.productMapper.mapCtProductVariantsToKlaviyoVariantsJob(
-                    product,
-                    variantsForDeletion as string[],
-                    'variantDeleted',
-                ),
+            variantsForDeletion.forEach((variantId) => {
+                promises.push({
+                    type: 'variantDeleted',
+                    body: this.context.productMapper.mapKlaviyoVariantIdToDeleteVariantRequest(variantId),
+                });
             });
         }
         if (variantsForCreation.length) {
-            promises.push({
-                type: 'variantCreated',
-                body: this.context.productMapper.mapCtProductVariantsToKlaviyoVariantsJob(
-                    product,
-                    variantsForCreation,
-                    'variantCreated',
-                ),
+            variantsForCreation.forEach((variant) => {
+                promises.push({
+                    type: 'variantCreated',
+                    body: this.context.productMapper.mapCtProductVariantToKlaviyoVariant(product, variant, false),
+                });
             });
         }
         if (variantsForUpdate.length) {
-            promises.push({
-                type: 'variantUpdated',
-                body: this.context.productMapper.mapCtProductVariantsToKlaviyoVariantsJob(
-                    product,
-                    variantsForUpdate,
-                    'variantUpdated',
-                ),
+            variantsForUpdate.forEach((variant) => {
+                promises.push({
+                    type: 'variantUpdated',
+                    body: this.context.productMapper.mapCtProductVariantToKlaviyoVariant(product, variant, true),
+                });
             });
         }
         return promises;

@@ -27,6 +27,9 @@ const klvSdkModule = {
 };
 
 import { KlaviyoSdkService } from './KlaviyoSdkService';
+import { EventType } from '../../../types/klaviyo-types';
+import { KlaviyoEvent } from '../../../types/klaviyo-plugin';
+import { EventEnum } from 'klaviyo-api';
 
 jest.mock('klaviyo-api', () => {
     const module = jest.createMockFromModule<any>('klaviyo-api');
@@ -68,9 +71,7 @@ describe('klaviyoService > sendEventToKlaviyo', () => {
         };
         const responseError: KlaviyoError = new KlaviyoError(409);
         responseError.setResponse({
-            error: {
-                text: '{"errors":[{"meta":{"duplicate_profile_id":"01GRKR887TDV7JS4JGM003ANYJ"}}]}',
-            },
+            data: { errors: [{ meta: { duplicate_profile_id: '01GRKR887TDV7JS4JGM003ANYJ' } }] },
         });
         klvSdkModule.Profiles.createProfile = jest.fn().mockRejectedValue(responseError);
 
@@ -88,7 +89,7 @@ describe('klaviyoService > sendEventToKlaviyo', () => {
                 data: {
                     type: 'profile',
                     attributes: {
-                        phone_number: '1234',
+                        phoneNumber: '1234',
                     },
                 },
             },
@@ -98,15 +99,13 @@ describe('klaviyoService > sendEventToKlaviyo', () => {
                 ...klaviyoEvent.body.data,
                 attributes: {
                     ...(klaviyoEvent.body.data as any).attributes,
-                    phone_number: undefined,
+                    phoneNumber: undefined,
                 },
             },
         };
         const responseError: KlaviyoError = new KlaviyoError(400);
         responseError.setResponse({
-            error: {
-                text: '{"errors":[{"source":{"pointer":"/data/attributes/phone_number"}}]}',
-            },
+            data: { errors: [{ source: { pointer: '/data/attributes/phone_number' } }] },
         });
         klvSdkModule.Profiles.createProfile.mockRejectedValueOnce(responseError);
         klvSdkModule.Profiles.createProfile.mockResolvedValueOnce({});
@@ -131,16 +130,12 @@ describe('klaviyoService > sendEventToKlaviyo', () => {
         };
         const responseError: KlaviyoError = new KlaviyoError(400);
         responseError.setResponse({
-            error: {
-                text: '{"errors":[{"source":{"pointer":"/data/attributes/phone_number"}}]}',
-            },
+            data: { errors: [{ source: { pointer: '/data/attributes/phone_number' } }] },
         });
         klvSdkModule.Profiles.createProfile.mockRejectedValueOnce(responseError);
         const responseErrorAlt: KlaviyoError = new KlaviyoError(400);
         responseErrorAlt.setResponse({
-            error: {
-                text: '{"errors":[{"source":{"pointer":"/data/attributes/phone_number"}}]}',
-            },
+            data: { errors: [{ source: { pointer: '/data/attributes/phone_number' } }] },
         });
         klvSdkModule.Profiles.createProfile.mockRejectedValueOnce(responseErrorAlt);
 
@@ -150,7 +145,6 @@ describe('klaviyoService > sendEventToKlaviyo', () => {
         expect(klvSdkModule.Profiles.updateProfile).toBeCalledTimes(0);
         expect(klvSdkModule.Profiles.createProfile).toBeCalledWith(klaviyoEvent.body);
     });
-
 
     test("should throw error when the input event is of type 'profileCreated' but the profile already exists in klaviyo and the error response doesn't contain the ID of the duplicated profile", async () => {
         const klaviyoEvent: KlaviyoEvent = {
@@ -544,7 +538,7 @@ describe('klaviyoService > sendJobRequestToKlaviyo', () => {
             type: 'variantUpdated',
             body: {
                 data: {
-                    type: 'catalog-variant-bulk-update-job',
+                    type: 'catalog-variant-bulk-update-job' as unknown as EventEnum,
                     attributes: {
                         variants: [],
                     },

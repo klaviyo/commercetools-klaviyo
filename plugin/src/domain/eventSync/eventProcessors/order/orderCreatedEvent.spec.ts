@@ -5,6 +5,7 @@ import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declara
 import { ctAuthNock, ctGetOrderByIdNock } from '../../../../test/integration/nocks/commercetoolsNock';
 import { Context } from '../../../../types/klaviyo-context';
 import { sampleOrderCreatedMessage } from '../../../../test/testData/orderData';
+import { EventRequest } from '../../../../types/klaviyo-types';
 
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 const orderEventRequestMock = mock<EventRequest>();

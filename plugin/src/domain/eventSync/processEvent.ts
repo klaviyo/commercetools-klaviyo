@@ -30,6 +30,7 @@ import { DefaultCtPaymentService } from '../../infrastructure/driven/commercetoo
 import { DefaultCtOrderService } from '../../infrastructure/driven/commercetools/DefaultCtOrderService';
 import { InventoryResourceUpdatedEventProcessor } from './eventProcessors/inventory/inventoryResourceUpdatedEventProcessor';
 import { ProductPublishedEventProcessor } from './eventProcessors/product/productPublishedEventProcessor';
+import { ProcessingResult } from '../../types/klaviyo-plugin';
 
 const context: Context = {
     klaviyoService: new KlaviyoSdkService(),
