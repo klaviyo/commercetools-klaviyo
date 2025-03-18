@@ -277,7 +277,7 @@ export class DefaultProductMapper implements ProductMapper {
         };
     }
 
-    public getProductInventoryByPriority(availability?: ProductVariantAvailability | InventoryEntry): number | null {
+    public getProductInventoryByPriority(availability?: ProductVariantAvailability | InventoryEntry): number | null | undefined {
         if (!availability) {
             return 0;
         }
@@ -286,31 +286,52 @@ export class DefaultProductMapper implements ProductMapper {
             const productInventoryChannel = config.get('product.inventory.useChannelInventory') as string;
             const variantAvailabilityChannels = (availability as ProductVariantAvailability).channels;
             const inventoryEntryChannel = (availability as InventoryEntry).supplyChannel;
-            if (productInventoryChannel && (variantAvailabilityChannels || inventoryEntryChannel)) {
-                const variantChannelAvailableQuantity = variantAvailabilityChannels
-                    ? variantAvailabilityChannels[productInventoryChannel]?.availableQuantity
-                    : undefined;
-                const inventoryChannelAvailableQuantity =
-                    inventoryEntryChannel?.id === productInventoryChannel ? availability.availableQuantity : undefined;
-                if (variantChannelAvailableQuantity) {
-                    return variantChannelAvailableQuantity;
-                }
-
-                if (inventoryChannelAvailableQuantity) {
-                    return inventoryChannelAvailableQuantity;
-                } else {
-                    if (!variantAvailabilityChannels) {
-                        return null;
-                    }
-                }
-            }
-            // Prevents bulk sync and inventory update events from stepping on each other
-            else if (!productInventoryChannel && inventoryEntryChannel) {
-                return null;
-            }
+            const returnValue = this.getInventoryQuantityByPriority(
+                availability,
+                productInventoryChannel,
+                variantAvailabilityChannels,
+                inventoryEntryChannel,
+            );
+            return isNaN(returnValue as number) ? availability?.availableQuantity || 0 : returnValue;
         }
 
         return availability?.availableQuantity || 0;
+    }
+
+    private getInventoryQuantityByPriority(
+        availability: ProductVariantAvailability | InventoryEntry,
+        productInventoryChannel: string,
+        variantAvailabilityChannels: ProductVariantAvailability['channels'],
+        inventoryEntryChannel: InventoryEntry['supplyChannel'],
+    ) {
+        if (productInventoryChannel && (variantAvailabilityChannels || inventoryEntryChannel)) {
+            const variantChannelAvailableQuantity = this.getVariantChannelAvailableQuantity(productInventoryChannel, variantAvailabilityChannels)
+            const inventoryChannelAvailableQuantity =
+                inventoryEntryChannel?.id === productInventoryChannel ? availability.availableQuantity : undefined;
+            if (variantChannelAvailableQuantity) {
+                return variantChannelAvailableQuantity;
+            }
+
+            if (inventoryChannelAvailableQuantity) {
+                return inventoryChannelAvailableQuantity;
+            }
+            
+            if (!variantAvailabilityChannels) {
+                return null;
+            }
+        }
+        // Prevents bulk sync and inventory update events from stepping on each other
+        else if (!productInventoryChannel && inventoryEntryChannel) {
+            return null;
+        }
+
+        return NaN;
+    }
+
+    private getVariantChannelAvailableQuantity(productInventoryChannel: string, variantAvailabilityChannels: ProductVariantAvailability['channels']): number | undefined {
+        return variantAvailabilityChannels
+                ? variantAvailabilityChannels[productInventoryChannel]?.availableQuantity
+                : undefined;
     }
 
     public mapKlaviyoItemIdToDeleteItemRequest(klaviyoItemId: string): ItemDeletedRequest {

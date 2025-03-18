@@ -40,6 +40,27 @@ export class OrdersSync {
         await this.syncOrders(this.ctOrderService.getOrdersByStartId, ' by start id', [startId]);
     };
 
+    private getProductsForOrder = async (
+        ctProductsByOrder: Record<string, object[]>,
+        ctOrdersResult: PaginatedOrderResults | undefined,
+    ) => {
+        for (const order of (ctOrdersResult as PaginatedOrderResults).data) {
+            ctProductsByOrder[order.id] = [];
+            let ctProductsResult: PaginatedProductResults | undefined;
+            do {
+                try {
+                    ctProductsResult = await this.ctProductService.getProductsByIdRange(
+                        order.lineItems.map((item) => item.productId),
+                        ctProductsResult?.lastId,
+                    );
+                    ctProductsByOrder[order.id] = ctProductsByOrder[order.id].concat(ctProductsResult.data);
+                } catch (err) {
+                    logger.info(`Failed to get product details for order: ${order.id}`);
+                }
+            } while (ctProductsResult?.hasMore);
+        }
+    };
+
     private syncOrders = async (ordersMethod: any, importTypeText: string, args: unknown[]) => {
         try {
             //ensures that only one sync at the time is running
@@ -56,23 +77,9 @@ export class OrdersSync {
             do {
                 ctOrdersResult = await ordersMethod(...args, ctOrdersResult?.lastId);
 
-                // Used to set Categories for Order properties in Klaviyo
+                // Used to set Products/Categories for Order properties in Klaviyo
                 ctProductsByOrder = {};
-                for (const order of (ctOrdersResult as PaginatedOrderResults).data) {
-                    ctProductsByOrder[order.id] = [];
-                    let ctProductsResult: PaginatedProductResults | undefined;
-                    do {
-                        try {
-                            ctProductsResult = await this.ctProductService.getProductsByIdRange(
-                                order.lineItems.map((item) => item.productId),
-                                ctProductsResult?.lastId,
-                            );
-                            ctProductsByOrder[order.id] = ctProductsByOrder[order.id].concat(ctProductsResult.data);
-                        } catch (err) {
-                            logger.info(`Failed to get product details for order: ${order.id}`);
-                        }
-                    } while (ctProductsResult?.hasMore);
-                }
+                await this.getProductsForOrder(ctProductsByOrder, ctOrdersResult);
 
                 const promiseResults = await Promise.allSettled(
                     (ctOrdersResult as PaginatedOrderResults).data.flatMap((order) =>
@@ -115,7 +122,12 @@ export class OrdersSync {
 
         //Order placed event
         events.push(
-            this.orderMapper.mapCtOrderToKlaviyoEvent(order, orderProducts, config.get('order.metrics.placedOrder'), false),
+            this.orderMapper.mapCtOrderToKlaviyoEvent(
+                order,
+                orderProducts,
+                config.get('order.metrics.placedOrder'),
+                false,
+            ),
         );
 
         //Ordered product event

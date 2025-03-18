@@ -55,5 +55,5 @@ runs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: E2E-reports
+        name: E2E-reports_${{ inputs.ct_project_id }}
         path: plugin/src/test/e2e/postman/newman

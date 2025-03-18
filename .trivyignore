@@ -1,3 +1,6 @@
 # Already defined a newer version of cross-spawn for this.
 # Dependency chain is jest - jest/core - execa - cross-spawn.
 #CVE-2024-21538
+
+# Same for axios 1.7.9, chain is klaviyo-api-node > axios
+CVE-2025-27152
