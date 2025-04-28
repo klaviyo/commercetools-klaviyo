@@ -50,14 +50,16 @@ describe('getCustomerProfileFromOrder', () => {
         expect(profile).toEqual({
             type: 'profile',
             attributes: {
-                address1: '',
-                address2: '',
                 email: 'test@example.com',
                 externalId: '123',
-                city: 'Test City',
-                country: 'Test Country',
-                region: undefined,
-                zip: undefined,
+                location: {
+                    address1: '',
+                    address2: '',
+                    city: 'Test City',
+                    country: 'Test Country',
+                    region: undefined,
+                    zip: undefined,
+                },
             },
         });
     });

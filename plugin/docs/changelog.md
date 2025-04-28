@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.0.1
+
+### Bug Fixes
+
+- Set profile location properties from under `location` object to match newer API revisions.
+
 ## v2.0.0
 
 ### Breaking Changes

@@ -23,7 +23,7 @@ export const getCustomerProfileFromOrder = (
             if (location) {
                 profile.attributes = {
                     ...profile.attributes,
-                    ...location,
+                    location,
                 };
             }
         }
