@@ -9,15 +9,20 @@ deployAs:
       securedConfiguration:
         - key: KLAVIYO_AUTH_KEY
           description: Klaviyo API key for requests
+          required: true
         - key: CT_API_CLIENT
           description: JSON Object with CT API Client ID and Secret for requests
+          required: true
       standardConfiguration:
         - key: CT_API_URL
           description: Commercetools API URL
+          required: true
         - key: CT_AUTH_URL
           description: Commercetools Auth URL
+          required: true
         - key: CT_PROJECT_ID
           description: Commercetools Project ID
+          required: true
         - key: CT_SCOPES
           description: Scopes for your Commercetools Client ID
         - key: PRODUCT_URL_TEMPLATE

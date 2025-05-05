@@ -46,6 +46,45 @@ describe('getAllCategories', () => {
         expect(result.data.length).toEqual(1);
     });
 
+    it('should start from a given id when lastId is provided', async () => {
+        mockGetCustomObjectApiPagedRequest.execute.mockResolvedValueOnce({
+            body: {
+                limit: 0,
+                count: 1,
+                results: [mock<Category>()],
+                offset: 0,
+                total: 0,
+            },
+        });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
+
+        const ctCategoryService = new DefaultCtCategoryService(mockCtApiRoot);
+        const result = await ctCategoryService.getAllCategories('123456');
+
+        expect(mockGetCustomObjectApiPagedRequest.execute).toBeCalledTimes(1);
+        expect(result.data.length).toEqual(1);
+    });
+
+    it('should not set lastId if there are no more results', async () => {
+        mockGetCustomObjectApiPagedRequest.execute.mockResolvedValueOnce({
+            body: {
+                limit: 0,
+                count: 1,
+                results: [],
+                offset: 0,
+                total: 0,
+            },
+        });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
+
+        const ctCategoryService = new DefaultCtCategoryService(mockCtApiRoot);
+        const result = await ctCategoryService.getAllCategories('123456');
+
+        expect(mockGetCustomObjectApiPagedRequest.execute).toBeCalledTimes(1);
+        expect(result.data.length).toEqual(0);
+        expect(result.lastId).toBeUndefined();
+    });
+
     it('should throw an error if fails to get categories from CT APIs', async () => {
         mockGetCustomObjectApiPagedRequest.execute.mockImplementation(() => {
             throw new CTErrorResponse(504, 'CT Error');

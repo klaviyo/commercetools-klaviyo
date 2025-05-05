@@ -80,7 +80,7 @@ export const processEvent = async (
     eventProcessors: (typeof AbstractEventProcessor)[] = defaultProcessors,
 ): Promise<ProcessingResult> => {
     // todo check ctMessage.payloadNotIncluded;
-    logger.info('Processing commercetools message', ctMessage);
+    logger.info(`Processing commercetools message with id ${ctMessage.id}`);
     const klaviyoRequestsPromises = await Promise.allSettled(
         eventProcessors
             .map((eventProcessors) => eventProcessors.instance(ctMessage, context))

@@ -47,6 +47,43 @@ describe('getAllOrders', () => {
         expect(result.data.length).toEqual(1);
     });
 
+    it('should start from a given id when lastId is provided', async () => {
+        mockGetCustomObjectApiPagedRequest.execute.mockResolvedValueOnce({ body: {
+            limit: 0,
+                count: 1,
+                results: [mock<Order>()],
+                offset: 0,
+                total: 0
+            }
+        });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
+
+        const ctOrderService = new DefaultCtOrderService(mockCtApiRoot)
+        const result = await ctOrderService.getAllOrders('12345');
+
+        expect(mockGetCustomObjectApiPagedRequest.execute).toBeCalledTimes(1);
+        expect(result.data.length).toEqual(1);
+    });
+
+    it('should not set lastId if there are no more results', async () => {
+        mockGetCustomObjectApiPagedRequest.execute.mockResolvedValueOnce({ body: {
+            limit: 0,
+                count: 1,
+                results: [],
+                offset: 0,
+                total: 0
+            }
+        });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
+
+        const ctOrderService = new DefaultCtOrderService(mockCtApiRoot)
+        const result = await ctOrderService.getAllOrders('12345');
+
+        expect(mockGetCustomObjectApiPagedRequest.execute).toBeCalledTimes(1);
+        expect(result.data.length).toEqual(0);
+        expect(result.lastId).toBeUndefined();
+    });
+
     it('should throw an error if fails to get orders from CT APIs', async () => {
         mockGetCustomObjectApiPagedRequest.execute.mockImplementation(() => {throw new CTErrorResponse(504, "CT Error")});
         jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
@@ -78,6 +115,43 @@ describe('getOrdersByIdRange', () => {
         expect(result.data.length).toEqual(1);
     });
 
+    it('should start from a given id when lastId is provided', async () => {
+        mockGetCustomObjectApiPagedRequest.execute.mockResolvedValueOnce({ body: {
+            limit: 0,
+                count: 1,
+                results: [mock<Order>()],
+                offset: 0,
+                total: 0
+            }
+        });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
+
+        const ctOrderService = new DefaultCtOrderService(mockCtApiRoot)
+        const result = await ctOrderService.getOrdersByIdRange(['123456'], '12345');
+
+        expect(mockGetCustomObjectApiPagedRequest.execute).toBeCalledTimes(1);
+        expect(result.data.length).toEqual(1);
+    });
+
+    it('should not set lastId if there are no more results', async () => {
+        mockGetCustomObjectApiPagedRequest.execute.mockResolvedValueOnce({ body: {
+            limit: 0,
+                count: 1,
+                results: [],
+                offset: 0,
+                total: 0
+            }
+        });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
+
+        const ctOrderService = new DefaultCtOrderService(mockCtApiRoot)
+        const result = await ctOrderService.getOrdersByIdRange(['123456'], '12345');
+
+        expect(mockGetCustomObjectApiPagedRequest.execute).toBeCalledTimes(1);
+        expect(result.data.length).toEqual(0);
+        expect(result.lastId).toBeUndefined();
+    });
+
     it('should throw an error if fails to get orders from CT APIs', async () => {
         mockGetCustomObjectApiPagedRequest.execute.mockImplementation(() => {throw new CTErrorResponse(504, "CT Error")});
         jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
@@ -107,6 +181,43 @@ describe('getOrdersByStartId', () => {
 
         expect(mockGetCustomObjectApiPagedRequest.execute).toBeCalledTimes(1);
         expect(result.data.length).toEqual(1);
+    });
+
+    it('should start from a given id when lastId is provided', async () => {
+        mockGetCustomObjectApiPagedRequest.execute.mockResolvedValueOnce({ body: {
+            limit: 0,
+                count: 1,
+                results: [mock<Order>()],
+                offset: 0,
+                total: 0
+            }
+        });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
+
+        const ctOrderService = new DefaultCtOrderService(mockCtApiRoot)
+        const result = await ctOrderService.getOrdersByStartId('123456', '12345');
+
+        expect(mockGetCustomObjectApiPagedRequest.execute).toBeCalledTimes(1);
+        expect(result.data.length).toEqual(1);
+    });
+
+    it('should not set lastId if there are no more results', async () => {
+        mockGetCustomObjectApiPagedRequest.execute.mockResolvedValueOnce({ body: {
+            limit: 0,
+                count: 1,
+                results: [],
+                offset: 0,
+                total: 0
+            }
+        });
+        jest.spyOn(ctService, 'getApiRoot').mockImplementation((() => mockCtApiRoot));
+
+        const ctOrderService = new DefaultCtOrderService(mockCtApiRoot)
+        const result = await ctOrderService.getOrdersByStartId('123456', '12345');
+
+        expect(mockGetCustomObjectApiPagedRequest.execute).toBeCalledTimes(1);
+        expect(result.data.length).toEqual(0);
+        expect(result.lastId).toBeUndefined();
     });
 
     it('should throw an error if fails to get orders from CT APIs', async () => {
