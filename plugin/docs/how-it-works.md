@@ -2,6 +2,12 @@
 
 [//]: # (Explain deduplication using CT id)
 
+## Mapping between API/SDK properties
+
+After TypeScript types were introduced in the `klaviyo-api` package, some models/mappers were added to transform snake_case properties into camelCase for responses (and the opposite for requests). E.g.: `external_id` will need to be sent as `externalId` when making requests, responses will return `externalId` rather than `external_id` (which is how it's defined in the API).
+
+The documentation below remains in snake_case to match the API. For more specifics on which types are mapped based on model and which requests use said models, take a look at the [klaviyo-api-node](https://github.com/klaviyo/klaviyo-api-node) repository.
+
 ## Realtime data sync
 
 ### Customer creation

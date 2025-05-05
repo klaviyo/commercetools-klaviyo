@@ -238,14 +238,14 @@ export const ctDeleteCustomObjectNock = (key: string) => {
 export const getAllOrders = (responseBody = {}) => {
     return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
         .get('/klaviyo-dev/orders')
-        .query({ limit: '20', withTotal: 'false', sort: 'id%20asc' })
+        .query({ limit: '10', withTotal: 'false', sort: 'id%20asc' })
         .reply(200, responseBody, []);
 };
 
 export const getAllCustomers = (responseBody = {}) => {
     return nock('https://api.us-central1.gcp.commercetools.com:443', { encodedQueryParams: true })
         .get('/klaviyo-dev/customers')
-        .query({ limit: '20', withTotal: 'false', sort: 'id%20asc' })
+        .query({ limit: '10', withTotal: 'false', sort: 'id%20asc' })
         .reply(200, responseBody, []);
 };
 

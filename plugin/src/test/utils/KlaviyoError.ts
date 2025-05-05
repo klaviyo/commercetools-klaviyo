@@ -2,6 +2,9 @@ type ErrorResponse = {
     error?: {
         text: string;
     };
+    data?: {
+        [key: string]: any;
+    };
 };
 
 export class KlaviyoError extends Error {

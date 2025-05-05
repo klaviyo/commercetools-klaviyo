@@ -8,6 +8,8 @@ import {
 import { getCTCustomerAddressForKlaviyo, getPhoneNumber } from './utils/CustomerAddressUtils';
 import { mapCTAddressToKlaviyoLocation } from './mappers/CTAddressToKlaviyoLocationMapper';
 import config from 'config';
+import { ProfileRequest } from '../../../../types/klaviyo-types';
+import { KlaviyoEvent } from '../../../../types/klaviyo-plugin';
 
 export class CustomerAddressUpdateEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {

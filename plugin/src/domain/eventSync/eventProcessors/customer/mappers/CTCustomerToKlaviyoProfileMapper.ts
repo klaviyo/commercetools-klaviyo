@@ -1,6 +1,7 @@
 import { Customer } from '@commercetools/platform-sdk';
 import { getCTCustomerAddressForKlaviyo, getPhoneNumber } from '../utils/CustomerAddressUtils';
 import { mapCTAddressToKlaviyoLocation } from './CTAddressToKlaviyoLocationMapper';
+import { Profile } from '../../../../../types/klaviyo-types';
 
 /**
  * Maps a commercetools customer to the Klaviyo profile request attributes

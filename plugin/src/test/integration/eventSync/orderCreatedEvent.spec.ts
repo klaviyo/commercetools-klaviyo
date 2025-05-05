@@ -63,8 +63,10 @@ describe('pubSub adapter order created message', () => {
         const createEventNock = klaviyoEventNock({
             type: 'event',
             attributes: {
-                profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                metric: { name: 'Placed Order' },
+                profile: {
+                    data: { type: 'profile', attributes: { email: 'test@klaviyo.com', external_id: '123-123-123' } },
+                },
+                metric: { data: { type: 'metric', attributes: { name: 'Placed Order' } } },
                 value: 13,
                 properties: {
                     ...mapAllowedProperties('order', {
@@ -79,18 +81,20 @@ describe('pubSub adapter order created message', () => {
                     Categories: ['Test Category 1'],
                 },
                 unique_id: '3456789',
-                time: '2023-01-27T15:00:00.000Z',
+                time: new Date('2023-01-27T15:00:00.000Z').toISOString(),
             },
         });
 
         const nockKlaviyoEvent1 = klaviyoEventNock({
             attributes: {
-                metric: { name: 'Ordered Product' },
-                profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
+                metric: { data: { type: 'metric', attributes: { name: 'Ordered Product' } } },
+                profile: {
+                    data: { type: 'profile', attributes: { email: 'test@klaviyo.com', external_id: '123-123-123' } },
+                },
                 properties: {
                     ...ctGet2Orders.results[0].lineItems[0],
                 },
-                time: '2023-01-27T15:00:01.000Z',
+                time: new Date('2023-01-27T15:00:01.000Z').toISOString(),
                 unique_id: 'dd853ebf-b35d-454e-9c6c-703479df6cbd',
                 value: 406.25,
             },
@@ -153,8 +157,10 @@ describe('pubSub adapter order created message', () => {
         const createEventNock = klaviyoEventNock({
             type: 'event',
             attributes: {
-                profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                metric: { name: 'Placed Order' },
+                profile: {
+                    data: { type: 'profile', attributes: { email: 'test@klaviyo.com', external_id: '123-123-123' } },
+                },
+                metric: { data: { type: 'metric', attributes: { name: 'Placed Order' } } },
                 value: 13,
                 properties: {
                     ...mapAllowedProperties('order', {
@@ -169,18 +175,20 @@ describe('pubSub adapter order created message', () => {
                     Categories: ['Test Category 1'],
                 },
                 unique_id: '3456789',
-                time: '2023-01-27T15:00:00.000Z',
+                time: new Date('2023-01-27T15:00:00.000Z').toISOString(),
             },
         });
 
         const nockKlaviyoEvent1 = klaviyoEventNock({
             attributes: {
-                metric: { name: 'Ordered Product' },
-                profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
+                metric: { data: { type: 'metric', attributes: { name: 'Ordered Product' } } },
+                profile: {
+                    data: { type: 'profile', attributes: { email: 'test@klaviyo.com', external_id: '123-123-123' } },
+                },
                 properties: {
                     ...ctGet2Orders.results[0].lineItems[0],
                 },
-                time: '2023-01-27T15:00:01.000Z',
+                time: new Date('2023-01-27T15:00:01.000Z').toISOString(),
                 unique_id: 'dd853ebf-b35d-454e-9c6c-703479df6cbd',
                 value: 406.25,
             },
@@ -270,8 +278,13 @@ describe('pubSub event that produces 5xx error', () => {
             {
                 type: 'event',
                 attributes: {
-                    profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
-                    metric: { name: 'Placed Order' },
+                    profile: {
+                        data: {
+                            type: 'profile',
+                            attributes: { email: 'test@klaviyo.com', external_id: '123-123-123' },
+                        },
+                    },
+                    metric: { data: { type: 'metric', attributes: { name: 'Placed Order' } } },
                     value: 13,
                     properties: {
                         ...mapAllowedProperties('order', {
@@ -286,7 +299,7 @@ describe('pubSub event that produces 5xx error', () => {
                         Categories: ['Test Category 1'],
                     },
                     unique_id: '3456789',
-                    time: '2023-01-27T15:00:00.000Z',
+                    time: new Date('2023-01-27T15:00:00.000Z').toISOString(),
                 },
             },
             500,
@@ -295,12 +308,17 @@ describe('pubSub event that produces 5xx error', () => {
         const nockKlaviyoEvent1 = klaviyoEventNock(
             {
                 attributes: {
-                    metric: { name: 'Ordered Product' },
-                    profile: { $email: 'test@klaviyo.com', $id: '123-123-123' },
+                    metric: { data: { type: 'metric', attributes: { name: 'Ordered Product' } } },
+                    profile: {
+                        data: {
+                            type: 'profile',
+                            attributes: { email: 'test@klaviyo.com', external_id: '123-123-123' },
+                        },
+                    },
                     properties: {
                         ...ctGet2Orders.results[0].lineItems[0],
                     },
-                    time: '2023-01-27T15:00:01.000Z',
+                    time: new Date('2023-01-27T15:00:01.000Z').toISOString(),
                     unique_id: 'dd853ebf-b35d-454e-9c6c-703479df6cbd',
                     value: 406.25,
                 },

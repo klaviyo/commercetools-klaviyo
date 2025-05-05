@@ -1,4 +1,5 @@
 import { Address } from '@commercetools/platform-sdk';
+import { KlaviyoLocation } from '../../../../../types/klaviyo-types';
 
 export const mapCTAddressToKlaviyoLocation = (address?: Address): KlaviyoLocation | null => {
     return address

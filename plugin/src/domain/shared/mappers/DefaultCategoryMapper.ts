@@ -1,6 +1,7 @@
 import { Category } from '@commercetools/platform-sdk';
 import { CategoryMapper } from './CategoryMapper';
 import { getLocalizedStringAsText } from '../../../utils/locale-currency-utils';
+import { CategoryDeletedRequest, CategoryRequest } from '../../../types/klaviyo-types';
 
 export class DefaultCategoryMapper implements CategoryMapper {
     public mapCtCategoryToKlaviyoCategory(category: Category, klaviyoCategoryId?: string): CategoryRequest {
@@ -9,10 +10,10 @@ export class DefaultCategoryMapper implements CategoryMapper {
                 type: 'catalog-category',
                 id: klaviyoCategoryId,
                 attributes: {
-                    external_id: !klaviyoCategoryId ? category.id : undefined,
+                    externalId: !klaviyoCategoryId ? category.id : undefined,
                     name: this.getCategoryNameWithAncestors(category),
-                    integration_type: !klaviyoCategoryId ? '$custom' : undefined,
-                    catalog_type: !klaviyoCategoryId ? '$default' : undefined,
+                    integrationType: !klaviyoCategoryId ? '$custom' : undefined,
+                    catalogType: !klaviyoCategoryId ? '$default' : undefined,
                 },
             },
         };

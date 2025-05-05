@@ -6,6 +6,7 @@ import { getSampleCustomerResourceUpdatedMessage } from '../../../../test/testDa
 import { Context } from '../../../../types/klaviyo-context';
 import { sampleCategoryCreatedMessage } from '../../../../test/testData/ctCategoryMessages';
 import config from 'config';
+import { CategoryRequest } from '../../../../types/klaviyo-types';
 
 const ctCategoryServiceMock = {
     getCategoryById: jest.fn(),
@@ -91,13 +92,14 @@ describe('CategoryResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
         );
         contextMock.klaviyoService.getKlaviyoCategoryByExternalId.mockResolvedValue({
             attributes: {
-                external_id: 'someId',
+                externalId: 'someId',
                 name: 'someName',
-                integration_type: '$custom',
-                catalog_type: '$default',
             },
             id: 'someId',
             type: 'catalog-category',
+            links: {
+                self: '',
+            },
         });
 
         const klaviyoEvent = await event.generateKlaviyoEvents();

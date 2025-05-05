@@ -2,7 +2,7 @@ import nock from 'nock';
 
 export const klaviyoCreateProfileNock = (data: any, responseCode = 201, responseBody = {}) => {
     return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
-        .post('/api/profiles/', {
+        .post('/api/profiles', {
             data,
         })
         .reply(responseCode, responseBody);
@@ -14,7 +14,7 @@ export const klaviyoUpsertClientProfileNock = (
     responseCode = 202,
 ) => {
     return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
-        .post('/client/profiles/', {
+        .post('/client/profiles', {
             data,
         })
         .query({ company_id })
@@ -23,7 +23,7 @@ export const klaviyoUpsertClientProfileNock = (
 
 export const klaviyoGetProfilesNock = (responseStatusCode = 200, noDataInResponse = false) => {
     return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
-        .get('/api/profiles/')
+        .get('/api/profiles')
         .query({ filter: 'equals%28external_id%2C%22e54d8233-be41-4ce0-ae68-5d0674dd8517%22%29' })
         .reply(
             responseStatusCode,
@@ -117,6 +117,6 @@ export const klaviyoPatchProfileNock = (responseStatus = 200, body?: any) => {
     }
 
     return nock('https://a.klaviyo.com:443', { encodedQueryParams: true })
-        .patch('/api/profiles/01GRKR887TDV7JS4JGM003ANYJ/', body)
+        .patch('/api/profiles/01GRKR887TDV7JS4JGM003ANYJ', body)
         .reply(responseStatus, {}, []);
 };

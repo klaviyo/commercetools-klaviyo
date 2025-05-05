@@ -35,8 +35,9 @@ describe('pubSub adapter category resource updated message', () => {
     });
 
     it('should update the category in klaviyo and return status code 204 when a category resource updated message is received from CT', (done) => {
+        // nock.recorder.rec();
         const authNock = ctAuthNock();
-        const getCustomerNock = ctGetCategoryByIdNock(sampleCategoryResourceUpdatedMessage.resource.id, 200);
+        const getCategoryNock = ctGetCategoryByIdNock(sampleCategoryResourceUpdatedMessage.resource.id, 200);
         const getKlaviyoGetCategoriesNock = klaviyoGetCategoriesNock();
         const getKlaviyoPatchCategoryNock = klaviyoPatchCategoryNock();
         chai.request(server)
@@ -46,14 +47,14 @@ describe('pubSub adapter category resource updated message', () => {
                 expect(err).to.be.null;
                 expect(res.status).to.eq(204);
                 expect(authNock.isDone()).to.be.true;
-                expect(getCustomerNock.isDone()).to.be.true;
+                expect(getCategoryNock.isDone()).to.be.true;
                 expect(getKlaviyoGetCategoriesNock.isDone()).to.be.true;
                 expect(getKlaviyoPatchCategoryNock.isDone()).to.be.true;
                 done();
             });
     });
 
-    it('should return status code 202 and not send the event to klaviyo when the get customer call to CT fails with status code 400', (done) => {
+    it('should return status code 202 and not send the event to klaviyo when the get category call to CT fails with status code 400', (done) => {
         const authNock = ctAuthNock();
         const getCustomerNock = ctGetCategoryByIdNock(sampleCategoryResourceUpdatedMessage.resource.id, 400);
         const getKlaviyoGetCategoriesNock = klaviyoGetCategoriesNock();
@@ -103,7 +104,7 @@ describe('pubSub adapter category resource updated message', () => {
             });
     });
 
-    it('should return status code 202 when the get profile from Klaviyo fails with status code 400', (done) => {
+    it('should return status code 202 when the get category from Klaviyo fails with status code 400', (done) => {
         const authNock = ctAuthNock();
         const getCategoryNock = ctGetCategoryByIdNock(sampleCategoryResourceUpdatedMessage.resource.id);
         const getKlaviyoGetCategoriesNock = klaviyoGetCategoriesNock(400);
@@ -121,7 +122,7 @@ describe('pubSub adapter category resource updated message', () => {
             });
     });
 
-    it('should return status code 500 when fails to get the profile in Klaviyo with a 5xx error', (done) => {
+    it('should return status code 500 when fails to get the category in Klaviyo with a 5xx error', (done) => {
         const authNock = ctAuthNock();
         const getCustomerNock = ctGetCategoryByIdNock(sampleCategoryResourceUpdatedMessage.resource.id);
         const getKlaviyoGetCategoriesNock = klaviyoGetCategoriesNock(500);

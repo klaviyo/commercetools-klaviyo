@@ -1,6 +1,7 @@
 import { DeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import { Context } from '../../../types/klaviyo-context';
 import config from 'config';
+import { KlaviyoEvent } from '../../../types/klaviyo-plugin';
 
 export abstract class AbstractEventProcessor {
     constructor(protected readonly ctMessage: DeliveryPayload, protected readonly context: Context) {}

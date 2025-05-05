@@ -7,6 +7,7 @@ import {
     sampleInventoryCreatedMessage,
     sampleInventoryResourceUpdatedMessage,
 } from '../../../../test/testData/ctInventoryMessages';
+import { ItemVariantRequest } from '../../../../types/klaviyo-types';
 
 const ctProductServiceMock = {
     getInventoryEntryById: jest.fn(),
@@ -24,8 +25,8 @@ const inventoryRequestMock = mock<ItemVariantRequest>();
 inventoryRequestMock.data = {
     attributes: {
         published: true,
-        inventory_policy: 1,
-        inventory_quantity: 100,
+        inventoryPolicy: 1,
+        inventoryQuantity: 100,
     },
     id: 'someId',
     type: 'catalog-variant',

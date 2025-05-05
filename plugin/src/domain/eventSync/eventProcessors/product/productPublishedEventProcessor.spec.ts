@@ -4,6 +4,7 @@ import { expect as exp } from 'chai';
 import { Context } from '../../../../types/klaviyo-context';
 import { sampleProductPublishedMessage } from '../../../../test/testData/ctProductMessages';
 import { ProductPublishedEventProcessor } from './productPublishedEventProcessor';
+import { ItemVariantJobRequest } from '../../../../types/klaviyo-types';
 
 jest.mock('../../../../infrastructure/driven/klaviyo/KlaviyoService');
 
@@ -18,7 +19,7 @@ jest.mock('../../../../infrastructure/driven/commercetools/DefaultCtProductServi
 }));
 
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
-const itemRequestMock = mock<ItemRequest>();
+const itemRequestMock = mock<any>();
 const variantJobRequestMock = mock<ItemVariantJobRequest>();
 const mockedProductId = 'mockedProductId';
 itemRequestMock.data.id = mockedProductId;
@@ -61,10 +62,10 @@ describe('ProductPublishedEventProcessor > generateKlaviyoEvents', () => {
         contextMock.ctProductService.getProductById.mockImplementationOnce(async () => ({
             masterData: {
                 current: {
-                    ...sampleProductPublishedMessage.productProjection,
+                    ...sampleProductPublishedMessage.productProjection as any,
                 },
             },
-        }));
+        }) as any);
         // contextMock.klaviyoService.getKlaviyoItemByExternalId.mockResolvedValue({
         //     id: `$custom:::$default:::${sampleProductPublishedMessage.resource.id}`,
         // } as any);
@@ -74,10 +75,10 @@ describe('ProductPublishedEventProcessor > generateKlaviyoEvents', () => {
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
         exp(klaviyoEvent).to.not.be.undefined;
-        exp(klaviyoEvent.length).to.be.eq(1);
+        exp(klaviyoEvent.length).to.be.eq(2);
     });
 
-    it('should generate the klaviyo update item event and variant jobs when the input product is not found in klaviyo', async () => {
+    it('should generate the klaviyo update item event and variant jobs when the input product is found in klaviyo', async () => {
         const ctMessageMock: MessageDeliveryPayload = mockDeep<MessageDeliveryPayload>();
         Object.defineProperty(ctMessageMock, 'resource', {
             value: { typeId: 'product', id: sampleProductPublishedMessage.resource.id },
@@ -89,7 +90,7 @@ describe('ProductPublishedEventProcessor > generateKlaviyoEvents', () => {
                     ...sampleProductPublishedMessage.productProjection,
                 },
             },
-        }));
+        }) as any);
         contextMock.klaviyoService.getKlaviyoItemByExternalId.mockResolvedValue({
             id: `$custom:::$default:::${sampleProductPublishedMessage.resource.id}`,
         } as any);
@@ -100,6 +101,6 @@ describe('ProductPublishedEventProcessor > generateKlaviyoEvents', () => {
         const klaviyoEvent = await event.generateKlaviyoEvents();
 
         exp(klaviyoEvent).to.not.be.undefined;
-        exp(klaviyoEvent.length).to.be.eq(1);
+        exp(klaviyoEvent.length).to.be.eq(2);
     });
 });

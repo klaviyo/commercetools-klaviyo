@@ -7,6 +7,8 @@ import { isFulfilled, isRejected } from '../../utils/promise';
 import { ErrorCodes } from '../../types/errors/StatusError';
 import { Customer } from '@commercetools/platform-sdk';
 import { CtCustomerService } from '../../infrastructure/driven/commercetools/CtCustomerService';
+import { ProfileRequest } from '../../types/klaviyo-types';
+import { delaySeconds } from '../../utils/delay-seconds';
 
 export class CustomersSync {
     lockKey = 'customerFullSync';
@@ -50,6 +52,7 @@ export class CustomersSync {
                         logger.error('Error syncing profiles with klaviyo', rejected),
                     );
                 }
+                await delaySeconds(2);
             } while (ctCustomerResults.hasMore);
             logger.info(
                 `Historical customers import. Total customers to be imported ${totalCustomers}, total klaviyo profiles: ${totalKlaviyoProfiles}, successfully imported: ${succeeded}, errored: ${errored}`,

@@ -7,6 +7,8 @@ import { isFulfilled, isRateLimited, isRejected } from '../../utils/promise';
 import { ErrorCodes } from '../../types/errors/StatusError';
 import { Category } from '@commercetools/platform-sdk';
 import { CtCategoryService } from '../../infrastructure/driven/commercetools/CtCategoryService';
+import { GetCatalogCategoryResponseCollection } from 'klaviyo-api';
+import { CategoryDeletedRequest, CategoryRequest } from '../../types/klaviyo-types';
 
 export class CategoriesSync {
     lockKey = 'categoryFullSync';
@@ -73,13 +75,13 @@ export class CategoriesSync {
             //ensures that only one sync at the time is running
             await this.lockService.acquireLock(this.lockKey);
 
-            let klaviyoCategoryResults: KlaviyoQueryResult<KlaviyoCategory> | undefined;
+            let klaviyoCategoryResults: GetCatalogCategoryResponseCollection | undefined;
             let succeeded = 0,
                 errored = 0,
                 totalCategories = 0;
 
             do {
-                klaviyoCategoryResults = await this.klaviyoService.getKlaviyoPaginatedCategories(klaviyoCategoryResults?.links.next);
+                klaviyoCategoryResults = await this.klaviyoService.getKlaviyoPaginatedCategories(klaviyoCategoryResults?.links?.next);
 
                 const promiseResults = await Promise.allSettled(
                     klaviyoCategoryResults.data.flatMap((category) => this.generateDeleteCategoryRequest(category.id as string)),
@@ -100,7 +102,7 @@ export class CategoriesSync {
                         logger.error('Error deleting categories in klaviyo', rejected),
                     );
                 }
-            } while (klaviyoCategoryResults?.links.next);
+            } while (klaviyoCategoryResults?.links?.next);
             logger.info(
                 `Klaviyo categories deletion. Total categories to be deleted ${totalCategories}, successfully deleted: ${succeeded}, errored: ${errored}`,
             );
