@@ -1,5 +1,21 @@
 # Changelog
 
+## v2.0.3
+
+### Other Changes
+
+- Tests: fixed an issue where certain tests would not finish on their own and Jest needed the `--forceExit` flag.
+- Cleaned up some comments/bits of old commented code.
+- Other minor changes.
+
+## v2.0.2
+
+### Other Changes
+
+- Changed/removed some of the logs to avoid logging profile/customer information which may be contained in some events.
+- Improved test coverage.
+- Other minor changes.
+
 ## v2.0.1
 
 ### Bug Fixes

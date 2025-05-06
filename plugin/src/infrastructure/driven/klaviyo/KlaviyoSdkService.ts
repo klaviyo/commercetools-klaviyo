@@ -35,7 +35,11 @@ const retryWithExponentialBackoff: RetryWithExponentialBackoff = new RetryWithEx
     numRetries: 5,
     maxInterval: 60,
 });
+
+// Used through instantiation, without passing it as a parameter to other classes/methods.
+// See: https://github.com/klaviyo/klaviyo-api-node/blob/main/README.md#global-api-key
 new GlobalApiKeySettings(process.env.KLAVIYO_AUTH_KEY || '', retryWithExponentialBackoff);
+
 export class KlaviyoSdkService extends KlaviyoService {
     public async sendEventToKlaviyo(event: KlaviyoEvent): Promise<any> {
         logger.info(`Sending event of type ${event.type} to Klaviyo`);
@@ -148,7 +152,7 @@ export class KlaviyoSdkService extends KlaviyoService {
             } profile. Retrying after removing phone number from profile...`,
         );
 
-        const modifiedBody: any = {
+        const modifiedBody = {
             data: {
                 ...body.data,
                 attributes: {

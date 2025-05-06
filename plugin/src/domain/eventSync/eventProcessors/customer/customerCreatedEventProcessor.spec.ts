@@ -51,7 +51,6 @@ describe('customerCreatedEvent > isEventValid', () => {
 describe('customerCreatedEvent > generateKlaviyoEvent', () => {
     beforeEach(() => {
         contextMock.klaviyoService.getKlaviyoProfileByExternalId.mockResolvedValue(undefined);
-        //todo add tests with profile available
     });
     it('should generate the klaviyo create profile event when the input customer created event is valid', async () => {
         const message = getSampleCustomerCreatedMessage();

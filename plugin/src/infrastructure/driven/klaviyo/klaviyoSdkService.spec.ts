@@ -98,7 +98,7 @@ describe('klaviyoService > sendEventToKlaviyo', () => {
             data: {
                 ...klaviyoEvent.body.data,
                 attributes: {
-                    ...(klaviyoEvent.body.data as any).attributes,
+                    ...(klaviyoEvent.body.data).attributes,
                     phoneNumber: undefined,
                 },
             },

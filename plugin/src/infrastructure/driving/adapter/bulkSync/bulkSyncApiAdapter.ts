@@ -274,11 +274,21 @@ bulkSyncApp.get('/sync/status', async (req, res) => {
     res.status(202).send();
 });
 
-export const bulkSyncApiAdapter: GenericAdapter = (): Promise<any> => {
+export const bulkSyncApiAdapterApp = () => {
     if ((process.env.APP_TYPE && process.env.APP_TYPE != 'BULK_IMPORT') || process.env.CONNECT_ENV) {
-        return Promise.resolve();
+        return;
     }
+    return app;
+};
+
+export const bulkSyncApiAdapter: GenericAdapter = (): Promise<any> => {
     const PORT = process.env.BULK_IMPORT_PORT || 6779;
-    bulkSyncApp.listen(PORT, () => logger.info(`klaviyo commercetools plugin bulk sync, listening on port ${PORT}`));
-    return Promise.resolve(app);
+    const adapterApp = bulkSyncApiAdapterApp();
+    if (adapterApp) {
+        bulkSyncApp.listen(PORT, () =>
+            logger.info(`klaviyo commercetools plugin bulk sync, listening on port ${PORT}`),
+        );
+        return Promise.resolve(app);
+    }
+    return Promise.resolve();
 };

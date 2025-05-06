@@ -24,7 +24,7 @@ export class CategoryCreatedEventProcessor extends AbstractEventProcessor {
         // Always get category from CT to expanded ancestors are available
         const category = (await this.context.ctCategoryService.getCategoryById(
             (message as CategoryCreatedMessage).resource.id,
-        )) as Category;
+        ));
 
         const body: CategoryRequest = this.context.categoryMapper.mapCtCategoryToKlaviyoCategory(category);
 

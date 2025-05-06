@@ -21,7 +21,7 @@ export class InventoryResourceUpdatedEventProcessor extends AbstractEventProcess
         logger.info(`processing CT ${message.resource.typeId}${message.notificationType} message`);
         const inventory = (await this.context.ctProductService.getInventoryEntryById(
             message.resource.id,
-        )) as InventoryEntry;
+        ));
         const klaviyoVariant = (
             await this.context.klaviyoService.getKlaviyoItemVariantsByCtSkus(undefined, [
                 message.resourceUserProvidedIdentifiers?.sku as string,

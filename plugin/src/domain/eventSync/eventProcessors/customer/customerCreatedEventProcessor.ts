@@ -27,7 +27,7 @@ export class CustomerCreatedEventProcessor extends AbstractEventProcessor {
         } else {
             customer = (await this.context.ctCustomerService.getCustomerProfile(
                 (message as CustomerCreatedMessage).resource.id,
-            )) as Customer;
+            ));
         }
 
         const klaviyoEvent: KlaviyoEvent = {

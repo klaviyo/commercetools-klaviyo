@@ -1,6 +1,6 @@
 {
   "name": "klaviyo-ct-plugin",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "Klaviyo plugin for integration with commercetools",
   "main": "index.js",
   "author": {
@@ -19,7 +19,7 @@
     "test:unit": "jest --modulePathIgnorePatterns=src/test/integration",
     "test:integration": "jest --testPathPattern=src/test/integration",
     "test:integrationDetectOpenHandles": "jest --testPathPattern=src/test/integration --no-cache --detectOpenHandles --runInBand --forceExit",
-    "test": "jest --forceExit",
+    "test": "jest",
     "test:watch": "npm test -- --watch",
     "ts-types": " tsc --emitDeclarationOnly --outDir dist",
     "prepare": "cd .. && husky install plugin/.husky",

@@ -10,6 +10,7 @@ import * as packageJson from '../../../../../package.json';
 
 export const app = express();
 app.use(express.json());
+app.disable('x-powered-by');
 const interceptor = new BatchInterceptor({
     name: 'klaviyo-useragent-interceptor',
     interceptors: [new ClientRequestInterceptor()],
@@ -72,11 +73,21 @@ app.post('/', async (req, res) => {
     }
 });
 
-export const pubsubAdapter: GenericAdapter = (): Promise<any> => {
+export const pubsubAdapterApp = () => {
     if (process.env.APP_TYPE && process.env.APP_TYPE != 'EVENT' && !process.env.CONNECT_ENV) {
-        return Promise.resolve();
+        return;
     }
+    return app;
+};
+
+export const pubsubAdapter: GenericAdapter = (): Promise<any> => {
     const PORT = process.env.PUB_SUB_PORT || 8080;
-    app.listen(PORT, () => logger.info(`klaviyo commercetools plugin pub/sub adapter, listening on port ${PORT}`));
-    return Promise.resolve(app);
+    const adapterApp = pubsubAdapterApp();
+    if (adapterApp) {
+        adapterApp.listen(PORT, () =>
+            logger.info(`klaviyo commercetools plugin pub/sub adapter, listening on port ${PORT}`),
+        );
+        return Promise.resolve(adapterApp);
+    }
+    return Promise.resolve();
 };

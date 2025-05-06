@@ -45,7 +45,6 @@ const context: Context = {
     ctOrderService: new DefaultCtOrderService(getApiRoot()),
 };
 
-// export const processEvent = (ctMessage: CloudEventsFormat | PlatformFormat) => {
 const defaultProcessors: (typeof AbstractEventProcessor)[] = [
     CustomerCreatedEventProcessor,
     CustomerCompanyNameSetEventProcessor,
@@ -62,24 +61,11 @@ const defaultProcessors: (typeof AbstractEventProcessor)[] = [
     ProductPublishedEventProcessor,
 ];
 
-// class CTEventsProcessor {
-//     constructor(private readonly klaviyoService: KlaviyoService, private readonly eventProcessors: (typeof AbstractEventProcessor)[]) {
-//     }
-//
-//     public async processEvent(ctMessage: MessageDeliveryPayload): Promise<ProcessingResult> {
-//         return Promise.resolve({
-//             status: 'OK',
-//         });
-//     }
-// }
-
-//todo move processEvent to class
 export const processEvent = async (
     ctMessage: MessageDeliveryPayload,
     klaviyoService: KlaviyoService,
     eventProcessors: (typeof AbstractEventProcessor)[] = defaultProcessors,
 ): Promise<ProcessingResult> => {
-    // todo check ctMessage.payloadNotIncluded;
     logger.info(`Processing commercetools message with id ${ctMessage.id}`);
     const klaviyoRequestsPromises = await Promise.allSettled(
         eventProcessors

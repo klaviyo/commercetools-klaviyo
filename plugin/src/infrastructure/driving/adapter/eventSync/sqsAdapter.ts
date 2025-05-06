@@ -1,5 +1,4 @@
 import { SQSBatchResponse, SQSEvent } from 'aws-lambda';
-import logger from '../../../../utils/log';
 import { processEvent } from '../../../../domain/eventSync/processEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
 import { SQSBatchItemFailure } from 'aws-lambda/trigger/sqs';

@@ -137,7 +137,6 @@ describe('pubSub event that produces 4xx error', () => {
     it('should return status 400 when the request has no body', (done) => {
         chai.request(server)
             .post('/')
-            // .send(undefined)
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res.status).to.eq(400);
