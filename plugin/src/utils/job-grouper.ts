@@ -1,3 +1,5 @@
+import { KlaviyoEvent, maxSizeJobArrayContainer } from "../types/klaviyo-plugin";
+
 export const groupIntoMaxSizeJobs = (inputArray: KlaviyoEvent[], resultArrayKeys: string[], elementKey: string): maxSizeJobArrayContainer => {
     const resultArrays: maxSizeJobArrayContainer = {};
 
@@ -8,23 +10,25 @@ export const groupIntoMaxSizeJobs = (inputArray: KlaviyoEvent[], resultArrayKeys
     inputArray.forEach((event: any) => {
         const lastEvent: any = resultArrays[event.type].slice(-1)[0];
         if (lastEvent) {
-            if (lastEvent.body.data.attributes[elementKey].length < 100) {
+            if (lastEvent.body.data.attributes[elementKey].data.length < 100) {
                 const elements = [
                     ...chunks(
-                        lastEvent.body.data.attributes[elementKey].concat(
-                            event.body.data.attributes[elementKey],
+                        lastEvent.body.data.attributes[elementKey].data.concat(
+                            event.body.data.attributes[elementKey].data,
                         ),
                         100,
                     ),
                 ];
-                lastEvent.body.data.attributes[elementKey] = elements[0];
+                lastEvent.body.data.attributes[elementKey].data = elements[0];
                 if (elements[1]) {
                     resultArrays[event.type].push({
                         type: event.type,
                         body: {
                             data: {
                                 attributes: {
-                                    [elementKey]: elements[1],
+                                    [elementKey]: {
+                                        data: elements[1],
+                                    },
                                 },
                                 type: event.body.data.type,
                             },

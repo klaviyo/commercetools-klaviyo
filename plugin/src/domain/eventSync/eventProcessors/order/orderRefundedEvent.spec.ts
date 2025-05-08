@@ -2,14 +2,9 @@ import { expect as exp } from 'chai';
 import { DeepMockProxy, mock, mockDeep } from "jest-mock-extended";
 import { OrderRefundedEvent } from './orderRefundedEvent';
 import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/subscription';
-import {
-    ctAuthNock,
-    ctGetPaymentByIdNock,
-    ctGetOrderByPaymentIdNock,
-} from '../../../../test/integration/nocks/commercetoolsNock';
-import * as ctService from '../../../../infrastructure/driven/commercetools/ctService';
 import { Context } from "../../../../types/klaviyo-context";
 import { sampleOrderCreatedMessage } from '../../../../test/testData/orderData';
+import { EventRequest } from '../../../../types/klaviyo-types';
 
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 const eventRequestMock = mock<EventRequest>();

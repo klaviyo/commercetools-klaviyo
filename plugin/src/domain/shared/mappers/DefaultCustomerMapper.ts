@@ -1,6 +1,7 @@
 import { Address, Customer } from '@commercetools/platform-sdk';
 import { CustomerMapper } from './CustomerMapper';
 import { mapAllowedProperties } from '../../../utils/property-mapper';
+import { KlaviyoLocation, ProfileRequest } from '../../../types/klaviyo-types';
 
 const E_164_REGEX = /^\+[1-9]\d{10,14}$/;
 
@@ -9,11 +10,11 @@ export class DefaultCustomerMapper implements CustomerMapper {
         const address = this.getCTCustomerAddressForKlaviyo(customer);
         const {
             email,
-            firstName: first_name,
-            lastName: last_name,
+            firstName,
+            lastName,
             title,
             companyName: organization,
-            id: external_id,
+            id: externalId,
             custom,
         } = customer;
         const props = mapAllowedProperties('customer.customFields', { ...(custom?.fields || {}) });
@@ -24,11 +25,11 @@ export class DefaultCustomerMapper implements CustomerMapper {
                 id: klaviyoProfileId,
                 attributes: {
                     email,
-                    external_id,
-                    first_name,
-                    last_name,
+                    externalId,
+                    firstName,
+                    lastName,
                     title,
-                    phone_number: address?.mobile || address?.phone,
+                    phoneNumber: address?.mobile || address?.phone,
                     organization,
                     location: this.mapCTAddressToKlaviyoLocation(address),
                     properties: Object.keys(props).length ? { ...props } : undefined,

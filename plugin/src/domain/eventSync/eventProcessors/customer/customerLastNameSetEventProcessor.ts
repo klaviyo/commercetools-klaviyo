@@ -1,6 +1,8 @@
 import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
 import { CustomerLastNameSetMessage } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/message';
+import { ProfileRequest } from '../../../../types/klaviyo-types';
+import { KlaviyoEvent } from '../../../../types/klaviyo-plugin';
 
 export class CustomerLastNameSetEventProcessor extends AbstractEventProcessor {
     isEventValid(): boolean {

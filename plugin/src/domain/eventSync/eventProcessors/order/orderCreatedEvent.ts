@@ -10,6 +10,8 @@ import {
 } from '@commercetools/platform-sdk';
 import config from 'config';
 import { PaginatedProductResults } from '../../../../infrastructure/driven/commercetools/DefaultCtProductService';
+import { EventRequest } from '../../../../types/klaviyo-types';
+import { KlaviyoEvent } from '../../../../types/klaviyo-plugin';
 
 export class OrderCreatedEvent extends AbstractEventProcessor {
     private readonly PROCESSOR_NAME = 'OrderCreated';

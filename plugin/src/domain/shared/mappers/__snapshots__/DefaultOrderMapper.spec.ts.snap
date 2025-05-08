@@ -5,11 +5,21 @@ exports[`map CT order line to klaviyo event should map a commercetools order lin
   "data": {
     "attributes": {
       "metric": {
-        "name": "Ordered Product",
+        "data": {
+          "attributes": {
+            "name": "Ordered Product",
+          },
+          "type": "metric",
+        },
       },
       "profile": {
-        "$email": "test@klaviyo.com",
-        "$id": "123-123-123",
+        "data": {
+          "attributes": {
+            "email": "test@klaviyo.com",
+            "externalId": "123-123-123",
+          },
+          "type": "profile",
+        },
       },
       "properties": {
         "discountedPricePerQuantity": [],
@@ -47,8 +57,8 @@ exports[`map CT order line to klaviyo event should map a commercetools order lin
           "id": 1,
         },
       },
-      "time": "2023-01-27T15:00:00.000Z",
-      "unique_id": "123-123-123",
+      "time": 2023-01-27T15:00:00.000Z,
+      "uniqueId": "123-123-123",
       "value": 13,
     },
     "type": "event",
@@ -61,11 +71,21 @@ exports[`map CT order to Klaviyo event should include/exclude/map custom fields 
   "data": {
     "attributes": {
       "metric": {
-        "name": "someMetric",
+        "data": {
+          "attributes": {
+            "name": "someMetric",
+          },
+          "type": "metric",
+        },
       },
       "profile": {
-        "$email": "test@klaviyo.com",
-        "$id": "123-123-123",
+        "data": {
+          "attributes": {
+            "email": "test@klaviyo.com",
+            "externalId": "123-123-123",
+          },
+          "type": "profile",
+        },
       },
       "properties": {
         "Categories": [],
@@ -87,8 +107,8 @@ exports[`map CT order to Klaviyo event should include/exclude/map custom fields 
         },
         "version": 24,
       },
-      "time": "2023-01-27T15:00:00.000Z",
-      "unique_id": "3456789",
+      "time": 2023-01-27T15:00:00.000Z,
+      "uniqueId": "3456789",
       "value": 13,
     },
     "type": "event",
@@ -101,11 +121,21 @@ exports[`map CT order to Klaviyo event should map a billing address profile prop
   "data": {
     "attributes": {
       "metric": {
-        "name": "someMetric",
+        "data": {
+          "attributes": {
+            "name": "someMetric",
+          },
+          "type": "metric",
+        },
       },
       "profile": {
-        "$email": "test@klaviyo.com",
-        "$id": "123-123-123",
+        "data": {
+          "attributes": {
+            "email": "test@klaviyo.com",
+            "externalId": "123-123-123",
+          },
+          "type": "profile",
+        },
       },
       "properties": {
         "Categories": [],
@@ -126,8 +156,8 @@ exports[`map CT order to Klaviyo event should map a billing address profile prop
         },
         "version": 24,
       },
-      "time": "2023-01-27T15:00:00.000Z",
-      "unique_id": "3456789",
+      "time": 2023-01-27T15:00:00.000Z,
+      "uniqueId": "3456789",
       "value": 13,
     },
     "type": "event",
@@ -140,11 +170,21 @@ exports[`map CT order to Klaviyo event should map a commercetools order with a g
   "data": {
     "attributes": {
       "metric": {
-        "name": "someMetric",
+        "data": {
+          "attributes": {
+            "name": "someMetric",
+          },
+          "type": "metric",
+        },
       },
       "profile": {
-        "$email": "test@klaviyo.com",
-        "$id": "123-123-123",
+        "data": {
+          "attributes": {
+            "email": "test@klaviyo.com",
+            "externalId": "123-123-123",
+          },
+          "type": "profile",
+        },
       },
       "properties": {
         "Categories": [],
@@ -165,8 +205,8 @@ exports[`map CT order to Klaviyo event should map a commercetools order with a g
         },
         "version": 24,
       },
-      "time": "2023-01-27T15:00:00.000Z",
-      "unique_id": "3456789",
+      "time": 2023-01-27T15:00:00.000Z,
+      "uniqueId": "3456789",
       "value": 13,
     },
     "type": "event",
@@ -179,11 +219,21 @@ exports[`map CT order to Klaviyo event should map order line items and custom li
   "data": {
     "attributes": {
       "metric": {
-        "name": "someMetric",
+        "data": {
+          "attributes": {
+            "name": "someMetric",
+          },
+          "type": "metric",
+        },
       },
       "profile": {
-        "$email": "test@klaviyo.com",
-        "$id": "123-123-123",
+        "data": {
+          "attributes": {
+            "email": "test@klaviyo.com",
+            "externalId": "123-123-123",
+          },
+          "type": "profile",
+        },
       },
       "properties": {
         "Categories": [],
@@ -219,8 +269,8 @@ exports[`map CT order to Klaviyo event should map order line items and custom li
         },
         "version": 24,
       },
-      "time": "2023-01-27T15:00:00.000Z",
-      "unique_id": "3456789",
+      "time": 2023-01-27T15:00:00.000Z,
+      "uniqueId": "3456789",
       "value": 13,
     },
     "type": "event",
@@ -233,11 +283,21 @@ exports[`map CT order to Klaviyo event should map product categories to the Cate
   "data": {
     "attributes": {
       "metric": {
-        "name": "someMetric",
+        "data": {
+          "attributes": {
+            "name": "someMetric",
+          },
+          "type": "metric",
+        },
       },
       "profile": {
-        "$email": "test@klaviyo.com",
-        "$id": "123-123-123",
+        "data": {
+          "attributes": {
+            "email": "test@klaviyo.com",
+            "externalId": "123-123-123",
+          },
+          "type": "profile",
+        },
       },
       "properties": {
         "Categories": [
@@ -275,8 +335,8 @@ exports[`map CT order to Klaviyo event should map product categories to the Cate
         },
         "version": 24,
       },
-      "time": "2023-01-27T15:00:00.000Z",
-      "unique_id": "3456789",
+      "time": 2023-01-27T15:00:00.000Z,
+      "uniqueId": "3456789",
       "value": 13,
     },
     "type": "event",
@@ -289,11 +349,21 @@ exports[`map CT refunded order to Klaviyo event should include/exclude/map custo
   "data": {
     "attributes": {
       "metric": {
-        "name": "someMetric",
+        "data": {
+          "attributes": {
+            "name": "someMetric",
+          },
+          "type": "metric",
+        },
       },
       "profile": {
-        "$email": "test@klaviyo.com",
-        "$id": "123-123-123",
+        "data": {
+          "attributes": {
+            "email": "test@klaviyo.com",
+            "externalId": "123-123-123",
+          },
+          "type": "profile",
+        },
       },
       "properties": {
         "Categories": [],
@@ -315,8 +385,8 @@ exports[`map CT refunded order to Klaviyo event should include/exclude/map custo
         },
         "version": 24,
       },
-      "time": "2023-01-27T15:00:00.000Z",
-      "unique_id": "3456789",
+      "time": 2023-01-27T15:00:00.000Z,
+      "uniqueId": "3456789",
       "value": 13,
     },
     "type": "event",
@@ -329,11 +399,21 @@ exports[`map CT refunded order to Klaviyo event should map a commercetools refun
   "data": {
     "attributes": {
       "metric": {
-        "name": "someMetric",
+        "data": {
+          "attributes": {
+            "name": "someMetric",
+          },
+          "type": "metric",
+        },
       },
       "profile": {
-        "$email": "test@klaviyo.com",
-        "$id": "123-123-123",
+        "data": {
+          "attributes": {
+            "email": "test@klaviyo.com",
+            "externalId": "123-123-123",
+          },
+          "type": "profile",
+        },
       },
       "properties": {
         "Categories": [],
@@ -354,8 +434,8 @@ exports[`map CT refunded order to Klaviyo event should map a commercetools refun
         },
         "version": 24,
       },
-      "time": "2023-01-27T15:00:00.000Z",
-      "unique_id": "3456789",
+      "time": 2023-01-27T15:00:00.000Z,
+      "uniqueId": "3456789",
       "value": 13,
     },
     "type": "event",

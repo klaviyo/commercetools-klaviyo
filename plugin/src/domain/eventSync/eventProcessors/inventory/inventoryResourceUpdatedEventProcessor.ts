@@ -1,6 +1,8 @@
 import { AbstractEventProcessor } from '../abstractEventProcessor';
 import logger from '../../../../utils/log';
 import { InventoryEntry, ResourceUpdatedDeliveryPayload } from '@commercetools/platform-sdk';
+import { ItemVariantRequest } from '../../../../types/klaviyo-types';
+import { KlaviyoEvent } from '../../../../types/klaviyo-plugin';
 
 export class InventoryResourceUpdatedEventProcessor extends AbstractEventProcessor {
     private readonly PROCESSOR_NAME = 'InventoryResourceUpdated';
@@ -31,7 +33,7 @@ export class InventoryResourceUpdatedEventProcessor extends AbstractEventProcess
                 body: this.context.productMapper.mapCtInventoryEntryToKlaviyoVariant(inventory, klaviyoVariant),
                 type: 'variantUpdated',
             };
-            if ((klaviyoEvent.body as ItemVariantRequest).data.attributes.inventory_quantity === undefined) {
+            if ((klaviyoEvent.body as ItemVariantRequest).data.attributes.inventoryQuantity === undefined) {
                 logger.info(
                     `The supply channel from inventory ${message.resource.id} is not configured to be used by variant ${
                         message.resourceUserProvidedIdentifiers?.sku as string

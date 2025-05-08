@@ -5,6 +5,7 @@ import { CustomerResourceUpdatedEventProcessor } from './customerResourceUpdated
 import { getSampleCustomerResourceUpdatedMessage } from '../../../../test/testData/ctCustomerMessages';
 import { getSampleCustomerApiResponse } from '../../../../test/testData/ctCustomerApi';
 import { Context } from '../../../../types/klaviyo-context';
+import { ProfileRequest } from '../../../../types/klaviyo-types';
 
 jest.mock('../../../../infrastructure/driven/klaviyo/KlaviyoService');
 
@@ -59,6 +60,9 @@ describe('CustomerResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
             type: 'profile',
             id: 'someId',
             attributes: {},
+            links: {
+                self: '',
+            },
         });
 
         const klaviyoEvent = await event.generateKlaviyoEvents();
@@ -66,7 +70,10 @@ describe('CustomerResourceUpdatedEventProcessor > generateKlaviyoEvent', () => {
         exp(klaviyoEvent).to.not.be.undefined;
         exp(klaviyoEvent.length).to.be.eq(1);
         expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledTimes(1);
-        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledWith(getSampleCustomerApiResponse(), 'someId');
+        expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledWith(
+            getSampleCustomerApiResponse(),
+            'someId',
+        );
         exp(klaviyoEvent[0].body.data.id).to.eq('someId');
     });
 

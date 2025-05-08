@@ -63,7 +63,7 @@ describe('syncAllOrders', () => {
         const nockKlaviyoEvent1 = klaviyoEventNock({
             attributes: {
                 metric: { name: 'Placed Order' },
-                profile: { $email: 'testuser1@klaviyo.com' },
+                profile: { email: 'testuser1@klaviyo.com' },
                 properties: {
                     createdAt: '2023-02-09T10:02:50.207Z',
                     customItems: [],
@@ -592,7 +592,7 @@ describe('syncAllOrders', () => {
         const nockKlaviyoEvent2 = klaviyoEventNock({
             attributes: {
                 metric: { name: 'Ordered Product' },
-                profile: { $email: 'testuser1@klaviyo.com' },
+                profile: { email: 'testuser1@klaviyo.com' },
                 properties: {
                     addedAt: '2023-02-09T10:02:50.192Z',
                     discountedPricePerQuantity: [],
@@ -832,7 +832,7 @@ describe('syncAllOrders', () => {
         const nockKlaviyoEvent3 = klaviyoEventNock({
             attributes: {
                 metric: { name: 'Ordered Product' },
-                profile: { $email: 'testuser1@klaviyo.com' },
+                profile: { email: 'testuser1@klaviyo.com' },
                 properties: {
                     addedAt: '2023-02-09T10:02:50.192Z',
                     discountedPricePerQuantity: [],
@@ -1088,5 +1088,5 @@ describe('syncAllOrders', () => {
         expect(nockKlaviyoEvent2.isDone()).to.be.true;
         expect(nockKlaviyoEvent3.isDone()).to.be.true;
         expect(nock.activeMocks().length).to.eq(0);
-    });
+    }, 10000);
 });

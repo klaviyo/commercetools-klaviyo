@@ -5,6 +5,7 @@ import { expect as exp } from 'chai';
 import { responseHandler } from './responseHandler';
 import mocked = jest.mocked;
 import { KlaviyoService } from "../../infrastructure/driven/klaviyo/KlaviyoService";
+import { KlaviyoEvent } from '../../types/klaviyo-plugin';
 
 jest.mock('../../infrastructure/driven/klaviyo/KlaviyoSdkService');
 jest.mock('./responseHandler');

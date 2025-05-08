@@ -11,7 +11,7 @@ export type PaginatedOrderResults = {
 };
 
 export class DefaultCtOrderService implements CtOrderService{
-    constructor(private readonly ctApiRoot: ByProjectKeyRequestBuilder, private readonly limit = 20) {}
+    constructor(private readonly ctApiRoot: ByProjectKeyRequestBuilder, private readonly limit = 10) {}
 
     getAllOrders = async (lastId?: string): Promise<PaginatedOrderResults> => {
         logger.info(`Getting all orders in commercetools with id after ${lastId}`);

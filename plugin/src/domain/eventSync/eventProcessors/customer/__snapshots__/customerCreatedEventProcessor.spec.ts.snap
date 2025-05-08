@@ -6,9 +6,9 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
     "data": {
       "attributes": {
         "email": "Alfred_Lebsack@hotmail.com",
-        "external_id": "77d8e6f4-2dee-4ac9-bd21-4035b6ba76d8",
-        "first_name": "Jailyn",
-        "last_name": "Hilll",
+        "externalId": "77d8e6f4-2dee-4ac9-bd21-4035b6ba76d8",
+        "firstName": "Jailyn",
+        "lastName": "Hilll",
         "location": {
           "address1": "12, First Street",
           "address2": "",
@@ -18,7 +18,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
           "zip": "12345",
         },
         "organization": undefined,
-        "phone_number": "+39 3234567892",
+        "phoneNumber": "+39 3234567892",
         "properties": undefined,
         "title": "Miss",
       },
@@ -36,9 +36,9 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
     "data": {
       "attributes": {
         "email": "roberto.smith@klaviyo.com",
-        "external_id": "e54d8233-be41-4ce0-ae68-5d0674dd8517",
-        "first_name": "Roberto",
-        "last_name": "Smith",
+        "externalId": "e54d8233-be41-4ce0-ae68-5d0674dd8517",
+        "firstName": "Roberto",
+        "lastName": "Smith",
         "location": {
           "address1": "C, Tall Tower, 23, High Road",
           "address2": "private access, additional address info",
@@ -48,7 +48,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
           "zip": "WE1 2DP",
         },
         "organization": "Klaviyo",
-        "phone_number": "+4407476588266",
+        "phoneNumber": "+4407476588266",
         "properties": undefined,
         "title": "Mr",
       },
@@ -66,9 +66,9 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
     "data": {
       "attributes": {
         "email": "roberto.smith@klaviyo.com",
-        "external_id": "e54d8233-be41-4ce0-ae68-5d0674dd8517",
-        "first_name": "Roberto",
-        "last_name": "Smith",
+        "externalId": "e54d8233-be41-4ce0-ae68-5d0674dd8517",
+        "firstName": "Roberto",
+        "lastName": "Smith",
         "location": {
           "address1": "C, Tall Tower, 23, I'm the default billing address",
           "address2": "private access, additional address info",
@@ -78,7 +78,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
           "zip": "WS2 5FX",
         },
         "organization": "Klaviyo",
-        "phone_number": "+4407476588266",
+        "phoneNumber": "+4407476588266",
         "properties": undefined,
         "title": "Mr",
       },
@@ -96,9 +96,9 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
     "data": {
       "attributes": {
         "email": "roberto.smith@klaviyo.com",
-        "external_id": "e54d8233-be41-4ce0-ae68-5d0674dd8517",
-        "first_name": "Roberto",
-        "last_name": "Smith",
+        "externalId": "e54d8233-be41-4ce0-ae68-5d0674dd8517",
+        "firstName": "Roberto",
+        "lastName": "Smith",
         "location": {
           "address1": "C, Tall Tower, 23, I'm a random address",
           "address2": "private access, I'm a random address",
@@ -108,7 +108,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
           "zip": "WS2 5FX",
         },
         "organization": "Klaviyo",
-        "phone_number": "+4407476588266",
+        "phoneNumber": "+4407476588266",
         "properties": undefined,
         "title": "Mr",
       },
@@ -126,9 +126,9 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
     "data": {
       "attributes": {
         "email": "roberto.smith@klaviyo.com",
-        "external_id": "e54d8233-be41-4ce0-ae68-5d0674dd8517",
-        "first_name": "Roberto",
-        "last_name": "Smith",
+        "externalId": "e54d8233-be41-4ce0-ae68-5d0674dd8517",
+        "firstName": "Roberto",
+        "lastName": "Smith",
         "location": {
           "address1": "C, Tall Tower, 23, I'm another billing address",
           "address2": "private access, I'm another billing address",
@@ -138,7 +138,7 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
           "zip": "WS2 5FY",
         },
         "organization": "Klaviyo",
-        "phone_number": "+4407476588266",
+        "phoneNumber": "+4407476588266",
         "properties": undefined,
         "title": "Mr",
       },
@@ -156,12 +156,12 @@ exports[`customerCreatedEvent > generateKlaviyoEvent should generate the klaviyo
     "data": {
       "attributes": {
         "email": "roberto.smith@klaviyo.com",
-        "external_id": "e54d8233-be41-4ce0-ae68-5d0674dd8517",
-        "first_name": "Roberto",
-        "last_name": "Smith",
+        "externalId": "e54d8233-be41-4ce0-ae68-5d0674dd8517",
+        "firstName": "Roberto",
+        "lastName": "Smith",
         "location": null,
         "organization": "Klaviyo",
-        "phone_number": undefined,
+        "phoneNumber": undefined,
         "properties": undefined,
         "title": "Mr",
       },

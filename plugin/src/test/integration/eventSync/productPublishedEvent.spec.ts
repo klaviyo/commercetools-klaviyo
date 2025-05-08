@@ -7,6 +7,7 @@ import {
     klaviyoGetItemNock,
     klaviyoGetCatalogueVariantsNock,
     klaviyoGetVariantJobNock,
+    klaviyoCreateVariantNock,
 } from '../nocks/KlaviyoCatalogueNock';
 import { sampleProductPublishedMessage } from '../../testData/ctProductMessages';
 import nock from 'nock';
@@ -90,120 +91,71 @@ describe('pubSub adapter product published message', () => {
         const updateItemNock = klaviyoUpdateItemNock(
             encodeURIComponent(`$custom:::$default:::${sampleProductPublishedMessage.resource.id}`),
             {
-                data: {
-                    id: `$custom:::$default:::${sampleProductPublishedMessage.resource.id}`,
-                    attributes: {
-                        description: 'Ideal for small electronics projects',
-                        image_full_url:
-                            'https://af8624530ae38a966e54-c4324683759a12aace9336b874361505.ssl.cf1.rackcdn.com/relay-5meY_-gN.jpg',
-                        price: 5,
-                        published: true,
-                        title: 'Small AC/DC Relay',
-                        url: 'https://example-store.com/products/example-product',
-                        custom_metadata: {
-                            title_json: '{"title_en":"Small AC/DC Relay"}',
-                            slug_json: '{"slug_en":"example-product"}',
-                            price_json:
-                                '{"price_EUR":5,"price_AD":5,"price_AT":5,"price_AX":5,"price_BE":5,"price_BL":5,"price_CP":5,"price_CY":5,"price_DE":5,"price_EA":5,"price_EE":5,"price_ES":5,"price_EU":5,"price_FI":5,"price_FR":5,"price_FX":5,"price_GF":5,"price_GP":5,"price_GR":5,"price_IC":5,"price_IE":5,"price_IT":5,"price_LT":5,"price_LU":5,"price_LV":5,"price_MC":5,"price_ME":5,"price_MF":5,"price_MQ":5,"price_MT":5,"price_NL":5,"price_PM":5,"price_PT":5,"price_RE":5,"price_SI":5,"price_SK":5,"price_SM":5,"price_TF":5,"price_VA":5,"price_XK":5,"price_YT":5,"price_ZW":5}',
-                            currency_json:
-                                '{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR"}',
-                        },
+                id: `$custom:::$default:::${sampleProductPublishedMessage.resource.id}`,
+                attributes: {
+                    description: 'Ideal for small electronics projects',
+                    image_full_url:
+                        'https://af8624530ae38a966e54-c4324683759a12aace9336b874361505.ssl.cf1.rackcdn.com/relay-5meY_-gN.jpg',
+                    price: 5,
+                    published: true,
+                    title: 'Small AC/DC Relay',
+                    url: 'https://example-store.com/products/example-product',
+                    custom_metadata: {
+                        title_json: '{"title_en":"Small AC/DC Relay"}',
+                        slug_json: '{"slug_en":"example-product"}',
+                        price_json:
+                            '{"price_EUR":5,"price_AD":5,"price_AT":5,"price_AX":5,"price_BE":5,"price_BL":5,"price_CP":5,"price_CY":5,"price_DE":5,"price_EA":5,"price_EE":5,"price_ES":5,"price_EU":5,"price_FI":5,"price_FR":5,"price_FX":5,"price_GF":5,"price_GP":5,"price_GR":5,"price_IC":5,"price_IE":5,"price_IT":5,"price_LT":5,"price_LU":5,"price_LV":5,"price_MC":5,"price_ME":5,"price_MF":5,"price_MQ":5,"price_MT":5,"price_NL":5,"price_PM":5,"price_PT":5,"price_RE":5,"price_SI":5,"price_SK":5,"price_SM":5,"price_TF":5,"price_VA":5,"price_XK":5,"price_YT":5,"price_ZW":5}',
+                        currency_json:
+                            '{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR"}',
                     },
-                    relationships: {
-                        categories: {
-                            data: [
-                                {
-                                    id: '$custom:::$default:::test',
-                                    type: 'catalog-category',
-                                },
-                            ],
-                        },
-                    },
-                    type: 'catalog-item',
                 },
+                relationships: {
+                    categories: {
+                        data: [
+                            {
+                                id: '$custom:::$default:::test',
+                                type: 'catalog-category',
+                            },
+                        ],
+                    },
+                },
+                type: 'catalog-item',
             },
         );
 
-        const createVariantsJobNock = klaviyoCreateVariantJobNock(
-            {
-                attributes: {
-                    variants: [
-                        {
-                            attributes: {
-                                catalog_type: '$default',
-                                description: 'Ideal for small electronics projects',
-                                external_id: 'EXPROD1',
-                                image_full_url:
-                                    'https://af8624530ae38a966e54-c4324683759a12aace9336b874361505.ssl.cf1.rackcdn.com/relay-5meY_-gN.jpg',
-                                integration_type: '$custom',
-                                inventory_policy: 1,
-                                inventory_quantity: 60,
-                                price: 5,
-                                published: true,
-                                sku: 'EXPROD1',
-                                title: 'Small AC/DC Relay',
-                                url: 'https://example-store.com/products/example-product',
-                                custom_metadata: {
-                                    title_json: '{"title_en":"Small AC/DC Relay"}',
-                                    slug_json: '{"slug_en":"example-product"}',
-                                    price_json:
-                                        '{"price_EUR":5,"price_AD":5,"price_AT":5,"price_AX":5,"price_BE":5,"price_BL":5,"price_CP":5,"price_CY":5,"price_DE":5,"price_EA":5,"price_EE":5,"price_ES":5,"price_EU":5,"price_FI":5,"price_FR":5,"price_FX":5,"price_GF":5,"price_GP":5,"price_GR":5,"price_IC":5,"price_IE":5,"price_IT":5,"price_LT":5,"price_LU":5,"price_LV":5,"price_MC":5,"price_ME":5,"price_MF":5,"price_MQ":5,"price_MT":5,"price_NL":5,"price_PM":5,"price_PT":5,"price_RE":5,"price_SI":5,"price_SK":5,"price_SM":5,"price_TF":5,"price_VA":5,"price_XK":5,"price_YT":5,"price_ZW":5}',
-                                    currency_json:
-                                        '{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR"}',
-                                },
-                            },
-                            relationships: {
-                                items: {
-                                    data: [
-                                        {
-                                            id: '$custom:::$default:::d5d463ef-8701-4823-9413-4dd6032cf581',
-                                            type: 'catalog-item',
-                                        },
-                                    ],
-                                },
-                            },
-                            type: 'catalog-variant',
-                        },
-                    ],
+        const createVariantNock = klaviyoCreateVariantNock({
+            attributes: {
+                catalog_type: '$default',
+                description: 'Ideal for small electronics projects',
+                external_id: 'EXPROD1',
+                image_full_url:
+                    'https://af8624530ae38a966e54-c4324683759a12aace9336b874361505.ssl.cf1.rackcdn.com/relay-5meY_-gN.jpg',
+                integration_type: '$custom',
+                inventory_policy: 1,
+                inventory_quantity: 60,
+                price: 5,
+                published: true,
+                sku: 'EXPROD1',
+                title: 'Small AC/DC Relay',
+                url: 'https://example-store.com/products/example-product',
+                custom_metadata: {
+                    title_json: '{"title_en":"Small AC/DC Relay"}',
+                    slug_json: '{"slug_en":"example-product"}',
+                    price_json:
+                        '{"price_EUR":5,"price_AD":5,"price_AT":5,"price_AX":5,"price_BE":5,"price_BL":5,"price_CP":5,"price_CY":5,"price_DE":5,"price_EA":5,"price_EE":5,"price_ES":5,"price_EU":5,"price_FI":5,"price_FR":5,"price_FX":5,"price_GF":5,"price_GP":5,"price_GR":5,"price_IC":5,"price_IE":5,"price_IT":5,"price_LT":5,"price_LU":5,"price_LV":5,"price_MC":5,"price_ME":5,"price_MF":5,"price_MQ":5,"price_MT":5,"price_NL":5,"price_PM":5,"price_PT":5,"price_RE":5,"price_SI":5,"price_SK":5,"price_SM":5,"price_TF":5,"price_VA":5,"price_XK":5,"price_YT":5,"price_ZW":5}',
+                    currency_json:
+                        '{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR"}',
                 },
-                type: 'catalog-variant-bulk-create-job',
             },
-            202,
-            {
-                data: {
-                    type: 'catalog-variant-bulk-create-job',
-                    id: 'test-id',
-                    attributes: {
-                        job_id: 'string',
-                        status: 'processing',
-                        created_at: '2022-11-08T00:00:00',
-                        total_count: 1,
-                        completed_count: 1,
-                        failed_count: 0,
-                        completed_at: '2022-11-08T00:00:00',
-                        expires_at: '2022-11-08T00:00:00',
-                        errors: [],
+            relationships: {
+                item: {
+                    data: {
+                        id: '$custom:::$default:::d5d463ef-8701-4823-9413-4dd6032cf581',
+                        type: 'catalog-item',
                     },
                 },
             },
-        );
-
-        const createVariantsJobStatusNock = klaviyoGetVariantJobNock('test-id', 200, {
-            data: {
-                type: 'catalog-variant-bulk-create-job',
-                id: 'test-id',
-                attributes: {
-                    job_id: 'string',
-                    status: 'complete',
-                    created_at: '2022-11-08T00:00:00',
-                    total_count: 1,
-                    completed_count: 1,
-                    failed_count: 0,
-                    completed_at: '2022-11-08T00:00:00',
-                    expires_at: '2022-11-08T00:00:00',
-                    errors: [],
-                },
-            },
+            type: 'catalog-variant',
         });
 
         chai.request(server)
@@ -217,8 +169,7 @@ describe('pubSub adapter product published message', () => {
                 expect(getItemNock.isDone()).to.be.true;
                 expect(getVariantsNock.isDone()).to.be.true;
                 expect(updateItemNock.isDone()).to.be.true;
-                expect(createVariantsJobNock.isDone()).to.be.true;
-                expect(createVariantsJobStatusNock.isDone()).to.be.true;
+                expect(createVariantNock.isDone()).to.be.true;
                 done();
             });
     });
@@ -317,104 +268,63 @@ describe('pubSub event that produces 5xx error', () => {
         const updateItemNock = klaviyoUpdateItemNock(
             encodeURIComponent(`$custom:::$default:::${sampleProductPublishedMessage.resource.id}`),
             {
-                data: {
-                    id: `$custom:::$default:::${sampleProductPublishedMessage.resource.id}`,
-                    attributes: {
-                        description: 'Ideal for small electronics projects',
-                        image_full_url:
-                            'https://af8624530ae38a966e54-c4324683759a12aace9336b874361505.ssl.cf1.rackcdn.com/relay-5meY_-gN.jpg',
-                        price: 5,
-                        published: true,
-                        title: 'Small AC/DC Relay',
-                        url: 'https://example-store.com/products/example-product',
-                    },
-                    relationships: {
-                        categories: {
-                            data: [
-                                {
-                                    id: '$custom:::$default:::test',
-                                    type: 'catalog-category',
-                                },
-                            ],
-                        },
-                    },
-                    type: 'catalog-item',
+                id: `$custom:::$default:::${sampleProductPublishedMessage.resource.id}`,
+                attributes: {
+                    description: 'Ideal for small electronics projects',
+                    image_full_url:
+                        'https://af8624530ae38a966e54-c4324683759a12aace9336b874361505.ssl.cf1.rackcdn.com/relay-5meY_-gN.jpg',
+                    price: 5,
+                    published: true,
+                    title: 'Small AC/DC Relay',
+                    url: 'https://example-store.com/products/example-product',
                 },
+                relationships: {
+                    categories: {
+                        data: [
+                            {
+                                id: '$custom:::$default:::test',
+                                type: 'catalog-category',
+                            },
+                        ],
+                    },
+                },
+                type: 'catalog-item',
             },
         );
 
-        const createVariantsJobNock = klaviyoCreateVariantJobNock(
-            {
-                attributes: {
-                    variants: [
-                        {
-                            attributes: {
-                                catalog_type: '$default',
-                                description: 'Ideal for small electronics projects',
-                                external_id: 'EXPROD1',
-                                image_full_url:
-                                    'https://af8624530ae38a966e54-c4324683759a12aace9336b874361505.ssl.cf1.rackcdn.com/relay-5meY_-gN.jpg',
-                                integration_type: '$custom',
-                                inventory_policy: 1,
-                                inventory_quantity: 60,
-                                price: 5,
-                                published: true,
-                                sku: 'EXPROD1',
-                                title: 'Small AC/DC Relay',
-                                url: 'https://example-store.com/products/example-product',
-                            },
-                            relationships: {
-                                items: {
-                                    data: [
-                                        {
-                                            id: '$custom:::$default:::d5d463ef-8701-4823-9413-4dd6032cf581',
-                                            type: 'catalog-item',
-                                        },
-                                    ],
-                                },
-                            },
-                            type: 'catalog-variant',
-                        },
-                    ],
+        const createVariantNock = klaviyoCreateVariantNock({
+            attributes: {
+                catalog_type: '$default',
+                description: 'Ideal for small electronics projects',
+                external_id: 'EXPROD1',
+                image_full_url:
+                    'https://af8624530ae38a966e54-c4324683759a12aace9336b874361505.ssl.cf1.rackcdn.com/relay-5meY_-gN.jpg',
+                integration_type: '$custom',
+                inventory_policy: 1,
+                inventory_quantity: 60,
+                price: 5,
+                published: true,
+                sku: 'EXPROD1',
+                title: 'Small AC/DC Relay',
+                url: 'https://example-store.com/products/example-product',
+                custom_metadata: {
+                    title_json: '{"title_en":"Small AC/DC Relay"}',
+                    slug_json: '{"slug_en":"example-product"}',
+                    price_json:
+                        '{"price_EUR":5,"price_AD":5,"price_AT":5,"price_AX":5,"price_BE":5,"price_BL":5,"price_CP":5,"price_CY":5,"price_DE":5,"price_EA":5,"price_EE":5,"price_ES":5,"price_EU":5,"price_FI":5,"price_FR":5,"price_FX":5,"price_GF":5,"price_GP":5,"price_GR":5,"price_IC":5,"price_IE":5,"price_IT":5,"price_LT":5,"price_LU":5,"price_LV":5,"price_MC":5,"price_ME":5,"price_MF":5,"price_MQ":5,"price_MT":5,"price_NL":5,"price_PM":5,"price_PT":5,"price_RE":5,"price_SI":5,"price_SK":5,"price_SM":5,"price_TF":5,"price_VA":5,"price_XK":5,"price_YT":5,"price_ZW":5}',
+                    currency_json:
+                        '{"currency_AD":"EUR","currency_AT":"EUR","currency_AX":"EUR","currency_BE":"EUR","currency_BL":"EUR","currency_CP":"EUR","currency_CY":"EUR","currency_DE":"EUR","currency_EA":"EUR","currency_EE":"EUR","currency_ES":"EUR","currency_EU":"EUR","currency_FI":"EUR","currency_FR":"EUR","currency_FX":"EUR","currency_GF":"EUR","currency_GP":"EUR","currency_GR":"EUR","currency_IC":"EUR","currency_IE":"EUR","currency_IT":"EUR","currency_LT":"EUR","currency_LU":"EUR","currency_LV":"EUR","currency_MC":"EUR","currency_ME":"EUR","currency_MF":"EUR","currency_MQ":"EUR","currency_MT":"EUR","currency_NL":"EUR","currency_PM":"EUR","currency_PT":"EUR","currency_RE":"EUR","currency_SI":"EUR","currency_SK":"EUR","currency_SM":"EUR","currency_TF":"EUR","currency_VA":"EUR","currency_XK":"EUR","currency_YT":"EUR","currency_ZW":"EUR"}',
                 },
-                type: 'catalog-variant-bulk-create-job',
             },
-            202,
-            {
-                data: {
-                    type: 'catalog-variant-bulk-create-job',
-                    id: 'test-id',
-                    attributes: {
-                        job_id: 'string',
-                        status: 'processing',
-                        created_at: '2022-11-08T00:00:00',
-                        total_count: 1,
-                        completed_count: 1,
-                        failed_count: 0,
-                        completed_at: '2022-11-08T00:00:00',
-                        expires_at: '2022-11-08T00:00:00',
-                        errors: [],
+            relationships: {
+                item: {
+                    data: {
+                        id: '$custom:::$default:::d5d463ef-8701-4823-9413-4dd6032cf581',
+                        type: 'catalog-item',
                     },
                 },
             },
-        );
-
-        const createVariantsJobStatusNock = klaviyoGetVariantJobNock('test-id', 200, {
-            data: {
-                type: 'catalog-variant-bulk-create-job',
-                id: 'test-id',
-                attributes: {
-                    job_id: 'string',
-                    status: 'complete',
-                    created_at: '2022-11-08T00:00:00',
-                    total_count: 1,
-                    completed_count: 1,
-                    failed_count: 0,
-                    completed_at: '2022-11-08T00:00:00',
-                    expires_at: '2022-11-08T00:00:00',
-                    errors: [],
-                },
-            },
+            type: 'catalog-variant',
         });
 
         chai.request(server)
@@ -427,8 +337,7 @@ describe('pubSub event that produces 5xx error', () => {
                 expect(getItemNock.isDone()).to.be.true;
                 expect(getVariantsNock.isDone()).to.be.false;
                 expect(updateItemNock.isDone()).to.be.false;
-                expect(createVariantsJobNock.isDone()).to.be.false;
-                expect(createVariantsJobStatusNock.isDone()).to.be.false;
+                expect(createVariantNock.isDone()).to.be.false;
                 done();
             });
     });

@@ -11,7 +11,7 @@ export type PaginatedCustomerResults = {
 };
 
 export class DefaultCtCustomerService implements CtCustomerService{
-    constructor(private readonly ctApiRoot: ByProjectKeyRequestBuilder, private readonly limit = 20) {}
+    constructor(private readonly ctApiRoot: ByProjectKeyRequestBuilder, private readonly limit = 10) {}
 
     getAllCustomers = async (lastId?: string): Promise<PaginatedCustomerResults> => {
         logger.info(`Getting all customers in commercetools with id after ${lastId}`);

@@ -1,3 +1,16 @@
+import {
+    CategoryDeletedRequest,
+    CategoryRequest,
+    EventRequest,
+    ItemDeletedRequest,
+    ItemJobRequest,
+    ItemRequest,
+    ItemVariantJobRequest,
+    ItemVariantRequest,
+    ProfileRequest,
+} from './klaviyo-types';
+import { EventCreateQueryV2 } from 'klaviyo-api';
+
 type KlaviyoEvent = {
     type:
         | 'profileCreated'
@@ -13,7 +26,8 @@ type KlaviyoEvent = {
         | 'variantUpdated'
         | 'variantDeleted'
         | 'event';
-    body: KlaviyoRequestType;
+    // Several Klaviyo queries
+    body: EventCreateQueryV2 | any;
 };
 
 type KlaviyoRequestType =
@@ -25,7 +39,8 @@ type KlaviyoRequestType =
     | ItemVariantRequest
     | ItemJobRequest
     | ItemVariantJobRequest
-    | ItemDeletedRequest;
+    | ItemDeletedRequest
+    | any;
 
 type ProcessingResult = {
     status: 'OK' | '4xx';

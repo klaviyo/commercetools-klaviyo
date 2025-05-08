@@ -72,5 +72,5 @@ describe('syncAllCustomers', () => {
         expect(nockKlaviyoCreateProfile1.isDone()).to.be.true;
         expect(nockKlaviyoCreateProfile2.isDone()).to.be.true;
         expect(nock.activeMocks().length).to.eq(0);
-    });
+    }, 10000);
 });

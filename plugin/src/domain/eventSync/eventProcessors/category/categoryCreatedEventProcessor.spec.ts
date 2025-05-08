@@ -5,6 +5,7 @@ import { MessageDeliveryPayload } from '@commercetools/platform-sdk/dist/declara
 import { Context } from '../../../../types/klaviyo-context';
 import { sampleCategoryCreatedMessage } from '../../../../test/testData/ctCategoryMessages';
 import config from 'config';
+import { CategoryRequest } from '../../../../types/klaviyo-types';
 
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 const categoryRequestMock = mock<CategoryRequest>();
