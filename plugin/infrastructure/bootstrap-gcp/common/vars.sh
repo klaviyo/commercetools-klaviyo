@@ -2,14 +2,14 @@
 
 export CONFIG_NAME=${PROJECT_NAME}
 
-export ORG_ID=696327350455
-export BILLING_ID=011EF7-3799F6-D698C5
+export ORG_ID=76839740135
+export BILLING_ID=011FB5-5C52C8-48351A
 
-export COMPUTE_REGION=europe-west2
+export COMPUTE_REGION=europe-west3
 export COMPUTE_ZONE=${COMPUTE_REGION}-c
 
 export TERRAFORM_SERVICE_ACCOUNT=terraform
-export TERRAFORM_BUCKET_NAME=${PROJECT_NAME}-terraform-state
+export TERRAFORM_BUCKET_NAME=klaviyo-ct-plugin-terraform-state
 
 export APIS="cloudkms.googleapis.com \
 compute.googleapis.com \

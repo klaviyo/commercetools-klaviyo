@@ -5,7 +5,7 @@ pushd $SCRIPT_DIR > /dev/null
 
 source common/usage.sh
 
-export PROJECT_NAME=klaviyo-ct-plugin
+export PROJECT_NAME=klaviyo-ct-plugin-$(date +%s)
 export USER_ACCOUNT=$1
 
 source common/vars.sh
