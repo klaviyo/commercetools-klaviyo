@@ -1,4 +1,7 @@
 ct_project_key            = "hcs-1"
 ct_scopes                 = "manage_subscriptions:hcs-1 manage_api_clients:hcs-1"
 gcp_environment_namespace = "dev"
-
+ct_api_url                = "https://api.europe-west1.gcp.commercetools.com"
+ct_auth_url               = "https://auth.europe-west1.gcp.commercetools.com"
+gcp_project_id            = "klaviyo-ct-plugin-1753264239"
+location                  = "europe-west1"

@@ -156,7 +156,7 @@ resource "google_project_service" "artifact_registry_api" {
 //todo add expiry policy for versioned images
 resource "google_artifact_registry_repository" "klaviyo-ct-plugin" {
   count         = var.gcp_environment_namespace == "dev" ? 1 : 0
-  location      = "us-central1"
+  location      = "europe-west1"
   repository_id = "docker-repo"
   description   = "Klaviyo commercetools plugin docker repository"
   format        = "DOCKER"

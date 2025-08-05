@@ -2,7 +2,7 @@ terraform {
   required_version = ">= 0.13"
 
   backend "gcs" {
-    bucket = "klaviyo-ct-plugin-terraform-state"
+    bucket = "klaviyo-ct-plugin-1753264239-terraform-state"
     prefix = "terraform/state"
   }
 

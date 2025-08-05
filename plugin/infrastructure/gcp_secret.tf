@@ -9,10 +9,10 @@ resource "google_secret_manager_secret" "klaviyo-auth-key" {
   replication {
     user_managed {
       replicas {
-        location = "us-central1"
+        location = var.location
       }
       replicas {
-        location = "us-east1"
+        location = var.location
       }
     }
   }
@@ -30,10 +30,10 @@ resource "google_secret_manager_secret" "ct-api-client" {
   replication {
     user_managed {
       replicas {
-        location = "us-central1"
+        location = var.location
       }
       replicas {
-        location = "us-east1"
+        location = var.location
       }
     }
   }
