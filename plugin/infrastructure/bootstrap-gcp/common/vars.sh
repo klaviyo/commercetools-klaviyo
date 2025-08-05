@@ -9,7 +9,7 @@ export COMPUTE_REGION=europe-west3
 export COMPUTE_ZONE=${COMPUTE_REGION}-c
 
 export TERRAFORM_SERVICE_ACCOUNT=terraform
-export TERRAFORM_BUCKET_NAME=klaviyo-ct-plugin-terraform-state
+export TERRAFORM_BUCKET_NAME=${PROJECT_NAME}-terraform-state
 
 export APIS="cloudkms.googleapis.com \
 compute.googleapis.com \
