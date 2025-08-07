@@ -34,6 +34,7 @@
     "@types/country-data": "^0.0.2",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.0",
+    "@types/lodash": "^4.17.20",
     "@types/node": "^18.15.11",
     "@types/node-fetch": "^2.6.3",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
