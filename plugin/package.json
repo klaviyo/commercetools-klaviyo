@@ -1,7 +1,7 @@
 {
   "name": "klaviyo-ct-plugin",
   "version": "2.0.3",
-  "description": "Klaviyo plugin for integration with commercetools",
+  "description": "Klaviyo plugin for integration with commercetools ",
   "main": "index.js",
   "author": {
     "name": "Apply Digital",
