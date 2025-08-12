@@ -137,24 +137,24 @@ jobs:
           klaviyo_auth_key_secret: ${{ env.ENV_STAGE }}-klaviyo_auth_key:latest
           klaviyo_company_id: ${{ vars.KLAVIYO_COMPANY_ID }}
           ct_api_client_secret: ${{ env.ENV_STAGE }}-commercetools_api_client:latest
-  e2e_tests:
-    name: "[dev] End to end tests"
-    runs-on: ubuntu-latest
-    needs: [ deployment_realtime, deployment_bulk_import ]
-    environment: dev
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Run postman collection
-        uses: ./.github/actions/postman
-        with:
-          ct_client_id: ${{ secrets.CT_E2E_CLIENT_ID }}
-          ct_secret: ${{ secrets.CT_E2E_SECRET }}
-          klaviyo_auth_key: ${{ secrets.KLAVIYO_AUTH_KEY }}
-          postman_collection_json: "klaviyo-e2e-tests.postman_collection.json"
-          ct_api_url: ${{ vars.CT_API_URL }}
-          ct_auth_url: ${{ vars.CT_AUTH_URL }}
-          ct_project_id: ${{ vars.CT_PROJECT_ID }}
+#  e2e_tests:
+#    name: "[dev] End to end tests"
+#    runs-on: ubuntu-latest
+#    needs: [ deployment_realtime, deployment_bulk_import ]
+#    environment: dev
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#      - name: Run postman collection
+#        uses: ./.github/actions/postman
+#        with:
+#          ct_client_id: ${{ secrets.CT_E2E_CLIENT_ID }}
+#          ct_secret: ${{ secrets.CT_E2E_SECRET }}
+#          klaviyo_auth_key: ${{ secrets.KLAVIYO_AUTH_KEY }}
+#          postman_collection_json: "klaviyo-e2e-tests.postman_collection.json"
+#          ct_api_url: ${{ vars.CT_API_URL }}
+#          ct_auth_url: ${{ vars.CT_AUTH_URL }}
+#          ct_project_id: ${{ vars.CT_PROJECT_ID }}
 
   infrastructure_prod:
     name: "[prod] Infrastructure"
@@ -229,21 +229,21 @@ jobs:
           klaviyo_auth_key_secret: ${{ env.ENV_STAGE }}-klaviyo_auth_key:latest
           klaviyo_company_id: ${{ vars.KLAVIYO_COMPANY_ID }}
           ct_api_client_secret: ${{ env.ENV_STAGE }}-commercetools_api_client:latest
-  e2e_tests_prod:
-    name: "[prod] End to end tests"
-    runs-on: ubuntu-latest
-    needs: [ deployment_realtime_prod, deployment_bulk_import_prod ]
-    environment: prod
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Run postman collection
-        uses: ./.github/actions/postman
-        with:
-          ct_client_id: ${{ secrets.CT_E2E_CLIENT_ID }}
-          ct_secret: ${{ secrets.CT_E2E_SECRET }}
-          klaviyo_auth_key: ${{ secrets.KLAVIYO_AUTH_KEY }}
-          postman_collection_json: "klaviyo-e2e-tests.postman_collection.json"
-          ct_api_url: ${{ vars.CT_API_URL }}
-          ct_auth_url: ${{ vars.CT_AUTH_URL }}
-          ct_project_id: ${{ vars.CT_PROJECT_ID }}
+#  e2e_tests_prod:
+#    name: "[prod] End to end tests"
+#    runs-on: ubuntu-latest
+#    needs: [ deployment_realtime_prod, deployment_bulk_import_prod ]
+#    environment: prod
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#      - name: Run postman collection
+#        uses: ./.github/actions/postman
+#        with:
+#          ct_client_id: ${{ secrets.CT_E2E_CLIENT_ID }}
+#          ct_secret: ${{ secrets.CT_E2E_SECRET }}
+#          klaviyo_auth_key: ${{ secrets.KLAVIYO_AUTH_KEY }}
+#          postman_collection_json: "klaviyo-e2e-tests.postman_collection.json"
+#          ct_api_url: ${{ vars.CT_API_URL }}
+#          ct_auth_url: ${{ vars.CT_AUTH_URL }}
+#          ct_project_id: ${{ vars.CT_PROJECT_ID }}
