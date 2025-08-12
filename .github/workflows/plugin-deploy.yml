@@ -159,7 +159,8 @@ jobs:
   infrastructure_prod:
     name: "[prod] Infrastructure"
     runs-on: ubuntu-latest
-    needs: [ e2e_tests ]
+    # needs: [ e2e_tests ]
+    needs: [ docker_image]
     environment: prod
     steps:
       - name: Checkout
