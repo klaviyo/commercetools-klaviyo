@@ -14,7 +14,7 @@ export class DefaultCustomerMapper implements CustomerMapper {
             lastName,
             title,
             companyName: organization,
-            id: externalId,
+            customerNumber,
             custom,
         } = customer;
         const props = mapAllowedProperties('customer.customFields', { ...(custom?.fields || {}) });
@@ -25,14 +25,14 @@ export class DefaultCustomerMapper implements CustomerMapper {
                 id: klaviyoProfileId,
                 attributes: {
                     email,
-                    externalId,
+                    externalId: customerNumber,
                     firstName,
                     lastName,
                     title,
                     phoneNumber: address?.mobile || address?.phone,
                     organization,
                     location: this.mapCTAddressToKlaviyoLocation(address),
-                    properties: Object.keys(props).length ? { ...props } : undefined,
+                    properties: Object.keys(props).length ? { ...props } : undefined
                 },
             },
         };
