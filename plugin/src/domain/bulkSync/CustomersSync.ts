@@ -9,6 +9,7 @@ import { Customer } from '@commercetools/platform-sdk';
 import { CtCustomerService } from '../../infrastructure/driven/commercetools/CtCustomerService';
 import { ProfileRequest } from '../../types/klaviyo-types';
 import { delaySeconds } from '../../utils/delay-seconds';
+import { ProfileDeduplicationService } from '../shared/services/ProfileDeduplicationService';
 
 export class CustomersSync {
     lockKey = 'customerFullSync';
@@ -17,6 +18,7 @@ export class CustomersSync {
         private readonly customerMapper: CustomerMapper,
         private readonly klaviyoService: KlaviyoService,
         private readonly ctCustomerService: CtCustomerService,
+        private readonly profileDeduplicationService?: ProfileDeduplicationService,
     ) {}
 
     public syncAllCustomers = async () => {
@@ -34,9 +36,11 @@ export class CustomersSync {
             do {
                 ctCustomerResults = await this.ctCustomerService.getAllCustomers(ctCustomerResults?.lastId);
 
-                const promiseResults = await Promise.allSettled(
-                    ctCustomerResults.data.flatMap((customer) => this.generateCustomerProfiles(customer)),
+                // Generate profile promises for all customers
+                const profilePromisesArrays = await Promise.all(
+                    ctCustomerResults.data.map((customer) => this.generateCustomerProfiles(customer)),
                 );
+                const promiseResults = await Promise.allSettled(profilePromisesArrays.flat());
 
                 const rejectedPromises = promiseResults.filter(isRejected);
                 const fulfilledPromises = promiseResults.filter(isFulfilled);
@@ -86,9 +90,11 @@ export class CustomersSync {
                     ctCustomerResults?.lastId,
                 );
 
-                const promiseResults = await Promise.allSettled(
-                    ctCustomerResults.data.flatMap((customer) => this.generateCustomerProfiles(customer)),
+                // Generate profile promises for all customers
+                const profilePromisesArrays = await Promise.all(
+                    ctCustomerResults.data.map((customer) => this.generateCustomerProfiles(customer)),
                 );
+                const promiseResults = await Promise.allSettled(profilePromisesArrays.flat());
 
                 const rejectedPromises = promiseResults.filter(isRejected);
                 const fulfilledPromises = promiseResults.filter(isFulfilled);
@@ -119,9 +125,39 @@ export class CustomersSync {
         }
     };
 
-    private generateCustomerProfiles = (customer: Customer): Promise<any>[] => {
-        const events: ProfileRequest[] = [];
+    private generateCustomerProfiles = async (customer: Customer): Promise<Promise<any>[]> => {
+        // Step 1: Check if deduplication is enabled
+        if (this.profileDeduplicationService?.shouldDeduplicate() && customer.email) {
+            // Step 2: Search for existing profile by email FIRST
+            const deduplicationResult = await this.profileDeduplicationService.findExistingProfileByEmail(
+                customer.email,
+                customer.id,
+            );
 
+            // Step 3: If found, update existing profile instead of creating new one
+            if (deduplicationResult.existingProfile && deduplicationResult.klaviyoProfileId) {
+                logger.debug(
+                    `Bulk sync: Found existing profile for email ${customer.email}. Using profile ID: ${deduplicationResult.klaviyoProfileId}`,
+                );
+
+                // Map customer to profile with existing Klaviyo profile ID
+                const profileBody = this.customerMapper.mapCtCustomerToKlaviyoProfile(
+                    customer,
+                    deduplicationResult.klaviyoProfileId,
+                );
+
+                // Step 4: Always use profileResourceUpdated since we're updating an existing profile
+                return [
+                    this.klaviyoService.sendEventToKlaviyo({
+                        type: 'profileResourceUpdated',
+                        body: profileBody,
+                    }),
+                ];
+            }
+        }
+
+        // No existing profile found or deduplication disabled - create new profile
+        const events: ProfileRequest[] = [];
         events.push(this.customerMapper.mapCtCustomerToKlaviyoProfile(customer));
 
         const klaviyoProfilePromises: Promise<any>[] = [];

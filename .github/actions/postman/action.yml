@@ -23,6 +23,10 @@ inputs:
   klaviyo_auth_key:
     description: 'Klaviyo auth key'
     required: true
+  deduplication_enabled:
+    description: 'Enable deduplication tests (true/false)'
+    required: false
+    default: 'false'
 runs:
   using: "composite"
   steps:
@@ -48,7 +52,8 @@ runs:
           --env-var "ct_auth_url=${{ inputs.ct_auth_url }}" \
           --env-var "ct_host=${{ inputs.ct_api_url }}" \
           --env-var "project-key=${{ inputs.ct_project_id }}" \
-          --env-var "customer-key=testcustomer"
+          --env-var "customer-key=testcustomer" \
+          --env-var "deduplication_enabled=${{ inputs.deduplication_enabled }}"
       shell: bash
       working-directory: ./plugin/src/test/e2e/postman
     - name: Upload test results

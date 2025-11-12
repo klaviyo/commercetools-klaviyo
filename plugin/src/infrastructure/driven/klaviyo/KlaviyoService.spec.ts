@@ -28,6 +28,10 @@ describe('Klaviyo abstract service', () => {
             return Promise.resolve(undefined);
         }
 
+        getKlaviyoProfileByEmail(email: string): Promise<GetProfileResponseData | undefined> {
+            return Promise.resolve(undefined);
+        }
+
         sendEventToKlaviyo(event: KlaviyoEvent): Promise<any> {
             return Promise.resolve(undefined);
         }

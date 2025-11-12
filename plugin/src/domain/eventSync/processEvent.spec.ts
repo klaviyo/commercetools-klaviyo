@@ -33,16 +33,17 @@ describe('processEvent', () => {
 
     const klaviyoServiceMock: jest.Mocked<KlaviyoService> = {
         sendEventToKlaviyo: jest.fn(),
+        sendJobRequestToKlaviyo: jest.fn(),
         logRateLimitHeaders: jest.fn(),
         getKlaviyoProfileByExternalId: jest.fn(),
+        getKlaviyoProfileByEmail: jest.fn(),
         getKlaviyoCategoryByExternalId: jest.fn(),
-        sendJobRequestToKlaviyo: jest.fn(),
-        checkRateLimitsAndDelay: jest.fn(),
         getKlaviyoItemsByIds: jest.fn(),
         getKlaviyoItemVariantsByCtSkus: jest.fn(),
         getKlaviyoPaginatedCategories: jest.fn(),
         getKlaviyoPaginatedItems: jest.fn(),
         getKlaviyoItemByExternalId: jest.fn(),
+        checkRateLimitsAndDelay: jest.fn(),
     };
 
     const responseHandlerMock = mocked(responseHandler);

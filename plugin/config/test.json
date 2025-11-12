@@ -89,6 +89,9 @@
           "includedField": "includedFieldAfterMap"
         }
       }
+    },
+    "deduplication": {
+      "enabled": false
     }
   },
   "payment": {

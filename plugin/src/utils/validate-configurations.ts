@@ -1,3 +1,5 @@
+import config from 'config';
+
 class ConfigValidationError extends Error {
 	message: string;
 	errors?: string[];
@@ -35,4 +37,27 @@ export const validateEnvironment = () => {
 		);		
 	}
 
+};
+
+export const validateDeduplicationConfig = () => {
+	const errors: string[] = [];
+
+	// Check if deduplication config exists
+	if (config.has('customer.deduplication')) {
+		const deduplicationConfig = config.get('customer.deduplication') as any;
+
+		// Validate 'enabled' field
+		if (!Object.prototype.hasOwnProperty.call(deduplicationConfig, 'enabled')) {
+			errors.push('customer.deduplication.enabled is required when customer.deduplication is configured.');
+		} else if (typeof deduplicationConfig.enabled !== 'boolean') {
+			errors.push('customer.deduplication.enabled must be a boolean value.');
+		}
+	}
+
+	if (errors.length) {
+		throw new ConfigValidationError(
+			'Invalid deduplication configuration. Please check your configuration file.',
+			errors,
+		);
+	}
 };

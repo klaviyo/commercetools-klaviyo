@@ -11,6 +11,11 @@ on:
           - prod
           - connect_dev
           - connect_prod
+      deduplication_enabled:
+        type: boolean
+        description: Enable deduplication tests
+        required: false
+        default: false
 jobs:
   e2e-tests:
     name: 'Running E2E tests'
@@ -29,4 +34,5 @@ jobs:
           ct_api_url: ${{ vars.CT_API_URL }}
           ct_auth_url: ${{ vars.CT_AUTH_URL }}
           ct_project_id: ${{ vars.CT_PROJECT_ID }}
+          deduplication_enabled: ${{ github.event.inputs.deduplication_enabled || 'false' }}
 

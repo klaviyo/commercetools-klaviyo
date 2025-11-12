@@ -17,6 +17,7 @@ export class DefaultOrderMapper implements OrderMapper {
         metric: string,
         updateAdditionalProfileProperties: boolean,
         time?: string,
+        klaviyoProfileId?: string,
     ): EventRequest {
         return {
             data: {
@@ -27,6 +28,7 @@ export class DefaultOrderMapper implements OrderMapper {
                             order,
                             this.customerMapper,
                             updateAdditionalProfileProperties && metric === config.get('order.metrics.placedOrder'),
+                            klaviyoProfileId,
                         ),
                     },
                     metric: {
@@ -61,6 +63,7 @@ export class DefaultOrderMapper implements OrderMapper {
         orderProducts: Product[],
         metric: string,
         time?: string,
+        klaviyoProfileId?: string,
     ): EventRequest {
         const refundAmounts =
             order.paymentInfo?.payments
@@ -77,7 +80,7 @@ export class DefaultOrderMapper implements OrderMapper {
             data: {
                 type: 'event',
                 attributes: {
-                    profile: { data: getCustomerProfileFromOrder(order, this.customerMapper) },
+                    profile: { data: getCustomerProfileFromOrder(order, this.customerMapper, false, klaviyoProfileId) },
                     metric: {
                         data: {
                             type: 'metric',
@@ -102,12 +105,17 @@ export class DefaultOrderMapper implements OrderMapper {
         };
     }
 
-    public mapOrderLineToProductOrderedEvent(lineItem: LineItem, order: Order, time?: string): EventRequest {
+    public mapOrderLineToProductOrderedEvent(
+        lineItem: LineItem,
+        order: Order,
+        time?: string,
+        klaviyoProfileId?: string,
+    ): EventRequest {
         return {
             data: {
                 type: 'event',
                 attributes: {
-                    profile: { data: getCustomerProfileFromOrder(order, this.customerMapper) },
+                    profile: { data: getCustomerProfileFromOrder(order, this.customerMapper, false, klaviyoProfileId) },
                     metric: {
                         data: { type: 'metric', attributes: { name: config.get('order.metrics.orderedProduct') } },
                     },

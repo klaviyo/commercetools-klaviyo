@@ -91,4 +91,33 @@ describe('getCustomerProfileFromOrder', () => {
             attributes: {},
         });
     });
+
+    it('should include klaviyoProfileId when provided', () => {
+        const order = {
+            customerEmail: 'test@example.com',
+            customerId: '123',
+        } as any;
+        const profile = getCustomerProfileFromOrder(order, customerMapper, false, 'klaviyo-profile-id-123');
+        expect(profile).toEqual({
+            type: 'profile',
+            id: 'klaviyo-profile-id-123',
+            attributes: {
+                email: 'test@example.com',
+                externalId: '123',
+            },
+        });
+    });
+
+    it('should not include klaviyoProfileId when not provided', () => {
+        const order = {
+            customerEmail: 'test@example.com',
+            customerId: '123',
+        } as any;
+        const profile = getCustomerProfileFromOrder(order, customerMapper, false);
+        expect(profile).not.toHaveProperty('id');
+        expect(profile.attributes).toEqual({
+            email: 'test@example.com',
+            externalId: '123',
+        });
+    });
 });

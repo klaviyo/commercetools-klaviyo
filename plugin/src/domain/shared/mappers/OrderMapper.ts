@@ -8,12 +8,19 @@ export interface OrderMapper {
         metric: string,
         updateAdditionalProfileProperties: boolean,
         time?: string,
+        klaviyoProfileId?: string,
     ): EventRequest;
     mapCtRefundedOrderToKlaviyoEvent(
         order: Order,
         orderProducts: Product[],
         metric: string,
         time?: string,
+        klaviyoProfileId?: string,
     ): EventRequest;
-    mapOrderLineToProductOrderedEvent(lineItem: LineItem, order: Order, time?: string): EventRequest;
+    mapOrderLineToProductOrderedEvent(
+        lineItem: LineItem,
+        order: Order,
+        time?: string,
+        klaviyoProfileId?: string,
+    ): EventRequest;
 }

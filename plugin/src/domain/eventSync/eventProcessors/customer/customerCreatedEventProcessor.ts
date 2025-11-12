@@ -30,6 +30,37 @@ export class CustomerCreatedEventProcessor extends AbstractEventProcessor {
             ));
         }
 
+        // Check if deduplication is enabled
+        if (this.context.profileDeduplicationService.shouldDeduplicate() && customer.email) {
+            // Search for existing profile by email
+            const deduplicationResult = await this.context.profileDeduplicationService.findExistingProfileByEmail(
+                customer.email,
+                customer.id,
+            );
+
+            // If found, update existing profile instead of creating new one
+            if (deduplicationResult.existingProfile && deduplicationResult.klaviyoProfileId) {
+                logger.info(
+                    `Found existing profile for email ${customer.email}. Updating profile ID: ${deduplicationResult.klaviyoProfileId}`,
+                );
+
+                // Map customer to profile with existing Klaviyo profile ID
+                // This includes updating the external_id with the Commercetools customer ID
+                const profileBody = this.context.customerMapper.mapCtCustomerToKlaviyoProfile(
+                    customer,
+                    deduplicationResult.klaviyoProfileId,
+                );
+
+                // Use profileResourceUpdated since we're updating an existing profile
+                const klaviyoEvent: KlaviyoEvent = {
+                    body: profileBody,
+                    type: 'profileResourceUpdated',
+                };
+                return [klaviyoEvent];
+            }
+        }
+
+        // No existing profile found or deduplication disabled - create new profile
         const klaviyoEvent: KlaviyoEvent = {
             body: this.context.customerMapper.mapCtCustomerToKlaviyoProfile(customer),
             type: 'profileCreated',

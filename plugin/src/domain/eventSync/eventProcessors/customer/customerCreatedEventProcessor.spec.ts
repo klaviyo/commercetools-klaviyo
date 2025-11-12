@@ -6,6 +6,7 @@ import { getSampleCustomerCreatedMessage } from '../../../../test/testData/ctCus
 import { Context } from '../../../../types/klaviyo-context';
 import { DefaultCustomerMapper } from '../../../shared/mappers/DefaultCustomerMapper';
 import { getSampleCustomerApiResponse } from '../../../../test/testData/ctCustomerApi';
+import { GetProfileResponseData } from 'klaviyo-api';
 
 jest.mock('../../../../infrastructure/driven/klaviyo/KlaviyoService');
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
@@ -291,5 +292,132 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
         expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledTimes(1);
         expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledWith(message.customer);
         expect(klaviyoEvent[0]).toMatchSnapshot();
+    });
+
+    describe('deduplication scenarios', () => {
+        beforeEach(() => {
+            contextMock.klaviyoService.getKlaviyoProfileByExternalId.mockResolvedValue(undefined);
+        });
+
+        it('should create new profile when deduplication is disabled', async () => {
+            contextMock.profileDeduplicationService.shouldDeduplicate.mockReturnValue(false);
+            const message = getSampleCustomerCreatedMessage();
+            const event = CustomerCreatedEventProcessor.instance(message as unknown as MessageDeliveryPayload, contextMock);
+
+            const klaviyoEvent = await event.generateKlaviyoEvents();
+
+            expect(contextMock.profileDeduplicationService.findExistingProfileByEmail).not.toHaveBeenCalled();
+            expect(klaviyoEvent[0].type).toBe('profileCreated');
+        });
+
+        it('should create new profile when deduplication is enabled but no existing profile found', async () => {
+            contextMock.profileDeduplicationService.shouldDeduplicate.mockReturnValue(true);
+            contextMock.profileDeduplicationService.findExistingProfileByEmail.mockResolvedValue({
+                existingProfile: undefined,
+                needsUpdate: false,
+                klaviyoProfileId: undefined,
+            });
+            const message = getSampleCustomerCreatedMessage();
+            const event = CustomerCreatedEventProcessor.instance(message as unknown as MessageDeliveryPayload, contextMock);
+
+            const klaviyoEvent = await event.generateKlaviyoEvents();
+
+            expect(contextMock.profileDeduplicationService.findExistingProfileByEmail).toHaveBeenCalledWith(
+                message.customer.email,
+                message.customer.id,
+            );
+            expect(klaviyoEvent[0].type).toBe('profileCreated');
+        });
+
+        it('should update existing profile when deduplication is enabled and profile found', async () => {
+            const existingProfile: GetProfileResponseData = {
+                id: 'existing-klaviyo-id',
+                attributes: {
+                    email: 'test@example.com',
+                    externalId: 'old-external-id',
+                },
+            } as GetProfileResponseData;
+
+            contextMock.profileDeduplicationService.shouldDeduplicate.mockReturnValue(true);
+            contextMock.profileDeduplicationService.findExistingProfileByEmail.mockResolvedValue({
+                existingProfile,
+                needsUpdate: true,
+                klaviyoProfileId: 'existing-klaviyo-id',
+            });
+            // Create a new message object with the desired email to avoid mutating a readonly property
+            const origMessage = getSampleCustomerCreatedMessage();
+            const message = {
+                ...origMessage,
+                customer: {
+                    ...origMessage.customer,
+                    email: 'test@example.com',
+                },
+            };
+            const event = CustomerCreatedEventProcessor.instance(message as unknown as MessageDeliveryPayload, contextMock);
+
+            const klaviyoEvent = await event.generateKlaviyoEvents();
+
+            expect(contextMock.profileDeduplicationService.findExistingProfileByEmail).toHaveBeenCalledWith(
+                'test@example.com',
+                message.customer.id,
+            );
+            expect(klaviyoEvent[0].type).toBe('profileResourceUpdated');
+            expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toHaveBeenCalledWith(
+                message.customer,
+                'existing-klaviyo-id',
+            );
+        });
+
+        it('should update existing profile when deduplication is enabled and profile found with matching external_id', async () => {
+            // Create a new message object with the desired email to avoid mutating a readonly property
+            const origMessage = getSampleCustomerCreatedMessage();
+            const message = {
+                ...origMessage,
+                customer: {
+                    ...origMessage.customer,
+                    email: 'test@example.com',
+                },
+            };
+            const existingProfile: GetProfileResponseData = {
+                id: 'existing-klaviyo-id',
+                attributes: {
+                    email: 'test@example.com',
+                    externalId: message.customer.id,
+                },
+            } as GetProfileResponseData;
+
+            contextMock.profileDeduplicationService.shouldDeduplicate.mockReturnValue(true);
+            contextMock.profileDeduplicationService.findExistingProfileByEmail.mockResolvedValue({
+                existingProfile,
+                needsUpdate: false,
+                klaviyoProfileId: 'existing-klaviyo-id',
+            });
+            const event = CustomerCreatedEventProcessor.instance(message as unknown as MessageDeliveryPayload, contextMock);
+
+            const klaviyoEvent = await event.generateKlaviyoEvents();
+
+            expect(klaviyoEvent[0].type).toBe('profileResourceUpdated');
+            expect(contextMock.customerMapper.mapCtCustomerToKlaviyoProfile).toHaveBeenCalledWith(
+                message.customer,
+                'existing-klaviyo-id',
+            );
+        });
+
+        it('should create new profile when customer has no email', async () => {
+            contextMock.profileDeduplicationService.shouldDeduplicate.mockReturnValue(true);
+            const origMessage = getSampleCustomerCreatedMessage();
+            // Create a new customer object without the email property
+            const { email, ...customerWithoutEmail } = origMessage.customer;
+            const message = {
+                ...origMessage,
+                customer: customerWithoutEmail,
+            };
+            const event = CustomerCreatedEventProcessor.instance(message as unknown as MessageDeliveryPayload, contextMock);
+
+            const klaviyoEvent = await event.generateKlaviyoEvents();
+
+            expect(contextMock.profileDeduplicationService.findExistingProfileByEmail).not.toHaveBeenCalled();
+            expect(klaviyoEvent[0].type).toBe('profileCreated');
+        });
     });
 });

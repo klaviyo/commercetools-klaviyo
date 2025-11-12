@@ -6,18 +6,21 @@ import { Customer } from '@commercetools/platform-sdk';
 import { ErrorCodes, StatusError } from '../../types/errors/StatusError';
 import { DefaultCtCustomerService } from '../../infrastructure/driven/commercetools/DefaultCtCustomerService';
 import { DefaultCustomerMapper } from '../shared/mappers/DefaultCustomerMapper';
-import logger from '../../utils/log'
+import logger from '../../utils/log';
+import { ProfileDeduplicationService } from '../shared/services/ProfileDeduplicationService';
 
 const mockCtCustomObjectLockService: DeepMockProxy<CTCustomObjectLockService> = mockDeep<CTCustomObjectLockService>();
 const mockDefaultCustomerMapper: DeepMockProxy<DefaultCustomerMapper> = mockDeep<DefaultCustomerMapper>();
 const mockKlaviyoSdkService: DeepMockProxy<KlaviyoSdkService> = mockDeep<KlaviyoSdkService>();
 const mockDefaultCtCustomerService: DeepMockProxy<DefaultCtCustomerService> = mockDeep<DefaultCtCustomerService>();
+const mockProfileDeduplicationService: DeepMockProxy<ProfileDeduplicationService> = mockDeep<ProfileDeduplicationService>();
 
 const historicalCustomers = new CustomersSync(
     mockCtCustomObjectLockService,
     mockDefaultCustomerMapper,
     mockKlaviyoSdkService,
     mockDefaultCtCustomerService,
+    mockProfileDeduplicationService,
 );
 
 describe('syncAllCustomers', () => {
@@ -159,5 +162,99 @@ describe('syncCustomersByIdRange', () => {
         expect(mockDefaultCustomerMapper.mapCtCustomerToKlaviyoProfile).toBeCalledTimes(0);
         expect(mockKlaviyoSdkService.sendEventToKlaviyo).toBeCalledTimes(0);
         expect(errorSpy).toBeCalledTimes(1);
+    });
+
+    describe('deduplication scenarios', () => {
+        beforeEach(() => {
+            jest.resetAllMocks();
+            // Set up default mock for mapCtCustomerToKlaviyoProfile
+            mockDefaultCustomerMapper.mapCtCustomerToKlaviyoProfile.mockImplementation((customer, klaviyoProfileId) => {
+                const profile: any = {
+                    data: {
+                        type: 'profile',
+                        attributes: {},
+                    },
+                };
+                if (klaviyoProfileId) {
+                    profile.data.id = klaviyoProfileId;
+                }
+                return profile;
+            });
+        });
+
+        it('should create new profile when deduplication is disabled', async () => {
+            mockCtCustomObjectLockService.acquireLock.mockResolvedValueOnce();
+            mockProfileDeduplicationService.shouldDeduplicate.mockReturnValue(false);
+
+            const mockCustomer = mock<Customer>();
+            Object.defineProperty(mockCustomer, 'createdAt', { value: '2023-01-27T15:00:00.000Z' });
+            Object.defineProperty(mockCustomer, 'email', { value: 'test@example.com' });
+            mockDefaultCtCustomerService.getAllCustomers.mockResolvedValueOnce({ data: [mockCustomer], hasMore: false });
+
+            await historicalCustomers.syncAllCustomers();
+
+            expect(mockProfileDeduplicationService.findExistingProfileByEmail).not.toHaveBeenCalled();
+            expect(mockKlaviyoSdkService.sendEventToKlaviyo).toHaveBeenCalledWith({
+                type: 'profileCreated',
+                body: expect.any(Object),
+            });
+        });
+
+        it('should update existing profile when deduplication is enabled and profile found', async () => {
+            mockCtCustomObjectLockService.acquireLock.mockResolvedValueOnce();
+            mockProfileDeduplicationService.shouldDeduplicate.mockReturnValue(true);
+            mockProfileDeduplicationService.findExistingProfileByEmail.mockResolvedValue({
+                existingProfile: {
+                    id: 'existing-klaviyo-id',
+                    attributes: { email: 'test@example.com', externalId: 'old-id' },
+                } as any,
+                needsUpdate: true,
+                klaviyoProfileId: 'existing-klaviyo-id',
+            });
+
+            const mockCustomer = mock<Customer>();
+            Object.defineProperty(mockCustomer, 'createdAt', { value: '2023-01-27T15:00:00.000Z' });
+            Object.defineProperty(mockCustomer, 'email', { value: 'test@example.com' });
+            Object.defineProperty(mockCustomer, 'id', { value: 'new-ct-id' });
+            mockDefaultCtCustomerService.getAllCustomers.mockResolvedValueOnce({ data: [mockCustomer], hasMore: false });
+
+            await historicalCustomers.syncAllCustomers();
+
+            expect(mockProfileDeduplicationService.findExistingProfileByEmail).toHaveBeenCalledWith(
+                'test@example.com',
+                'new-ct-id',
+            );
+            expect(mockKlaviyoSdkService.sendEventToKlaviyo).toHaveBeenCalledWith({
+                type: 'profileResourceUpdated',
+                body: expect.objectContaining({
+                    data: expect.objectContaining({
+                        id: 'existing-klaviyo-id',
+                    }),
+                }),
+            });
+        });
+
+        it('should create new profile when deduplication is enabled but no existing profile found', async () => {
+            mockCtCustomObjectLockService.acquireLock.mockResolvedValueOnce();
+            mockProfileDeduplicationService.shouldDeduplicate.mockReturnValue(true);
+            mockProfileDeduplicationService.findExistingProfileByEmail.mockResolvedValue({
+                existingProfile: undefined,
+                needsUpdate: false,
+                klaviyoProfileId: undefined,
+            });
+
+            const mockCustomer = mock<Customer>();
+            Object.defineProperty(mockCustomer, 'createdAt', { value: '2023-01-27T15:00:00.000Z' });
+            Object.defineProperty(mockCustomer, 'email', { value: 'test@example.com' });
+            mockDefaultCtCustomerService.getAllCustomers.mockResolvedValueOnce({ data: [mockCustomer], hasMore: false });
+
+            await historicalCustomers.syncAllCustomers();
+
+            expect(mockProfileDeduplicationService.findExistingProfileByEmail).toHaveBeenCalled();
+            expect(mockKlaviyoSdkService.sendEventToKlaviyo).toHaveBeenCalledWith({
+                type: 'profileCreated',
+                body: expect.any(Object),
+            });
+        });
     });
 });

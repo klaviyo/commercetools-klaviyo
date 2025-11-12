@@ -1722,6 +1722,796 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "04 customer deduplication",
+			"item": [
+				{
+					"name": "04 [check] Skip if deduplication disabled",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const deduplicationEnabled = pm.environment.get(\"deduplication_enabled\");",
+									"if (!deduplicationEnabled || deduplicationEnabled === \"false\" || deduplicationEnabled === false) {",
+									"    console.log(\"Deduplication tests skipped - deduplication_enabled is not set or false\");",
+									"    postman.setNextRequest(null);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const deduplicationEnabled = pm.environment.get(\"deduplication_enabled\");",
+									"if (!deduplicationEnabled || deduplicationEnabled === \"false\" || deduplicationEnabled === false) {",
+									"    console.log(\"Deduplication is disabled - skipping test assertions\");",
+									"    pm.test(\"Deduplication tests skipped\", function () {",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"} else {",
+									"    pm.test(\"Deduplication is enabled\", function () {",
+									"        pm.expect(deduplicationEnabled).to.not.be.undefined;",
+									"        pm.expect(deduplicationEnabled).to.not.eql(\"false\");",
+									"        pm.expect(deduplicationEnabled).to.not.eql(false);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{klaviyoBaseUrl}}/api/profiles/",
+							"host": [
+								"{{klaviyoBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"profiles",
+								""
+							]
+						},
+						"description": "This request checks if deduplication is enabled and skips the test folder if not."
+					},
+					"response": []
+				},
+				{
+					"name": "04 [auth] Obtain CT access token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(response.access_token).to.not.be.undefined;",
+									"    pm.environment.set(\"ctp_access_token\", response.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{ct_client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{ct_client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ct_auth_url}}/oauth/token?grant_type=client_credentials",
+							"host": [
+								"{{ct_auth_url}}"
+							],
+							"path": [
+								"oauth",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials"
+								}
+							]
+						},
+						"description": "Use this request to obtain an access token for your commercetools platform project via Client Credentials Flow."
+					},
+					"response": []
+				},
+				{
+					"name": "04 [setup] Create Profile in Klaviyo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code !== 201) {",
+									"    console.log(\"Response status: \" + pm.response.code);",
+									"    console.log(\"Response body: \" + pm.response.text());",
+									"    const errorBody = pm.response.json();",
+									"    if (errorBody.errors && errorBody.errors.length > 0) {",
+									"        console.log(\"Error details: \" + JSON.stringify(errorBody.errors));",
+									"    }",
+									"}",
+									"pm.test(\"Profile created in Klaviyo\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"const json = pm.response.json();",
+									"if (json.data && json.data.id) {",
+									"    pm.environment.set(\"existing-klaviyo-profile-id\", json.data.id);",
+									"    console.log(\"Created existing profile with ID: \" + json.data.id);",
+									"} else {",
+									"    console.log(\"Profile ID not in response, will fetch it in next step\");",
+									"}",
+									"if (json.data && json.data.attributes && json.data.attributes.email) {",
+									"    pm.environment.set(\"dedup-customer-email\", json.data.attributes.email);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate random email if not already set",
+									"if (!pm.environment.get(\"dedup-customer-email\")) {",
+									"    const randomEmail = \"dedup-test-\" + Math.random().toString(36).substring(2, 11) + \"@example.com\";",
+									"    pm.environment.set(\"dedup-customer-email\", randomEmail);",
+									"    console.log(\"Generated email: \" + randomEmail);",
+									"}",
+									"pm.variables.replaceIn('{{$randomFirstName}}')",
+									"pm.variables.replaceIn('{{$randomLastName}}')"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "Klaviyo-API-Key {{klaviyoPrivateKey}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"description": "(Required) API endpoint revision (format: YYYY-MM-DD[.suffix])",
+								"key": "revision",
+								"value": "2023-10-15"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"data\": {\n        \"type\": \"profile\",\n        \"attributes\": {\n            \"email\": \"{{dedup-customer-email}}\",\n            \"first_name\": \"{{$randomFirstName}}\",\n            \"last_name\": \"{{$randomLastName}}\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{klaviyoBaseUrl}}/api/profiles",
+							"host": [
+								"{{klaviyoBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"profiles"
+							]
+						},
+						"description": "Creates a profile in Klaviyo without external_id. This simulates a profile that was created before the customer existed in Commercetools."
+					},
+					"response": []
+				},
+				{
+					"name": "04 [setup] Get Created Profile ID from Klaviyo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Skip this step if we already have the profile ID from the POST response",
+									"if (pm.environment.get(\"existing-klaviyo-profile-id\")) {",
+									"    console.log(\"Profile ID already set from POST response, skipping GET\");",
+									"    pm.test(\"Profile ID already available\", function () {",
+									"        pm.expect(true).to.be.true;",
+									"    });",
+									"    return;",
+									"}",
+									"",
+									"var expectedHttpStatus = 200;",
+									"var maxNumberOfTries = 10;",
+									"var sleepBetweenTries = 2000;",
+									"",
+									"if (!pm.environment.get(\"collection_tries\")) {",
+									"    pm.environment.set(\"collection_tries\", 1);",
+									"}",
+									"const jsonData = pm.response.json();",
+									"if ((pm.response.code != expectedHttpStatus || jsonData.data.length == 0) && (pm.environment.get(\"collection_tries\") < maxNumberOfTries)) {",
+									"    console.log(\"retry\");",
+									"    var tries = parseInt(pm.environment.get(\"collection_tries\"), 10);",
+									"    pm.environment.set(\"collection_tries\", tries + 1);",
+									"    setTimeout(function() {}, sleepBetweenTries);",
+									"    postman.setNextRequest(request.name);",
+									"} else {",
+									"    pm.environment.unset(\"collection_tries\");",
+									"",
+									"    pm.test(\"Profile found in Klaviyo\", function () {",
+									"        pm.response.to.have.status(expectedHttpStatus);",
+									"        pm.expect(jsonData.data.length).to.be.above(0);",
+									"    });",
+									"",
+									"    const profile = jsonData.data.find(p => p.attributes.email === pm.environment.get(\"dedup-customer-email\"));",
+									"    if (profile && profile.id) {",
+									"        pm.environment.set(\"existing-klaviyo-profile-id\", profile.id);",
+									"        console.log(\"Found existing profile with ID: \" + profile.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "Klaviyo-API-Key {{klaviyoPrivateKey}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "(Required) API endpoint revision (format: YYYY-MM-DD[.suffix])",
+								"key": "revision",
+								"value": "2022-10-17"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{klaviyoBaseUrl}}/api/profiles/?filter=equals(email,\"{{dedup-customer-email}}\")",
+							"host": [
+								"{{klaviyoBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"profiles",
+								""
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "equals(email,\"{{dedup-customer-email}}\")"
+								}
+							]
+						},
+						"description": "Retrieves the profile ID that was created by the event. This ID will be used to verify deduplication."
+					},
+					"response": []
+				},
+				{
+					"name": "04 [setup] Get Customer in CT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = pm.response.json();",
+									"console.log(\"Get customer response status: \", pm.response.code)",
+									"pm.test(\"Status code is 200 or 404\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 404])",
+									"});",
+									"if (pm.response.code === 404){",
+									"    console.log(\"Customer does not exist, will create\");",
+									"    postman.setNextRequest(\"04 [when] Create Customer in CT\");",
+									"}",
+									"else{",
+									"    console.log(\"Customer exists, deleting first\");",
+									"    pm.environment.set(\"customer-version\", data.version);",
+									"    pm.environment.set(\"customer-id\", data.id);",
+									"    postman.setNextRequest(\"04 [setup] Delete Customer in CT\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{ctp_access_token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ct_host}}/{{project-key}}/customers/key=dedup-test-customer",
+							"host": [
+								"{{ct_host}}"
+							],
+							"path": [
+								"{{project-key}}",
+								"customers",
+								"key=dedup-test-customer"
+							]
+						},
+						"description": "Check if customer exists in CT, delete if it does, create if it doesn't."
+					},
+					"response": []
+				},
+				{
+					"name": "04 [setup] Delete Customer in CT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"postman.setNextRequest(\"04 [when] Create Customer in CT\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{ctp_access_token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ct_host}}/{{project-key}}/customers/{{customer-id}}?version={{customer-version}}",
+							"host": [
+								"{{ct_host}}"
+							],
+							"path": [
+								"{{project-key}}",
+								"customers",
+								"{{customer-id}}"
+							],
+							"query": [
+								{
+									"key": "version",
+									"value": "{{customer-version}}"
+								}
+							]
+						},
+						"description": "Delete existing customer before creating new one."
+					},
+					"response": []
+				},
+				{
+					"name": "04 [when] Create Customer in CT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const json = pm.response.json();",
+									"pm.test(\"Customer is created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.expect(json.customer.id).to.not.be.null;",
+									"});",
+									"pm.environment.set(\"customer-email\", json.customer.email);",
+									"pm.environment.set(\"customer-version\", json.customer.version);",
+									"pm.environment.set(\"customer-id\", json.customer.id);",
+									"pm.test(\"Customer email matches existing Klaviyo profile\", function () {",
+									"    pm.expect(json.customer.email).to.eql(pm.environment.get(\"dedup-customer-email\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.replaceIn('{{$randomFirstName}}')",
+									"pm.variables.replaceIn('{{$randomLastName}}')"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{ctp_access_token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Mr\",\n    \"email\": \"{{dedup-customer-email}}\",\n    \"key\": \"dedup-test-customer\",\n    \"firstName\": \"{{$randomFirstName}}\",\n    \"lastName\": \"{{$randomLastName}}\",\n    \"password\": \"secret123\"\n}"
+						},
+						"url": {
+							"raw": "{{ct_host}}/{{project-key}}/customers",
+							"host": [
+								"{{ct_host}}"
+							],
+							"path": [
+								"{{project-key}}",
+								"customers"
+							]
+						},
+						"description": "Create a customer in CT with the same email as the existing Klaviyo profile. This should trigger deduplication."
+					},
+					"response": []
+				},
+				{
+					"name": "04 [then] Verify Profile Updated in Klaviyo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var expectedHttpStatus = 200;",
+									"var maxWaitTimeMs = 30000;",
+									"var sleepBetweenTries = 2000;",
+									"",
+									"var startTime = pm.environment.get(\"dedup_wait_start_time\");",
+									"if (!startTime) {",
+									"    startTime = Date.now();",
+									"    pm.environment.set(\"dedup_wait_start_time\", startTime);",
+									"}",
+									"",
+									"const jsonData = pm.response.json();",
+									"const profile = jsonData.data ? jsonData.data.find(p => p.attributes.email === pm.environment.get(\"dedup-customer-email\")) : null;",
+									"const profileFound = profile !== null && profile !== undefined;",
+									"const externalIdSet = profile && profile.attributes && profile.attributes.external_id === pm.environment.get(\"customer-id\");",
+									"const elapsedTime = Date.now() - parseInt(startTime, 10);",
+									"const shouldRetry = (pm.response.code != expectedHttpStatus || !profileFound || !externalIdSet) && (elapsedTime < maxWaitTimeMs);",
+									"",
+									"if (shouldRetry) {",
+									"    console.log(\"retry - elapsed: \" + elapsedTime + \"ms, profile found: \" + profileFound + \", external_id set: \" + externalIdSet);",
+									"    setTimeout(function() {}, sleepBetweenTries);",
+									"    postman.setNextRequest(request.name);",
+									"} else {",
+									"    pm.environment.unset(\"dedup_wait_start_time\");",
+									"",
+									"    pm.test(\"Profile found in Klaviyo\", function () {",
+									"        pm.response.to.have.status(expectedHttpStatus);",
+									"        pm.expect(jsonData.data.length).to.be.above(0);",
+									"    });",
+									"",
+									"    pm.test(\"Profile exists with correct email\", function () {",
+									"        pm.expect(profile).to.not.be.undefined;",
+									"    });",
+									"",
+									"    pm.test(\"Profile ID matches existing profile (no duplicate created)\", function () {",
+									"        pm.expect(profile.id).to.eql(pm.environment.get(\"existing-klaviyo-profile-id\"));",
+									"    });",
+									"",
+									"    pm.test(\"Profile has external_id set to CT customer ID\", function () {",
+									"        pm.expect(profile.attributes.external_id).to.eql(pm.environment.get(\"customer-id\"));",
+									"    });",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "Klaviyo-API-Key {{klaviyoPrivateKey}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "(Required) API endpoint revision (format: YYYY-MM-DD[.suffix])",
+								"key": "revision",
+								"value": "2022-10-17"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{klaviyoBaseUrl}}/api/profiles/?filter=equals(email,\"{{dedup-customer-email}}\")",
+							"host": [
+								"{{klaviyoBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"profiles",
+								""
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "equals(email,\"{{dedup-customer-email}}\")"
+								}
+							]
+						},
+						"description": "Verify that the existing profile was updated (not duplicated) and has external_id set."
+					},
+					"response": []
+				},
+				{
+					"name": "04 [cleanup] Delete Customer in CT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "{{ctp_access_token}}",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "Bearer",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ct_host}}/{{project-key}}/customers/{{customer-id}}?version={{customer-version}}",
+							"host": [
+								"{{ct_host}}"
+							],
+							"path": [
+								"{{project-key}}",
+								"customers",
+								"{{customer-id}}"
+							],
+							"query": [
+								{
+									"key": "version",
+									"value": "{{customer-version}}"
+								}
+							]
+						},
+						"description": "Clean up: Delete customer from CT."
+					},
+					"response": []
+				},
+				{
+					"name": "04 [cleanup] Delete Profile in Klaviyo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "Klaviyo-API-Key {{klaviyoPrivateKey}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"description": "(Required) API endpoint revision (format: YYYY-MM-DD[.suffix])",
+								"key": "revision",
+								"value": "2023-01-24"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"data\": {\n        \"type\": \"data-privacy-deletion-job\",\n        \"attributes\": {\n            \"email\": \"{{dedup-customer-email}}\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://a.klaviyo.com/api/data-privacy-deletion-jobs/",
+							"protocol": "https",
+							"host": [
+								"a",
+								"klaviyo",
+								"com"
+							],
+							"path": [
+								"api",
+								"data-privacy-deletion-jobs",
+								""
+							]
+						},
+						"description": "Clean up: Delete profile from Klaviyo."
+					},
+					"response": []
+				}
+			],
+			"description": "Tests that when deduplication is enabled, creating a customer in Commercetools with an email that already exists in Klaviyo will update the existing profile (not create a duplicate) and set the external_id."
 		}
 	]
 }

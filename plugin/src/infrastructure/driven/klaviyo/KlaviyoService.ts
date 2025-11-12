@@ -16,6 +16,8 @@ export abstract class KlaviyoService {
 
     abstract getKlaviyoProfileByExternalId(externalId: string): Promise<GetProfileResponseData | undefined>;
 
+    abstract getKlaviyoProfileByEmail(email: string): Promise<GetProfileResponseData | undefined>;
+
     public logRateLimitHeaders(
         fulfilledPromises?: PromiseFulfilledResult<any>[],
         rejectedPromises?: PromiseRejectedResult[],

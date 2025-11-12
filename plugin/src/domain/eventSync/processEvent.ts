@@ -31,9 +31,11 @@ import { DefaultCtOrderService } from '../../infrastructure/driven/commercetools
 import { InventoryResourceUpdatedEventProcessor } from './eventProcessors/inventory/inventoryResourceUpdatedEventProcessor';
 import { ProductPublishedEventProcessor } from './eventProcessors/product/productPublishedEventProcessor';
 import { ProcessingResult } from '../../types/klaviyo-plugin';
+import { ProfileDeduplicationService } from '../shared/services/ProfileDeduplicationService';
 
+const klaviyoService = new KlaviyoSdkService();
 const context: Context = {
-    klaviyoService: new KlaviyoSdkService(),
+    klaviyoService,
     orderMapper: new DefaultOrderMapper(new DummyCurrencyService(), new DefaultCustomerMapper()),
     customerMapper: new DefaultCustomerMapper(),
     categoryMapper: new DefaultCategoryMapper(),
@@ -43,6 +45,7 @@ const context: Context = {
     ctCategoryService: new DefaultCtCategoryService(getApiRoot()),
     ctPaymentService: new DefaultCtPaymentService(getApiRoot()),
     ctOrderService: new DefaultCtOrderService(getApiRoot()),
+    profileDeduplicationService: new ProfileDeduplicationService(klaviyoService),
 };
 
 const defaultProcessors: (typeof AbstractEventProcessor)[] = [

@@ -106,6 +106,28 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
+    public async getKlaviyoProfileByEmail(email: string): Promise<GetProfileResponseData | undefined> {
+        logger.info(`Getting profile in Klaviyo with email ${email}`);
+        try {
+            const filter = `equals(email,"${email}")`;
+            const profiles = await Profiles.getProfiles({ filter });
+            // If multiple profiles exist with same email, return the first one
+            // In practice, Klaviyo should prevent duplicates, but we handle edge case
+            const profile = profiles?.body.data?.find(
+                (profile: GetProfileResponseData) => profile.attributes.email === email,
+            );
+            if (profiles?.body.data && profiles.body.data.length > 1) {
+                logger.warn(
+                    `Multiple profiles found with email ${email}. Using first match. Total: ${profiles.body.data.length}`,
+                );
+            }
+            return profile;
+        } catch (e: any) {
+            logger.error(`Error getting profile in Klaviyo with email ${email}: ${e.message}`, e);
+            throw e;
+        }
+    }
+
     private async createOrUpdateProfile(body: KlaviyoRequestType, create: boolean) {
         try {
             return await this.processProfileOperation(body, create);

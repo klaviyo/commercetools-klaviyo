@@ -8,6 +8,7 @@ import { CtProductService } from '../infrastructure/driven/commercetools/CtProdu
 import { CtCategoryService } from '../infrastructure/driven/commercetools/CtCategoryService';
 import { CtPaymentService } from '../infrastructure/driven/commercetools/CtPaymentService';
 import { CtOrderService } from '../infrastructure/driven/commercetools/CtOrderService';
+import { ProfileDeduplicationService } from '../domain/shared/services/ProfileDeduplicationService';
 
 type Context = {
     klaviyoService: KlaviyoService;
@@ -20,4 +21,5 @@ type Context = {
     ctCategoryService: CtCategoryService;
     ctPaymentService: CtPaymentService;
     ctOrderService: CtOrderService;
+    profileDeduplicationService: ProfileDeduplicationService;
 };

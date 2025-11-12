@@ -6,11 +6,15 @@ export const getCustomerProfileFromOrder = (
     order: Order,
     customerMapper: CustomerMapper,
     updateAdditionalProfileProperties = false,
+    klaviyoProfileId?: string,
 ): KlaviyoEventProfile => {
     const profile: KlaviyoEventProfile = {
         type: 'profile',
         attributes: {},
     };
+    if (klaviyoProfileId) {
+        profile.id = klaviyoProfileId;
+    }
     if (order.customerEmail) {
         profile.attributes.email = order.customerEmail;
     }

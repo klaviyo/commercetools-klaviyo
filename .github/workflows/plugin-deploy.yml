@@ -155,6 +155,7 @@ jobs:
           ct_api_url: ${{ vars.CT_API_URL }}
           ct_auth_url: ${{ vars.CT_AUTH_URL }}
           ct_project_id: ${{ vars.CT_PROJECT_ID }}
+          deduplication_enabled: 'false'
 
   infrastructure_prod:
     name: "[prod] Infrastructure"
@@ -247,3 +248,4 @@ jobs:
           ct_api_url: ${{ vars.CT_API_URL }}
           ct_auth_url: ${{ vars.CT_AUTH_URL }}
           ct_project_id: ${{ vars.CT_PROJECT_ID }}
+          deduplication_enabled: 'false'

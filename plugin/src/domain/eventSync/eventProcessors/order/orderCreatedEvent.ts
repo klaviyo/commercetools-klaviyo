@@ -53,21 +53,62 @@ export class OrderCreatedEvent extends AbstractEventProcessor {
             }
         } while ((ctProductsResult as PaginatedProductResults)?.hasMore);
 
+        // Step 1: For guest orders (email but no customerId), check for existing profile if deduplication enabled
+        let klaviyoProfileId: string | undefined;
+        if (
+            this.context.profileDeduplicationService.shouldDeduplicate() &&
+            order.customerEmail &&
+            !order.customerId
+        ) {
+            // Step 2: Search for existing profile by email FIRST
+            const deduplicationResult = await this.context.profileDeduplicationService.findExistingProfileByEmail(
+                order.customerEmail,
+            );
+
+            // Step 3: If found, use the Klaviyo profile ID for order events
+            if (deduplicationResult.existingProfile && deduplicationResult.klaviyoProfileId) {
+                logger.debug(
+                    `Order event: Found existing profile for email ${order.customerEmail}. Using profile ID: ${deduplicationResult.klaviyoProfileId}`,
+                );
+                klaviyoProfileId = deduplicationResult.klaviyoProfileId;
+
+                // Step 4: If profile is missing external_id and we have customerId from order, update it
+                // Note: This handles the case where order.customerId might be set later
+                if (order.customerId && deduplicationResult.needsUpdate) {
+                    logger.info(
+                        `Order event: Updating profile ${deduplicationResult.klaviyoProfileId} with external_id ${order.customerId}`,
+                    );
+                    // Update profile with external_id - this happens asynchronously, don't wait
+                    this.context.klaviyoService
+                        .sendEventToKlaviyo({
+                            type: 'profileResourceUpdated',
+                            body: this.context.customerMapper.mapCtCustomerToKlaviyoProfile(
+                                { id: order.customerId, email: order.customerEmail } as any,
+                                deduplicationResult.klaviyoProfileId,
+                            ),
+                        })
+                        .catch((e) => logger.error('Error updating profile with external_id from order', e));
+                }
+            }
+        }
+
         const body: EventRequest = this.context.orderMapper.mapCtOrderToKlaviyoEvent(
             order,
             orderProducts,
             config.get('order.metrics.placedOrder'),
             true,
+            undefined,
+            klaviyoProfileId,
         );
 
         const events: KlaviyoEvent[] = [{ body, type: 'event' }];
 
-        this.getProductOrderedEventsFromOrder(events, order);
+        this.getProductOrderedEventsFromOrder(events, order, klaviyoProfileId);
 
         return Promise.resolve(events);
     }
 
-    private getProductOrderedEventsFromOrder(events: KlaviyoEvent[], order: Order) {
+    private getProductOrderedEventsFromOrder(events: KlaviyoEvent[], order: Order, klaviyoProfileId?: string) {
         const eventTime: Date = new Date(order.createdAt);
         eventTime.setSeconds(eventTime.getSeconds() + 1);
         order?.lineItems?.forEach((lineItem) => {
@@ -76,6 +117,7 @@ export class OrderCreatedEvent extends AbstractEventProcessor {
                     lineItem,
                     order,
                     eventTime.toISOString(),
+                    klaviyoProfileId,
                 ),
                 type: 'event',
             });

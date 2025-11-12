@@ -10,7 +10,7 @@ const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
 const eventRequestMock = mock<EventRequest>();
 const mockedOrderId = "mockedOrder";
 eventRequestMock.data.id = mockedOrderId;
-contextMock.orderMapper.mapCtRefundedOrderToKlaviyoEvent.mockImplementation((order, metric, time) => eventRequestMock);
+contextMock.orderMapper.mapCtRefundedOrderToKlaviyoEvent.mockImplementation((order, orderProducts, metric, time, klaviyoProfileId) => eventRequestMock);
 
 describe('orderRefundedEvent > isEventValid', () => {
     it('should return valid when a payment transaction has type "Refund" (PaymentTransactionAdded)', async () => {

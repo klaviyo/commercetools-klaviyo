@@ -12,8 +12,8 @@ orderEventRequestMock.data.id = mockedOrderId;
 const lineEventRequestMock = mock<EventRequest>();
 const mockedOrderLineId = 'mockedOrderLineId';
 lineEventRequestMock.data.id = mockedOrderLineId;
-contextMock.orderMapper.mapCtOrderToKlaviyoEvent.mockImplementation((order, metric, time) => orderEventRequestMock);
-contextMock.orderMapper.mapOrderLineToProductOrderedEvent.mockImplementation((lineItem, order) => lineEventRequestMock);
+contextMock.orderMapper.mapCtOrderToKlaviyoEvent.mockImplementation((order, orderProducts, metric, updateAdditionalProfileProperties, time, klaviyoProfileId) => orderEventRequestMock);
+contextMock.orderMapper.mapOrderLineToProductOrderedEvent.mockImplementation((lineItem, order, time, klaviyoProfileId) => lineEventRequestMock);
 
 describe('orderStateChangedEvent > isEventValid', () => {
     it('should return valid when order is in Cancelled state', async () => {

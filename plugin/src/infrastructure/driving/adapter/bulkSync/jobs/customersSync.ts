@@ -5,6 +5,7 @@ import { DefaultCustomerMapper } from '../../../../../domain/shared/mappers/Defa
 import { KlaviyoSdkService } from '../../../../driven/klaviyo/KlaviyoSdkService';
 import { DefaultCtCustomerService } from '../../../../driven/commercetools/DefaultCtCustomerService';
 import { getApiRoot } from '../../../../driven/commercetools/ctService';
+import { ProfileDeduplicationService } from '../../../../../domain/shared/services/ProfileDeduplicationService';
 
 let customersSync: CustomersSync;
 
@@ -24,11 +25,13 @@ const releaseLock = async () => {
 }
 
 (async () => {
+	const klaviyoService = new KlaviyoSdkService();
 	customersSync = new CustomersSync(
 		new CTCustomObjectLockService(getApiRoot()),
 		new DefaultCustomerMapper(),
-		new KlaviyoSdkService(),
+		klaviyoService,
 		new DefaultCtCustomerService(getApiRoot()),
+		new ProfileDeduplicationService(klaviyoService),
 	);
 	if (workerData?.customerIds.length) {
 		await customersSync.syncCustomersByIdRange(workerData?.customerIds);

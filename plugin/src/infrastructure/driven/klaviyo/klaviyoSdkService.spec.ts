@@ -6,6 +6,7 @@ const klvSdkModule = {
     Profiles: {
         createProfile: jest.fn(),
         updateProfile: jest.fn(),
+        getProfiles: jest.fn(),
     },
     Events: {
         createEvent: jest.fn(),
@@ -30,6 +31,14 @@ import { KlaviyoSdkService } from './KlaviyoSdkService';
 import { EventType } from '../../../types/klaviyo-types';
 import { KlaviyoEvent } from '../../../types/klaviyo-plugin';
 import { EventEnum } from 'klaviyo-api';
+import logger from '../../../utils/log';
+
+jest.mock('../../../utils/log', () => ({
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+}));
 
 jest.mock('klaviyo-api', () => {
     const module = jest.createMockFromModule<any>('klaviyo-api');
@@ -820,5 +829,90 @@ describe('klaviyoService > getKlaviyoPaginatedItems', () => {
         }
 
         expect(error).toBeInstanceOf(StatusError);
+    });
+});
+
+describe('klaviyoService > getKlaviyoProfileByEmail', () => {
+    beforeEach(() => {
+        jest.resetAllMocks();
+    });
+
+    test('should return profile when found by email', async () => {
+        const mockProfile = {
+            id: 'profile-id',
+            attributes: {
+                email: 'test@example.com',
+                externalId: 'external-id',
+            },
+        };
+
+        klvSdkModule.Profiles.getProfiles.mockResolvedValueOnce({
+            body: {
+                data: [mockProfile],
+            },
+        });
+
+        const result = await klaviyoService.getKlaviyoProfileByEmail('test@example.com');
+
+        expect(result).toEqual(mockProfile);
+        expect(klvSdkModule.Profiles.getProfiles).toHaveBeenCalledWith({
+            filter: 'equals(email,"test@example.com")',
+        });
+    });
+
+    test('should return undefined when no profile is found', async () => {
+        klvSdkModule.Profiles.getProfiles.mockResolvedValueOnce({
+            body: {
+                data: [],
+            },
+        });
+
+        const result = await klaviyoService.getKlaviyoProfileByEmail('test@example.com');
+
+        expect(result).toBeUndefined();
+        expect(klvSdkModule.Profiles.getProfiles).toHaveBeenCalledWith({
+            filter: 'equals(email,"test@example.com")',
+        });
+    });
+
+    test('should return first profile and log warning when multiple profiles found', async () => {
+        const mockProfile1 = {
+            id: 'profile-id-1',
+            attributes: {
+                email: 'test@example.com',
+                externalId: 'external-id-1',
+            },
+        };
+        const mockProfile2 = {
+            id: 'profile-id-2',
+            attributes: {
+                email: 'test@example.com',
+                externalId: 'external-id-2',
+            },
+        };
+
+        klvSdkModule.Profiles.getProfiles.mockResolvedValueOnce({
+            body: {
+                data: [mockProfile1, mockProfile2],
+            },
+        });
+
+        const result = await klaviyoService.getKlaviyoProfileByEmail('test@example.com');
+
+        expect(result).toEqual(mockProfile1);
+        expect(logger.warn).toHaveBeenCalledWith(
+            expect.stringContaining('Multiple profiles found with email test@example.com'),
+        );
+    });
+
+    test('should throw error when API call fails', async () => {
+        const apiError = new Error('API Error');
+        klvSdkModule.Profiles.getProfiles.mockRejectedValueOnce(apiError);
+
+        await expect(klaviyoService.getKlaviyoProfileByEmail('test@example.com')).rejects.toThrow('API Error');
+        expect(logger.error).toHaveBeenCalledWith(
+            expect.stringContaining('Error getting profile in Klaviyo with email test@example.com: API Error'),
+            apiError,
+        );
     });
 });
