@@ -40,9 +40,7 @@ export class CustomerCreatedEventProcessor extends AbstractEventProcessor {
 
             // If found, update existing profile instead of creating new one
             if (deduplicationResult.existingProfile && deduplicationResult.klaviyoProfileId) {
-                logger.info(
-                    `Found existing profile for email ${customer.email}. Updating profile ID: ${deduplicationResult.klaviyoProfileId}`,
-                );
+                logger.info('Found existing profile; updating instead of creating.');
 
                 // Map customer to profile with existing Klaviyo profile ID
                 // This includes updating the external_id with the Commercetools customer ID

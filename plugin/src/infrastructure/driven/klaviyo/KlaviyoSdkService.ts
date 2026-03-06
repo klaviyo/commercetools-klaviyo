@@ -92,7 +92,7 @@ export class KlaviyoSdkService extends KlaviyoService {
     }
 
     public async getKlaviyoProfileByExternalId(externalId: string): Promise<GetProfileResponseData | undefined> {
-        logger.info(`Getting profile in Klaviyo with externalId ${externalId}`);
+        logger.info('Getting profile in Klaviyo by external ID');
         try {
             const filter = `equals(external_id,"${externalId}")`;
             const profiles = await Profiles.getProfiles({ filter });
@@ -101,13 +101,13 @@ export class KlaviyoSdkService extends KlaviyoService {
             );
             return profile;
         } catch (e) {
-            logger.error(`Error getting profile in Klaviyo with externalId ${externalId}`);
+            logger.error('Error getting profile in Klaviyo by external ID');
             throw e;
         }
     }
 
     public async getKlaviyoProfileByEmail(email: string): Promise<GetProfileResponseData | undefined> {
-        logger.info(`Getting profile in Klaviyo with email ${email}`);
+        logger.info('Getting profile in Klaviyo by email');
         try {
             const filter = `equals(email,"${email}")`;
             const profiles = await Profiles.getProfiles({ filter });
@@ -117,13 +117,11 @@ export class KlaviyoSdkService extends KlaviyoService {
                 (profile: GetProfileResponseData) => profile.attributes.email === email,
             );
             if (profiles?.body.data && profiles.body.data.length > 1) {
-                logger.warn(
-                    `Multiple profiles found with email ${email}. Using first match. Total: ${profiles.body.data.length}`,
-                );
+                logger.warn('Multiple profiles found for email. Using first match.');
             }
             return profile;
         } catch (e: any) {
-            logger.error(`Error getting profile in Klaviyo with email ${email}: ${e.message}`, e);
+            logger.error('Error getting profile in Klaviyo by email', e);
             throw e;
         }
     }

@@ -901,7 +901,7 @@ describe('klaviyoService > getKlaviyoProfileByEmail', () => {
 
         expect(result).toEqual(mockProfile1);
         expect(logger.warn).toHaveBeenCalledWith(
-            expect.stringContaining('Multiple profiles found with email test@example.com'),
+            'Multiple profiles found for email. Using first match.',
         );
     });
 
@@ -910,9 +910,6 @@ describe('klaviyoService > getKlaviyoProfileByEmail', () => {
         klvSdkModule.Profiles.getProfiles.mockRejectedValueOnce(apiError);
 
         await expect(klaviyoService.getKlaviyoProfileByEmail('test@example.com')).rejects.toThrow('API Error');
-        expect(logger.error).toHaveBeenCalledWith(
-            expect.stringContaining('Error getting profile in Klaviyo with email test@example.com: API Error'),
-            apiError,
-        );
+        expect(logger.error).toHaveBeenCalledWith('Error getting profile in Klaviyo by email', apiError);
     });
 });

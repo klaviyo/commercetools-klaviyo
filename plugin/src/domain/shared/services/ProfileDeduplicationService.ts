@@ -66,7 +66,7 @@ export class ProfileDeduplicationService {
 
             if (needsUpdate) {
                 logger.info(
-                    `Found existing profile for email ${email} but external_id mismatch. Existing: ${existingExternalId}, New: ${externalId}. Profile will be updated.`,
+                    'Found existing profile but external_id mismatch. Profile will be updated.',
                 );
             }
 

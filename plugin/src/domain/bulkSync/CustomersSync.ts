@@ -136,9 +136,7 @@ export class CustomersSync {
 
             // Step 3: If found, update existing profile instead of creating new one
             if (deduplicationResult.existingProfile && deduplicationResult.klaviyoProfileId) {
-                logger.debug(
-                    `Bulk sync: Found existing profile for email ${customer.email}. Using profile ID: ${deduplicationResult.klaviyoProfileId}`,
-                );
+                logger.debug('Bulk sync: Found existing profile; using profile update instead of create.');
 
                 // Map customer to profile with existing Klaviyo profile ID
                 const profileBody = this.customerMapper.mapCtCustomerToKlaviyoProfile(

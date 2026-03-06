@@ -67,17 +67,13 @@ export class OrderCreatedEvent extends AbstractEventProcessor {
 
             // Step 3: If found, use the Klaviyo profile ID for order events
             if (deduplicationResult.existingProfile && deduplicationResult.klaviyoProfileId) {
-                logger.debug(
-                    `Order event: Found existing profile for email ${order.customerEmail}. Using profile ID: ${deduplicationResult.klaviyoProfileId}`,
-                );
+                logger.debug('Order event: Found existing profile; using for order.');
                 klaviyoProfileId = deduplicationResult.klaviyoProfileId;
 
                 // Step 4: If profile is missing external_id and we have customerId from order, update it
                 // Note: This handles the case where order.customerId might be set later
                 if (order.customerId && deduplicationResult.needsUpdate) {
-                    logger.info(
-                        `Order event: Updating profile ${deduplicationResult.klaviyoProfileId} with external_id ${order.customerId}`,
-                    );
+                    logger.info('Order event: Updating profile with external_id from order.');
                     // Update profile with external_id - this happens asynchronously, don't wait
                     this.context.klaviyoService
                         .sendEventToKlaviyo({
