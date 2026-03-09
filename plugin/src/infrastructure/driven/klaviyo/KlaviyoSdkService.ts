@@ -114,7 +114,8 @@ export class KlaviyoSdkService extends KlaviyoService {
             // If multiple profiles exist with same email, return the first one
             // In practice, Klaviyo should prevent duplicates, but we handle edge case
             const profile = profiles?.body.data?.find(
-                (profile: GetProfileResponseData) => profile.attributes.email === email,
+                (profile: GetProfileResponseData) =>
+                    profile.attributes.email?.toLowerCase() === email.toLowerCase(),
             );
             if (profiles?.body.data && profiles.body.data.length > 1) {
                 logger.warn('Multiple profiles found for email. Using first match.');
