@@ -1,4 +1,4 @@
-FROM node:20-alpine AS BUILD_IMAGE
+FROM node:22-alpine AS BUILD_IMAGE
 RUN apk add --update dumb-init
 
 WORKDIR /usr/src/app
@@ -10,10 +10,12 @@ RUN yarn build
 # remove development dependencies
 RUN yarn install --production --ignore-scripts --prefer-offline --force --frozen-lockfile
 
-FROM node:20-alpine
+FROM node:22-alpine
 
-# Partially deal with CVE-2024-21538
-RUN rm -r /usr/local/lib/node_modules/npm/node_modules/cross-spawn/
+# Deal with vulnerabilities in npm/yarn dependencies by removing package managers from the production image
+RUN rm -rf /usr/local/lib/node_modules/npm \
+    && rm -f /usr/local/bin/npm /usr/local/bin/npx \
+    && rm -rf /opt/yarn* /usr/local/bin/yarn /usr/local/bin/yarnpkg
 
 ENV NODE_ENV production
 ENV NODE_CONFIG_DIR ./dist/config
