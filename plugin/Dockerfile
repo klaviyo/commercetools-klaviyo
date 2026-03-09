@@ -12,6 +12,9 @@ RUN yarn install --production --ignore-scripts --prefer-offline --force --frozen
 
 FROM node:22-alpine
 
+# Upgrade Alpine OS packages to patch any vulnerabilities in the base image (e.g., zlib CVE-2026-22184)
+RUN apk upgrade --no-cache
+
 # Deal with vulnerabilities in npm/yarn dependencies by removing package managers from the production image
 RUN rm -rf /usr/local/lib/node_modules/npm \
     && rm -f /usr/local/bin/npm /usr/local/bin/npx \
