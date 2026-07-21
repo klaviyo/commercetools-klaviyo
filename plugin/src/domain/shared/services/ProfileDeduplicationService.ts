@@ -1,10 +1,10 @@
 import { KlaviyoService } from '../../../infrastructure/driven/klaviyo/KlaviyoService';
-import { GetProfileResponseData } from 'klaviyo-api';
+import { ProfileResponseObjectResourceExtended } from 'klaviyo-api';
 import logger from '../../../utils/log';
 import config from 'config';
 
 export interface DeduplicationResult {
-    existingProfile: GetProfileResponseData | undefined;
+    existingProfile: ProfileResponseObjectResourceExtended | undefined;
     needsUpdate: boolean;
     klaviyoProfileId: string | undefined;
 }

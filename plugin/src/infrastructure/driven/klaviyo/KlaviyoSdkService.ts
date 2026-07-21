@@ -5,13 +5,13 @@ import {
     Events,
     Profiles,
     Catalogs,
-    GetProfileResponseData,
+    ProfileResponseObjectResourceExtended,
     CatalogCategoryCreateQuery,
-    GetCatalogItemResponseCollectionCompoundDocumentDataInner,
+    CatalogItemResponseObjectResource,
     GetCatalogItemResponseCollectionCompoundDocument,
     GetCatalogCategoryResponseCollection,
-    GetCatalogVariantResponseCollectionDataInner,
-    GetCatalogCategoryResponseCollectionDataInner,
+    CatalogVariantResponseObjectResource,
+    CatalogCategoryResponseObjectResource,
     CatalogItemCreateQuery,
     CatalogItemUpdateQuery,
     RetryWithExponentialBackoff,
@@ -91,13 +91,13 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
-    public async getKlaviyoProfileByExternalId(externalId: string): Promise<GetProfileResponseData | undefined> {
+    public async getKlaviyoProfileByExternalId(externalId: string): Promise<ProfileResponseObjectResourceExtended | undefined> {
         logger.info('Getting profile in Klaviyo by external ID');
         try {
             const filter = `equals(external_id,"${externalId}")`;
             const profiles = await Profiles.getProfiles({ filter });
             const profile = profiles?.body.data?.find(
-                (profile: GetProfileResponseData) => profile.attributes.externalId === externalId,
+                (profile: ProfileResponseObjectResourceExtended) => profile.attributes.externalId === externalId,
             );
             return profile;
         } catch (e) {
@@ -106,7 +106,7 @@ export class KlaviyoSdkService extends KlaviyoService {
         }
     }
 
-    public async getKlaviyoProfileByEmail(email: string): Promise<GetProfileResponseData | undefined> {
+    public async getKlaviyoProfileByEmail(email: string): Promise<ProfileResponseObjectResourceExtended | undefined> {
         logger.info('Getting profile in Klaviyo by email');
         try {
             const filter = `equals(email,"${email}")`;
@@ -114,7 +114,7 @@ export class KlaviyoSdkService extends KlaviyoService {
             // If multiple profiles exist with same email, return the first one
             // In practice, Klaviyo should prevent duplicates, but we handle edge case
             const profile = profiles?.body.data?.find(
-                (profile: GetProfileResponseData) =>
+                (profile: ProfileResponseObjectResourceExtended) =>
                     profile.attributes.email?.toLowerCase() === email.toLowerCase(),
             );
             if (profiles?.body.data && profiles.body.data.length > 1) {
@@ -303,7 +303,7 @@ export class KlaviyoSdkService extends KlaviyoService {
 
     public async getKlaviyoCategoryByExternalId(
         externalId: string,
-    ): Promise<GetCatalogCategoryResponseCollectionDataInner | undefined> {
+    ): Promise<CatalogCategoryResponseObjectResource | undefined> {
         logger.info(`Getting categories in Klaviyo with externalId ${externalId}`);
         try {
             const filter = `any(ids,["$custom:::$default:::${externalId}"])`;
@@ -340,7 +340,7 @@ export class KlaviyoSdkService extends KlaviyoService {
         productId?: string,
         skus?: string[],
         fieldsCatalogVariant?: any[],
-    ): Promise<GetCatalogVariantResponseCollectionDataInner[]> {
+    ): Promise<CatalogVariantResponseObjectResource[]> {
         let filter;
         if (skus && !skus.length) {
             return [];
@@ -407,7 +407,7 @@ export class KlaviyoSdkService extends KlaviyoService {
 
     public async getKlaviyoItemByExternalId(
         externalId: string,
-    ): Promise<GetCatalogItemResponseCollectionCompoundDocumentDataInner | undefined> {
+    ): Promise<CatalogItemResponseObjectResource | undefined> {
         logger.info(`Getting item in Klaviyo with externalId ${externalId}`);
         try {
             const itemId = `$custom:::$default:::${externalId}`;

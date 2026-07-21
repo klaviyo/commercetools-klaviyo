@@ -1,10 +1,10 @@
 import {
     GetCatalogCategoryResponseCollection,
-    GetCatalogCategoryResponseCollectionDataInner,
+    CatalogCategoryResponseObjectResource,
     GetCatalogItemResponseCollectionCompoundDocument,
-    GetCatalogItemResponseCollectionCompoundDocumentDataInner,
-    GetCatalogVariantResponseCollectionDataInner,
-    GetProfileResponseData,
+    CatalogItemResponseObjectResource,
+    CatalogVariantResponseObjectResource,
+    ProfileResponseObjectResourceExtended,
 } from 'klaviyo-api';
 import logger from '../../../utils/log';
 import { KlaviyoEvent } from '../../../types/klaviyo-plugin';
@@ -14,9 +14,9 @@ export abstract class KlaviyoService {
 
     abstract sendJobRequestToKlaviyo(event: KlaviyoEvent): Promise<any>;
 
-    abstract getKlaviyoProfileByExternalId(externalId: string): Promise<GetProfileResponseData | undefined>;
+    abstract getKlaviyoProfileByExternalId(externalId: string): Promise<ProfileResponseObjectResourceExtended | undefined>;
 
-    abstract getKlaviyoProfileByEmail(email: string): Promise<GetProfileResponseData | undefined>;
+    abstract getKlaviyoProfileByEmail(email: string): Promise<ProfileResponseObjectResourceExtended | undefined>;
 
     public logRateLimitHeaders(
         fulfilledPromises?: PromiseFulfilledResult<any>[],
@@ -75,18 +75,18 @@ export abstract class KlaviyoService {
 
     abstract getKlaviyoCategoryByExternalId(
         externalId: string,
-    ): Promise<GetCatalogCategoryResponseCollectionDataInner | undefined>;
+    ): Promise<CatalogCategoryResponseObjectResource | undefined>;
 
     abstract getKlaviyoItemsByIds(
         ids: string[],
         fieldsCatalogItem?: string[],
-    ): Promise<GetCatalogItemResponseCollectionCompoundDocumentDataInner[]>;
+    ): Promise<CatalogItemResponseObjectResource[]>;
 
     abstract getKlaviyoItemVariantsByCtSkus(
         productId?: string,
         skus?: string[],
         fieldsCatalogVariant?: string[],
-    ): Promise<GetCatalogVariantResponseCollectionDataInner[]>;
+    ): Promise<CatalogVariantResponseObjectResource[]>;
 
     abstract getKlaviyoPaginatedCategories(nextPageCursor?: string): Promise<GetCatalogCategoryResponseCollection>;
 
@@ -96,5 +96,5 @@ export abstract class KlaviyoService {
 
     abstract getKlaviyoItemByExternalId(
         externalId: string,
-    ): Promise<GetCatalogItemResponseCollectionCompoundDocumentDataInner | undefined>;
+    ): Promise<CatalogItemResponseObjectResource | undefined>;
 }

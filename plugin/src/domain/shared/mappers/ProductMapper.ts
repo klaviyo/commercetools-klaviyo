@@ -6,7 +6,7 @@ import {
     ItemVariantJobRequest,
     ItemVariantRequest,
 } from '../../../types/klaviyo-types';
-import { GetCatalogVariantResponseCollectionDataInner } from 'klaviyo-api';
+import { CatalogVariantResponseObjectResource } from 'klaviyo-api';
 
 export interface ProductMapper {
     mapCtProductToKlaviyoItem(product: Product, update?: boolean): ItemRequest;
@@ -25,6 +25,6 @@ export interface ProductMapper {
     mapKlaviyoVariantIdToDeleteVariantRequest(klaviyoVariantId: string): ItemDeletedRequest;
     mapCtInventoryEntryToKlaviyoVariant(
         inventory: InventoryEntry,
-        klaviyoVariant: GetCatalogVariantResponseCollectionDataInner,
+        klaviyoVariant: CatalogVariantResponseObjectResource,
     ): ItemVariantRequest;
 }

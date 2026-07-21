@@ -26,7 +26,7 @@ import {
     ItemVariantType,
     KlaviyoRelationshipData,
 } from '../../../types/klaviyo-types';
-import { GetCatalogVariantResponseCollectionDataInner } from 'klaviyo-api';
+import { CatalogVariantResponseObjectResource } from 'klaviyo-api';
 
 export class DefaultProductMapper implements ProductMapper {
     constructor(private readonly currencyService: CurrencyService) {}
@@ -352,7 +352,7 @@ export class DefaultProductMapper implements ProductMapper {
 
     public mapCtInventoryEntryToKlaviyoVariant(
         inventory: InventoryEntry,
-        klaviyoVariant: GetCatalogVariantResponseCollectionDataInner,
+        klaviyoVariant: CatalogVariantResponseObjectResource,
     ): ItemVariantRequest {
         const inventoryEntryQuantity = this.getProductInventoryByPriority(inventory);
         return {

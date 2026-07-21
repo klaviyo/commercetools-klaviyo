@@ -3,11 +3,11 @@ import logger from '../../../utils/log';
 import { mock } from 'jest-mock-extended';
 import {
     GetCatalogCategoryResponseCollection,
-    GetCatalogCategoryResponseCollectionDataInner,
+    CatalogCategoryResponseObjectResource,
     GetCatalogItemResponseCollectionCompoundDocument,
-    GetCatalogItemResponseCollectionCompoundDocumentDataInner,
-    GetCatalogVariantResponseCollectionDataInner,
-    GetProfileResponseData,
+    CatalogItemResponseObjectResource,
+    CatalogVariantResponseObjectResource,
+    ProfileResponseObjectResourceExtended,
 } from 'klaviyo-api';
 import { KlaviyoEvent } from '../../../types/klaviyo-plugin';
 
@@ -24,11 +24,11 @@ describe('Klaviyo abstract service', () => {
     });
 
     class DummyKlaviyoService extends KlaviyoService {
-        getKlaviyoProfileByExternalId(externalId: string): Promise<GetProfileResponseData | undefined> {
+        getKlaviyoProfileByExternalId(externalId: string): Promise<ProfileResponseObjectResourceExtended | undefined> {
             return Promise.resolve(undefined);
         }
 
-        getKlaviyoProfileByEmail(email: string): Promise<GetProfileResponseData | undefined> {
+        getKlaviyoProfileByEmail(email: string): Promise<ProfileResponseObjectResourceExtended | undefined> {
             return Promise.resolve(undefined);
         }
 
@@ -38,7 +38,7 @@ describe('Klaviyo abstract service', () => {
 
         getKlaviyoCategoryByExternalId(
             externalId: string,
-        ): Promise<GetCatalogCategoryResponseCollectionDataInner | undefined> {
+        ): Promise<CatalogCategoryResponseObjectResource | undefined> {
             return Promise.resolve(undefined);
         }
 
@@ -49,16 +49,16 @@ describe('Klaviyo abstract service', () => {
         getKlaviyoItemsByIds(
             ids: string[],
             fieldsCatalogItem?: string[],
-        ): Promise<GetCatalogItemResponseCollectionCompoundDocumentDataInner[]> {
-            return Promise.resolve(mock<GetCatalogItemResponseCollectionCompoundDocumentDataInner[]>());
+        ): Promise<CatalogItemResponseObjectResource[]> {
+            return Promise.resolve(mock<CatalogItemResponseObjectResource[]>());
         }
 
         getKlaviyoItemVariantsByCtSkus(
             productId?: string,
             skus?: string[],
             fieldsCatalogVariant?: string[],
-        ): Promise<GetCatalogVariantResponseCollectionDataInner[]> {
-            return Promise.resolve(mock<GetCatalogVariantResponseCollectionDataInner[]>());
+        ): Promise<CatalogVariantResponseObjectResource[]> {
+            return Promise.resolve(mock<CatalogVariantResponseObjectResource[]>());
         }
 
         getKlaviyoPaginatedCategories(nextPageCursor?: string): Promise<GetCatalogCategoryResponseCollection> {
@@ -71,8 +71,8 @@ describe('Klaviyo abstract service', () => {
 
         getKlaviyoItemByExternalId(
             externalId: string,
-        ): Promise<GetCatalogItemResponseCollectionCompoundDocumentDataInner | undefined> {
-            return Promise.resolve(mock<GetCatalogItemResponseCollectionCompoundDocumentDataInner>());
+        ): Promise<CatalogItemResponseObjectResource | undefined> {
+            return Promise.resolve(mock<CatalogItemResponseObjectResource>());
         }
     }
 

@@ -1,7 +1,7 @@
 import { ProfileDeduplicationService } from './ProfileDeduplicationService';
 import { KlaviyoService } from '../../../infrastructure/driven/klaviyo/KlaviyoService';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { GetProfileResponseData } from 'klaviyo-api';
+import { ProfileResponseObjectResourceExtended } from 'klaviyo-api';
 import logger from '../../../utils/log';
 import config from 'config';
 
@@ -79,13 +79,13 @@ describe('ProfileDeduplicationService', () => {
         });
 
         it('should return existing profile when found with matching external_id', async () => {
-            const existingProfile: GetProfileResponseData = {
+            const existingProfile: ProfileResponseObjectResourceExtended = {
                 id: 'klaviyo-profile-id',
                 attributes: {
                     email: 'test@example.com',
                     externalId: 'external-id',
                 },
-            } as GetProfileResponseData;
+            } as ProfileResponseObjectResourceExtended;
 
             mockKlaviyoService.getKlaviyoProfileByEmail.mockResolvedValue(existingProfile);
 
@@ -97,13 +97,13 @@ describe('ProfileDeduplicationService', () => {
         });
 
         it('should return existing profile with needsUpdate=true when external_id differs', async () => {
-            const existingProfile: GetProfileResponseData = {
+            const existingProfile: ProfileResponseObjectResourceExtended = {
                 id: 'klaviyo-profile-id',
                 attributes: {
                     email: 'test@example.com',
                     externalId: 'old-external-id',
                 },
-            } as GetProfileResponseData;
+            } as ProfileResponseObjectResourceExtended;
 
             mockKlaviyoService.getKlaviyoProfileByEmail.mockResolvedValue(existingProfile);
 
@@ -115,13 +115,13 @@ describe('ProfileDeduplicationService', () => {
         });
 
         it('should return existing profile with needsUpdate=true when external_id is missing', async () => {
-            const existingProfile: GetProfileResponseData = {
+            const existingProfile: ProfileResponseObjectResourceExtended = {
                 id: 'klaviyo-profile-id',
                 attributes: {
                     email: 'test@example.com',
                     externalId: undefined,
                 },
-            } as GetProfileResponseData;
+            } as ProfileResponseObjectResourceExtended;
 
             mockKlaviyoService.getKlaviyoProfileByEmail.mockResolvedValue(existingProfile);
 
@@ -133,13 +133,13 @@ describe('ProfileDeduplicationService', () => {
         });
 
         it('should return existing profile with needsUpdate=false when external_id is not provided', async () => {
-            const existingProfile: GetProfileResponseData = {
+            const existingProfile: ProfileResponseObjectResourceExtended = {
                 id: 'klaviyo-profile-id',
                 attributes: {
                     email: 'test@example.com',
                     externalId: 'some-id',
                 },
-            } as GetProfileResponseData;
+            } as ProfileResponseObjectResourceExtended;
 
             mockKlaviyoService.getKlaviyoProfileByEmail.mockResolvedValue(existingProfile);
 
@@ -162,13 +162,13 @@ describe('ProfileDeduplicationService', () => {
         });
 
         it('should handle null external_id correctly', async () => {
-            const existingProfile: GetProfileResponseData = {
+            const existingProfile: ProfileResponseObjectResourceExtended = {
                 id: 'klaviyo-profile-id',
                 attributes: {
                     email: 'test@example.com',
                     externalId: 'existing-id',
                 },
-            } as GetProfileResponseData;
+            } as ProfileResponseObjectResourceExtended;
 
             mockKlaviyoService.getKlaviyoProfileByEmail.mockResolvedValue(existingProfile);
 

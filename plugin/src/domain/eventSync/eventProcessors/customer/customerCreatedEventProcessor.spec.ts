@@ -6,7 +6,7 @@ import { getSampleCustomerCreatedMessage } from '../../../../test/testData/ctCus
 import { Context } from '../../../../types/klaviyo-context';
 import { DefaultCustomerMapper } from '../../../shared/mappers/DefaultCustomerMapper';
 import { getSampleCustomerApiResponse } from '../../../../test/testData/ctCustomerApi';
-import { GetProfileResponseData } from 'klaviyo-api';
+import { ProfileResponseObjectResourceExtended } from 'klaviyo-api';
 
 jest.mock('../../../../infrastructure/driven/klaviyo/KlaviyoService');
 const contextMock: DeepMockProxy<Context> = mockDeep<Context>();
@@ -330,13 +330,13 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
         });
 
         it('should update existing profile when deduplication is enabled and profile found', async () => {
-            const existingProfile: GetProfileResponseData = {
+            const existingProfile: ProfileResponseObjectResourceExtended = {
                 id: 'existing-klaviyo-id',
                 attributes: {
                     email: 'test@example.com',
                     externalId: 'old-external-id',
                 },
-            } as GetProfileResponseData;
+            } as ProfileResponseObjectResourceExtended;
 
             contextMock.profileDeduplicationService.shouldDeduplicate.mockReturnValue(true);
             contextMock.profileDeduplicationService.findExistingProfileByEmail.mockResolvedValue({
@@ -378,13 +378,13 @@ describe('customerCreatedEvent > generateKlaviyoEvent', () => {
                     email: 'test@example.com',
                 },
             };
-            const existingProfile: GetProfileResponseData = {
+            const existingProfile: ProfileResponseObjectResourceExtended = {
                 id: 'existing-klaviyo-id',
                 attributes: {
                     email: 'test@example.com',
                     externalId: message.customer.id,
                 },
-            } as GetProfileResponseData;
+            } as ProfileResponseObjectResourceExtended;
 
             contextMock.profileDeduplicationService.shouldDeduplicate.mockReturnValue(true);
             contextMock.profileDeduplicationService.findExistingProfileByEmail.mockResolvedValue({
